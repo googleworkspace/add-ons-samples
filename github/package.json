@@ -1,0 +1,19 @@
+{
+  "name": "github-gmail-add-on-sample",
+  "version": "1.0.0",
+  "description": "Sample Gmail add-on to demonstrate connecting with external services. Displays GitHub information for emails containing links to issues or pull requests.",
+  "scripts": {
+    "build": "gulp",
+	"lint": "jshint src/*.gs",
+	"format": "prettier --write src/*.gs",
+	"push": "gasp push"
+  },
+  "author": "Steven Bazyl",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "jshint": "^2.9.5",
+    "prettier": "1.7.3"
+  }
+}

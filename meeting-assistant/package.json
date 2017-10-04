@@ -1,0 +1,20 @@
+{
+  "name": "meeting-assistant",
+  "version": "1.0.0",
+  "description": "Sample Gmail add-on. Quickly schedule a meeting in response to an email thread.",
+  "scripts": {
+    "build": "gulp",
+    "lint": "jshint src/*.gs",
+    "format": "prettier --write src/*.gs",
+    "push": "gasp push"
+  },
+  "author": "Steven Bazyl",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "eslint": "^4.8.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "jshint": "^2.9.5",
+    "prettier": "1.7.3"
+  }
+}

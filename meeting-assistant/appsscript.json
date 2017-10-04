@@ -1,0 +1,32 @@
+{
+  "timeZone": "America/Denver",
+  "dependencies": {
+    "enabledAdvancedServices": [{
+      "userSymbol": "Calendar",
+      "serviceId": "calendar",
+      "version": "v3"
+    }]
+  },
+  "exceptionLogging": "CLOUD",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.storage",
+    "https://www.googleapis.com/auth/gmail.addons.execute", 
+    "https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
+    "https://www.googleapis.com/auth/calendar"
+  ],
+  "gmail": {
+    "version": "TRUSTED_TESTER_V2",
+    "name": "Meeting assistant",
+    "logoUrl": "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/clock.svg.png",
+    "universalActions": [{
+      "text": "Schedule a meeting",
+      "runFunction": "handleShowScheduler"
+    }, {
+      "text": "Settings",
+      "runFunction": "handleShowSettings"
+    }],
+    "openLinkUrlPrefixes": [
+      "https://calendar.google.com"  
+    ]
+  }
+}
