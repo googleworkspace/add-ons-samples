@@ -1,0 +1,17 @@
+name: "moment"
+description:
+    "Parse and display dates in any timezone."
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "http://momentjs.com/timezone/"
+  }
+  url {
+    type: GIT
+    value: "https://github.com/moment/moment-timezone/"
+  }
+  version: "0.5.13"
+  last_upgrade_date { year: 2017 month: 10 day: 23 }
+  license_type: NOTICE
+}

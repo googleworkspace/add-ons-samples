@@ -1,0 +1,17 @@
+name: "moment"
+description:
+    "A modern JavaScript utility library delivering modularity, performance & extras."
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://lodash.com/"
+  }
+  url {
+    type: GIT
+    value: "https://github.com/lodash/lodash/"
+  }
+  version: "4.17.4"
+  last_upgrade_date { year: 2017 month: 10 day: 23 }
+  license_type: NOTICE
+}

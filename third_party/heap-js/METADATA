@@ -1,0 +1,18 @@
+name: "moment"
+description:
+    "Heap data structure for JavaScript."
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://github.com/ignlg/heap-js"
+  }
+  url {
+    type: GIT
+    value: "https://github.com/ignlg/heap-js"
+  }
+  version: "1.2.2"
+  last_upgrade_date { year: 2017 month: 10 day: 23 }
+  license_type: NOTICE
+  local_modifications: "Removed export declaration for apps script compatibility."
+}
