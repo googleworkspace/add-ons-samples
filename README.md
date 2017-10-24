@@ -8,7 +8,7 @@ See sub-directories for more detailed descriptions of individual samples.
 ## Overview
 
 Save time and effort for your users by automating these tasks with
-[Gmail add-ons)(https://developers.google.com/gmail/add-ons).
+[Gmail add-ons](https://developers.google.com/gmail/add-ons).
 Gmail add-ons examine incoming messages, then act on these messages in
 various ways, such as by:
 
