@@ -2,7 +2,7 @@
 
 [![Stack Overflow][stackoverflow-shield]][stackoverflow-link]
 
-This repository contains samples [Gmail add-ons)(https://developers.google.com/gmail/add-ons).
+This repository contains samples [Gmail add-ons](https://developers.google.com/gmail/add-ons).
 See sub-directories for more detailed descriptions of individual samples.
 
 ## Overview
@@ -34,7 +34,7 @@ services to bring rich information into Gmail.
 
 If you have questions or run into issues with Gmail add-ons, see:
 
-* Stack Overflow: tag questions with [`gmail-addons`][stackoverflow-link]
+* Stack Overflow: tag questions with [`gmail-addons`](stackoverflow-link)
 
 ## Contributing changes
 
@@ -43,7 +43,7 @@ to this project.
 
 ## License
 
-Thes samples are licensed under the [Apache 2 license][LICENSE].
+Thes samples are licensed under the [Apache 2 license](LICENSE).
 
 <!-- references -->
 
