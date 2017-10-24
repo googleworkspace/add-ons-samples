@@ -15,26 +15,20 @@
 var DEBUG = true;
 
 /**
- * Item represents an issue in the bug tracker.
+ * Typedef for events passed from Gmail to the add-on. Supplied for
+ * reference.
  *
- * @type {ItemType}
- * @const
+ * @typedef {Object} Event
+ * @property {Object} parameters - Request parameters. Must include a 
+ *    key "action" with the name of the action to dispatch
+ * @property {Object} formInput - Values of input fields
  */
-ITEM_TYPE_ISSUE = "issues";
-
-/**
- * Item represents a pull request.
- *
- * @type {ItemType}
- * @const
- */
-ITEM_TYPE_PULL_REQUEST = "pull";
 
 /**
  * Error handler
  * @callback ErrorHandler
  * @param {Error} exception - Exception to handle
- * @Return {Card|ActionResponse|UnivseralActionResponse} optional card or action response to render
+ * @return {Card|ActionResponse|UnivseralActionResponse} optional card or action response to render
  */
 
 /** 
@@ -45,7 +39,7 @@ ITEM_TYPE_PULL_REQUEST = "pull";
  * @return {Card[]}
  */
 function getContextualAddOn(event) {
-  event.parameters = { action: "ShowAddOn" };
+  event.parameters = { action: "showAddOn" };
   return dispatchActionInternal_(event, addOnErrorHandler);
 }
 
@@ -60,7 +54,7 @@ function handleShowSettings() {
   return dispatchActionInternal_(
     {
       parameters: {
-        action: "ShowSettings"
+        action: "showSettings"
       }
     },
     universalActionErrorHandler
@@ -77,7 +71,7 @@ function handleShowSettings() {
 function handleAuthorizationRequired() {
   return dispatchActionInternal_({
     parameters: {
-      action: "ShowAuthorizationCard"
+      action: "showAuthorizationCard"
     }
   });
 }
@@ -133,11 +127,11 @@ function dispatchAction(event) {
  * Validates and dispatches an action.
  *
  * @param {Event} event - user event to process
- * @param {ErrorHandler} opt_errorHandler - Handles errors, optionally 
+ * @param {ErrorHandler} errorHandler - Handles errors, optionally 
  *        returning a card or action response.
  * @return {ActionResponse|UniversalActionResponse|Card} Card or form action
  */
-function dispatchActionInternal_(event, opt_errorHandler) {
+function dispatchActionInternal_(event, errorHandler) {
   if (DEBUG) {
     console.time("dispatchActionInternal");
     console.log(event);
@@ -157,8 +151,8 @@ function dispatchActionInternal_(event, opt_errorHandler) {
     return actionFn(event);
   } catch (err) {
     console.error(err);
-    if (opt_errorHandler) {
-      return opt_errorHandler(err);
+    if (errorHandler) {
+      return errorHandler(err);
     } else {
       throw err;
     }
@@ -172,15 +166,15 @@ function dispatchActionInternal_(event, opt_errorHandler) {
 /**
  * Handle unexpected errors for the main universal action entry points.
  *
- * @type ErrorHandler
+ * @param {Error} exception - Exception to handle
+ * @return {Card|ActionResponse|UnivseralActionResponse} optional card or action response to render
  */
 function addOnErrorHandler(err) {
   if (err instanceof AuthorizationRequiredException) {
-    console.info("Requesting reauthorization");
     CardService.newAuthorizationException()
       .setAuthorizationUrl(githubClient().authorizationUrl())
       .setResourceDisplayName("GitHub")
-      .setCustomUiCallback("handleAuthorizationRequired") // TODO - Will be changed to take card directly?
+      .setCustomUiCallback("handleAuthorizationRequired")
       .throwException();
   } else {
     return buildErrorCard({
@@ -193,46 +187,24 @@ function addOnErrorHandler(err) {
 /**
  * Handle unexpected errors for universal actions.
  *
- * @type ErrorHandler
+ * @param {Error} exception - Exception to handle
+ * @return {Card|ActionResponse|UnivseralActionResponse} optional card or action response to render
  */
 function universalActionErrorHandler(err) {
-  if (err instanceof AuthorizationRequiredException) {
-    console.info("Requesting reauthorization");
-    CardService.newAuthorizationException()
-      .setAuthorizationUrl(githubClient().authorizationUrl())
-      .setResourceDisplayName("GitHub")
-      .setCustomUiCallback("handleAuthorizationRequired") // TODO - Will be changed to take card directly?
-      .throwException();
-  } else {
-    var card = buildErrorCard({
-      exception: err,
-      showStackTrace: DEBUG
-    });
-    return CardService.newUniversalActionResponseBuilder()
-      .displayAddOnCards([card])
-      .build();
-  }
+  var card = addOnErrorHandler(err);
+  return CardService.newUniversalActionResponseBuilder()
+    .displayAddOnCards([card])
+    .build();
 }
 /**
  * Handle unexpected errors for secondary actions.
  *
- * @type ErrorHandler
+ * @param {Error} exception - Exception to handle
+ * @return {Card|ActionResponse|UnivseralActionResponse} optional card or action response to render
  */
 function actionErrorHandler(err) {
-  if (err instanceof AuthorizationRequiredException) {
-    console.info("Requesting reauthorization");
-    CardService.newAuthorizationException()
-      .setAuthorizationUrl(githubClient().authorizationUrl())
-      .setResourceDisplayName("GitHub")
-      .setCustomUiCallback("handleAuthorizationRequired") // TODO - Will be changed to take card directly?
-      .throwException();
-  } else {
-    var card = buildErrorCard({
-      exception: err,
-      showStackTrace: DEBUG
-    });
-    return CardService.newActionResponseBuilder()
-      .setNavigation(CardService.newNavigation().pushCard(card))
-      .build();
-  }
+  var card = addOnErrorHandler(err);
+  return CardService.newActionResponseBuilder()
+    .setNavigation(CardService.newNavigation().pushCard(card))
+    .build();
 }

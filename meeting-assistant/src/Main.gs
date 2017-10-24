@@ -24,6 +24,16 @@ var DEFAULT_DEADLINE_SECONDS = 20;
 var WEEKDAYS = [1, 2, 3, 4, 5]; // Weekeday values used by momentjs
 
 /**
+ * Typedef for events passed from Gmail to the add-on. Supplied for
+ * reference.
+ *
+ * @typedef {Object} Event
+ * @property {Object} parameters - Request parameters. Must include a 
+ *    key "action" with the name of the action to dispatch
+ * @property {Object} formInput - Values of input fields
+ */
+
+/**
  * Typedef for error handler callbacks. Provided for reference.
  * 
  * @callback ErrorHandler
@@ -39,7 +49,7 @@ var WEEKDAYS = [1, 2, 3, 4, 5]; // Weekeday values used by momentjs
  * @return {UniversalActionResponse}
  */
 function handleShowScheduler(event) {
-  event.parameters.action = "ShowSearchForm";
+  event.parameters.action = "showSearchForm";
   return dispatchActionInternal(event, universalActionErrorHandler);
 }
 
@@ -51,7 +61,7 @@ function handleShowScheduler(event) {
  * @return {UniversalActionResponse}
  */
 function handleShowSettings(event) {
-  event.parameters.action = "ShowSettings";
+  event.parameters.action = "showSettings";
   return dispatchActionInternal(event, universalActionErrorHandler);
 }
 /** 

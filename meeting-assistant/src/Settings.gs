@@ -59,7 +59,7 @@ function resetSettingsForUser() {
 }
 
 /**
- * Prototype object for cached properties instances.
+ * Prototype object for cached access to script/user properties.
  */
 var cachedPropertiesPrototype = {
   /**

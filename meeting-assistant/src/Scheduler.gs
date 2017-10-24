@@ -13,6 +13,16 @@
 // limitations under the License.
 
 /**
+ * Typedef for the scheduler response
+ *
+ * @typedef {Object} SchedulerResponse
+ * @property {TimePeriod[]} freeTimes - List of candidate time periods
+ * @property {boolean} isPartialResponse - True if not all participant calendar
+ *    were considered.
+ */
+
+
+/**
  * Prototype object for scheduler instances.
  */
 var SchedulerPrototype = {
@@ -30,7 +40,7 @@ var SchedulerPrototype = {
   * Finds the next N available times among a set of participants, where N
   * is set via the builder's `maxFreeTimes` property.
   *
-  * @return {Object}
+  * @return {SchedulerResponse}
   */
   findAvailableTimes: function() {
     if (DEBUG) {
@@ -118,6 +128,9 @@ var SchedulerPrototype = {
       var freeTimes = [];
       var nextBusyPeriod = iterator.next();
 
+      // Keep proposing candidate times until enough valid times
+      // are found or the end of the search range is hit. Skip
+      // ahead any time a busy period is found. 
       while (
         nextPeriod.end <= this.timeMax_ &&
         freeTimes.length < this.maxFreeTimes
@@ -131,9 +144,11 @@ var SchedulerPrototype = {
           nextBusyPeriod = iterator.next();
           continue;
         }
+
         if (this.isValidTimePeriod_(nextPeriod)) {
           freeTimes.push(nextPeriod);
         }
+
         var nextStart = moment(nextPeriod.start)
           .add(this.meetingIntervalMinutes, "minutes")
           .valueOf();
@@ -159,10 +174,9 @@ var SchedulerPrototype = {
   * @private
   */
   createAdjustedPeriod_: function(startTime) {
-    var start = moment(startTime).tz(this.timezone);
-
     // Round up and make the time clean
-    start
+    var start = moment(startTime)
+      .tz(this.timezone)
       .minutes(roundUpToNearest_(start.minutes(), this.meetingIntervalMinutes))
       .seconds(0)
       .milliseconds(0);
@@ -271,7 +285,7 @@ var MergedCalendarsIteratorPrototype = {
    */
   next: function() {
     if (this.heap_.isEmpty()) {
-      return undefined;
+      return;
     }
 
     var timePeriod = this.popAndQueueNextTimePeriod_();
@@ -340,10 +354,7 @@ var MergedCalendarsIteratorPrototype = {
    */
   init_: function() {
     this.heap_ = new Heap(function(a, b) {
-      if (!a || !b) {
-        return 0;
-      }
-      return a.timePeriod.start - b.timePeriod.start;
+      return (a && b) ? a.timePeriod.start - b.timePeriod.start : 0;
     });
 
     // Init heap with first element from each calendar

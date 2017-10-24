@@ -14,33 +14,36 @@
 
 /**
  * Urls of various icons.
+ * From https://github.com/webdog/octicons-png
+ * @constant
  */
 var Icons = {
-  repository:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/repo.svg.png",
-  contributedRepositories:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/repo-push.svg.png",
-  state: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/pulse.svg.png",
-  person: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/person.svg.png",
-  calendar:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/calendar.svg.png",
-  stars: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/star.svg.png",
-  forks:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/repo-forked.svg.png",
-  watchers: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/eye.svg.png",
-  issues: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/bug.svg.png",
-  pullRequests:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/repo-pull.svg.png",
-  email: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/mail.svg.png",
-  company:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/organization.svg.png",
-  location:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/location.svg.png",
-  bio: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/note.svg.png",
-  followers:
-    "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/radio-tower.svg.png",
-  labels: "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/tag.svg.png"
+  repository: buildIconUrl_("repo"),
+  contributedRepositories: buildIconUrl_("repo-push"),
+  state: buildIconUrl_("pulse"),
+  person: buildIconUrl_("person"),
+  calendar: buildIconUrl_("calendar"),
+  stars: buildIconUrl_("star"),
+  forks: buildIconUrl_("repo-forked"),
+  watchers: buildIconUrl_("eye"),
+  issues: buildIconUrl_("bug"),
+  pullRequests: buildIconUrl_("repo-pull"),
+  email: buildIconUrl_("mail"),
+  company: buildIconUrl_("organization"),
+  location: buildIconUrl_("location"),
+  bio: buildIconUrl_("note"),
+  followers: buildIconUrl_("radio-tower"),
+  labels: buildIconUrl_("tag")
 };
+
+/**
+ * Constructs the full URL for an icon.
+ * @param {String} name - base file name of the icon
+ * @return {String} full URL to the hosted icon.
+ */
+function buildIconUrl_(name) {
+  return "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/" + name + ".svg.png";
+}
 
 /**
  * Builds the custom authorization card to connect to the user's GitHub
@@ -55,24 +58,18 @@ function buildAuthorizationCard(opts) {
   var section = CardService.newCardSection()
     .addWidget(
       CardService.newTextParagraph().setText(
-        'Please authorize access to your <a href="https://github.com">GitHub</a> account.'
+        'Please authorize access to your GitHub account.'
       )
     )
     .addWidget(
       CardService.newButtonSet().addButton(
         CardService.newTextButton()
           .setText("Authorize")
-          .setOpenLink(
-            CardService.newOpenLink()
-              .setUrl(opts.url)
-              .setOpenAs(CardService.OpenAs.OVERLAY)
-              .setOnClose(CardService.OnClose.RELOAD_ADD_ON)
+          .setAuthorizationAction(
+            CardService.newAuthorizationAction()
+              .setAuthorizationUrl(opts.url)
           )
-        // TODO: Use once fully rolled out
-        //.setAuthorizationAction(
-        //   CardService.newAuthorizationAction().setAuthorizationUrl(opts.url)
-        // )
-      )
+      ) 
     );
   var card = CardService.newCardBuilder()
     .setHeader(header)
@@ -144,7 +141,7 @@ function buildSettingsCard(opts) {
         CardService.newButtonSet().addButton(
           CardService.newTextButton()
             .setText("Disconnect account")
-            .setOnClickAction(createAction_("DisconnectAccount"))
+            .setOnClickAction(createAction_("disconnectAccount"))
         )
       )
     );
@@ -356,9 +353,9 @@ function buildRepositoryCard(opts) {
  * @param {string} opts.location - User's location
  * @param {string} opts.bio - User's bio
  * @param {Date} opts.memberSince - Date user joined GitHub
- * @param {number} opts.repositories - Number of repositories the user owns or forked
- * @param {number} opts.contributedRepositories - Number of repositories the user contributed to
- * @param {number} opts.followers - Number of people following the user 
+ * @param {number} opts.repositoryCount - Number of repositories the user owns or forked
+ * @param {number} opts.contributedRepositorytCount - Number of repositories the user contributed to
+ * @param {number} opts.followerCount - Number of people following the user 
  * @return {Card}
  */
 function buildUserCard(opts) {
@@ -396,21 +393,21 @@ function buildUserCard(opts) {
           createKeyValue_(
             "Repositories",
             Icons.repository,
-            opts.repositories.toString()
+            opts.repositoryCount.toString()
           )
         )
         .addWidget(
           createKeyValue_(
             "Contributed repositories",
             Icons.contributedRepositories,
-            opts.contributedRepositories.toString()
+            opts.contributedRepositoryCount.toString()
           )
         )
         .addWidget(
           createKeyValue_(
             "Followers",
             Icons.followers,
-            opts.followers.toString()
+            opts.followerCount.toString()
           )
         )
     );
@@ -418,8 +415,8 @@ function buildUserCard(opts) {
 }
 
 /**
- * Choses between a value a default placeholder. The place holder
- * is used if the value is null, undefined, or an empty string.
+ * Choses between a value and a default placeholder. The placeholder
+ * is used if the value is falsy.
  *
  * @param {Object} value - Value to check/return
  * @param {Object} defaultValue - Value to return if original value not valid.
@@ -489,7 +486,7 @@ function createExternalLink_(url) {
 function createUserKeyValue_(label, person) {
   var widget = createKeyValue_(label, Icons.person, person);
   if (person) {
-    widget.setOnClickAction(createAction_("ShowUser", { login: person }));
+    widget.setOnClickAction(createAction_("showUser", { login: person }));
   }
   return widget;
 }
@@ -504,7 +501,7 @@ function createUserKeyValue_(label, person) {
  */
 function createRepositoryKeyValue_(label, nameWithOwner) {
   var nameAndOwner = nameWithOwner.split("/");
-  var action = createAction_("ShowRepository", {
+  var action = createAction_("showRepository", {
     owner: nameAndOwner[0],
     repo: nameAndOwner[1]
   });
@@ -523,8 +520,5 @@ function createRepositoryKeyValue_(label, nameWithOwner) {
  * @private
  */
 function formatDateTime_(value) {
-  if (value) {
-    return moment(value).fromNow();
-  }
-  return "---";
+  return value ? moment(value).fromNow() : "---";
 }

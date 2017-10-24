@@ -24,7 +24,7 @@ various ways, such as by:
 schedule meetings in response to an email thread. It demonstrates
 interactive cards & forms as well as interaction with the Google Calendar API.
 
-[Git Info](github) - This add-on shows additional information about issues and
+[GitHub Reader](github) - This add-on shows additional information about issues and
 pull requests for [GitHub](https://github.com) repositories. It demonstrates how
 conditionally display cards based on email content as well as connect to external
 services to bring rich information into Gmail.

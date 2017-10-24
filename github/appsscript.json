@@ -16,7 +16,7 @@
   ],
   "gmail": {
     "version": "TRUSTED_TESTER_V2",
-    "name": "Git Info",
+    "name": "GitHub Reader",
     "logoUrl": "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/git-branch.svg.png",
     "contextualTriggers": [{
       "unconditional": {

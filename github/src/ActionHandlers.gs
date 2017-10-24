@@ -13,14 +13,12 @@
 // limitations under the License.
 
 /**
- * Typedef for events passed from gmail to the add-on. Supplied for
- * reference.
- * 
- * @typedef {Object} Event
- * @property {Object} parameters - Request parameters. Must include a 
- *    key "action" with the name of the action to dispatch
- * @property {Object} formInput - Values of input fields
+ * Map of internal functions for handling various types of github links.
  */
+var linkHandlers = {
+  issues: handleIssue_,
+  pull: handlePullRequest_
+};
 
 /**
  * Collection of functions to handle user interactions with the add-on. 
@@ -29,13 +27,13 @@
  */
 var ActionHandlers = {
   /**
-	* Primary handler for the add-on. Displays cards about a pull or issue
-	* if referenced in the email.
-	*
-	* @param {Event} e - Event from gmail
-	* @return {Card[]}
-	*/
-  ShowAddOn: function(e) {
+   * Primary handler for the add-on. Displays cards about a pull or issue
+   * if referenced in the email.
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {Card[]}
+   */
+  showAddOn: function(e) {
     var message = getCurrentMessage(e);
     var links = extractGitHubLinks(message.getBody());
 
@@ -44,24 +42,21 @@ var ActionHandlers = {
     }
 
     var cards = _.map(links, function(link) {
-      if (link.type == ITEM_TYPE_ISSUE) {
-        return handleIssue_(link.owner, link.repo, link.id);
-      } else if (link.type == ITEM_TYPE_PULL_REQUEST) {
-        return handlePullRequest_(link.owner, link.repo, link.id);
-      } else {
+      if (!linkHandlers[link.type]) {
         throw new Error("Invalid link type: " + link.type);
       }
+      return linkHandlers[link.type](link.owner, link.repo, link.id);
     });
     return cards;
   },
 
   /**
-	* Displays the add-on settings card.
-	*
-	* @param {Event} e - Event from gmail
-	* @return {CardService.FormAction}
-	*/
-  ShowSettings: function(e) {
+   * Displays the add-on settings card.
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {CardService.FormAction}
+   */
+  showSettings: function(e) {
     var githubResponse = githubClient().query(Queries.VIEWER, {});
 
     var card = buildSettingsCard({
@@ -75,22 +70,22 @@ var ActionHandlers = {
   },
 
   /**
-	* Disconnects the user"s GitHub account.
-	*
-	* @param {Event} e - Event from gmail
-	*/
-  DisconnectAccount: function(e) {
+   * Disconnects the user's GitHub account.
+   *
+   * @param {Event} e - Event from Gmail
+   */
+  disconnectAccount: function(e) {
     githubClient().disconnect();
     throw new AuthorizationRequiredException();
   },
 
   /**
-	* Shows a card displaying details about a GitHub user (name, employer, location, etc.)
-	*
-	* @param {Event} e - Event from gmail
-	* @return {CardService.FormAction}
-	*/
-  ShowUser: function(e) {
+   * Shows a card displaying details about a GitHub user (name, employer, location, etc.)
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {CardService.FormAction}
+   */
+  showUser: function(e) {
     var githubResponse = githubClient().query(Queries.USER, {
       login: e.parameters.login
     });
@@ -106,9 +101,9 @@ var ActionHandlers = {
       location: user.location,
       bio: user.bio,
       memberSince: user.createdAt,
-      repositories: user.repositories.totalCount,
-      contributedRepositories: user.contributedRepositories.totalCount,
-      followers: user.followers.totalCount
+      repositoryCount: user.repositories.totalCount,
+      contributedRepositoryCount: user.contributedRepositories.totalCount,
+      followerCount: user.followers.totalCount
     });
 
     return CardService.newActionResponseBuilder()
@@ -117,12 +112,12 @@ var ActionHandlers = {
   },
 
   /**
-	 * Shows a card displaying details of a GitHub repository.
-	 *
-	 * @param {Event} e - Event from gmail
-	 * @return {CardService.ActionResponse}
-	 */
-  ShowRepository: function(e) {
+   * Shows a card displaying details of a GitHub repository.
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {CardService.ActionResponse}
+   */
+  showRepository: function(e) {
     var githubResponse = githubClient().query(Queries.REPOSITORY, {
       owner: e.parameters.owner,
       repo: e.parameters.repo
@@ -148,12 +143,12 @@ var ActionHandlers = {
   },
 
   /**
-	 * Shows a the GitHub authorization card.
-	 *
-	 * @param {Event} e - Event from gmail
-	 * @return {CardService.Card}
-	 */
-  ShowAuthorizationCard: function(e) {
+   * Shows a the GitHub authorization card.
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {CardService.Card}
+   */
+  showAuthorizationCard: function(e) {
     return buildAuthorizationCard({
       url: githubClient().authorizationUrl()
     });
@@ -214,7 +209,7 @@ function handlePullRequest_(owner, repoName, id) {
   });
 
   var repo = githubResponse.repository;
-  var pullRequest = githubResponse.repository.pullRequest;
+  var pullRequest = repo.pullRequest;
 
   var card = buildPullRequestCard({
     id: pullRequest.id,

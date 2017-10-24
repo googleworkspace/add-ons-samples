@@ -54,7 +54,7 @@ function buildSearchCard(opts) {
       CardService.newTextButton()
         .setText("Find times")
         .setOnClickAction(
-          createAction_("FindTimes", { state: JSON.stringify(opts.state) })
+          createAction_("findTimes", { state: JSON.stringify(opts.state) })
         )
     )
   );
@@ -116,7 +116,7 @@ function buildResultsCard(opts) {
       CardService.newTextButton()
         .setText("Send meeting invite")
         .setOnClickAction(
-          createAction_("CreateMeeting", { state: JSON.stringify(opts.state) })
+          createAction_("createMeeting", { state: JSON.stringify(opts.state) })
         )
     )
   );
@@ -219,12 +219,12 @@ function buildSettingsCard(opts) {
       .addButton(
         CardService.newTextButton()
           .setText("Save")
-          .setOnClickAction(createAction_("SaveSettings", {}))
+          .setOnClickAction(createAction_("saveSettings", {}))
       )
       .addButton(
         CardService.newTextButton()
           .setText("Reset to defaults")
-          .setOnClickAction(createAction_("ResetSettings", {}))
+          .setOnClickAction(createAction_("resetSettings", {}))
       )
   );
   return CardService.newCardBuilder()

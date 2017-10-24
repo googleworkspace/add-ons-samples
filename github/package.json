@@ -4,9 +4,8 @@
   "description": "Sample Gmail add-on to demonstrate connecting with external services. Displays GitHub information for emails containing links to issues or pull requests.",
   "scripts": {
     "build": "gulp",
-	"lint": "jshint src/*.gs",
-	"format": "prettier --write src/*.gs",
-	"push": "gasp push"
+    "lint": "jshint src/*.gs",
+    "format": "prettier --write src/*.gs"
   },
   "author": "Steven Bazyl",
   "license": "Apache-2.0",

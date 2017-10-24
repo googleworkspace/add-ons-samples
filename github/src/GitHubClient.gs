@@ -19,16 +19,19 @@
  */
 function AuthorizationRequiredException() {}
 
+/**
+ * Prototype object for the GitHub API client.
+ */
 var GitHubClientPrototype = {
   apiEndpoint: "https://api.github.com/graphql",
   oauthService: null,
   /**
-  * Execute a GraphQL query against the GitHub API.
-  *
-  * @param {Query} query - GraphQL query to run
-  * @param {Object} vars - Named variables to include in the query
-  * @return {Object} API response 
-  */
+   * Execute a GraphQL query against the GitHub API.
+   *
+   * @param {Query} query - GraphQL query to run
+   * @param {Object} vars - Named variables to include in the query
+   * @return {Object} API response
+   */
   query: function(query, vars) {
     if (DEBUG) {
       console.time("query");
@@ -85,27 +88,27 @@ var GitHubClientPrototype = {
   },
 
   /**
-  * De-authorizes the GitHub client.
-  */
+   * De-authorizes the GitHub client.
+   */
   disconnect: function() {
     this.oauthService.reset();
   },
 
   /**
-  * Returns the URL for user authorization.
-  *
-  * @return {string} authorization URL
-  */
+   * Returns the URL for user authorization.
+   *
+   * @return {string} authorization URL
+   */
   authorizationUrl: function() {
     return this.oauthService.getAuthorizationUrl();
   },
 
   /**
-  * Handles the oauth response from GitHub. Raises an error
-  * if authorization declined or failed.
-  *
-  * @param {Object} oauthResponse - response parameters
-  */
+   * Handles the oauth response from GitHub. Raises an error
+   * if authorization declined or failed.
+   *
+   * @param {Object} oauthResponse - response parameters
+   */
   handleOAuthResponse: function(oauthResponse) {
     var authorized = this.oauthService.handleCallback(oauthResponse);
     if (!authorized) {

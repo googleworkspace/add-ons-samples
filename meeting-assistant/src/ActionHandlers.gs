@@ -13,28 +13,18 @@
 // limitations under the License.
 
 /**
- * Typedef for events passed from gmail to the add-on. Supplied for
- * reference.
- *
- * @typedef {Object} Event
- * @property {Object} parameters - Request parameters. Must include a 
- *    key "action" with the name of the action to dispatch
- * @property {Object} formInput - Values of input fields
- */
-
-/**
  * Collection of functions to handle user interactions with the add-on. 
  *
  * @constant
  */
 var ActionHandlers = {
   /**
-  * Displays the meeting search card.
-  * 
-  * @param {Event} e - Event from gmail
-  * @return {UniversalActionResponse}
-  */
-  ShowSearchForm: function(e) {
+   * Displays the meeting search card.
+   * 
+   * @param {Event} e - Event from Gmail
+   * @return {UniversalActionResponse}
+   */
+  showSearchForm: function(e) {
     var settings = getSettingsForUser();
     var message = getCurrentMessage(e);
     var people = extractRecipients(message, settings.emailBlacklist);
@@ -58,11 +48,11 @@ var ActionHandlers = {
   },
 
   /**
-  * Searches for free times and displays a card with the results.
-  * 
-  * @return {ActionResponse}
-  */
-  FindTimes: function(e) {
+   * Searches for free times and displays a card with the results.
+   * 
+   * @return {ActionResponse}
+   */
+  findTimes: function(e) {
     var deadlineMonitor = buildDeadlineMonitor(DEFAULT_DEADLINE_SECONDS);
     var settings = getSettingsForUser();
     var state = _.assign(JSON.parse(e.parameters.state), {
@@ -72,6 +62,7 @@ var ActionHandlers = {
       endHour: parseInt(e.formInput.end)
     });
 
+    // Validate time ranges -- start must be befor end
     if (state.endHour <= state.startHour) {
       return CardService.newActionResponseBuilder()
         .setNotification(
@@ -82,6 +73,7 @@ var ActionHandlers = {
         .build();
     }
 
+    // Validate time ranges -- meeting duration must fit between start/end times
     if (state.durationMinutes > (state.endHour - state.startHour) * 60) {
       return CardService.newActionResponseBuilder()
         .setNotification(
@@ -105,7 +97,7 @@ var ActionHandlers = {
     });
 
     var responseBuilder = CardService.newActionResponseBuilder();
-    try {
+    try { // Handle exceptions from our deadline monitor gracefully
       var response = scheduler.findAvailableTimes();
       if (response.freeTimes.length) {
         var card = buildResultsCard({
@@ -133,6 +125,7 @@ var ActionHandlers = {
             .setType(CardService.NotificationType.WARNING)
         );
       } else {
+        // Handle all other errors in the entry points
         throw err;
       }
     }
@@ -141,12 +134,12 @@ var ActionHandlers = {
   },
 
   /**
-  * Creates an event and displays a confirmation card.
-  * 
-  * @param {Event} e - Event from gmail
-  * @return {ActionResponse}
-  */
-  CreateMeeting: function(e) {
+   * Creates an event and displays a confirmation card.
+   * 
+   * @param {Event} e - Event from Gmail
+   * @return {ActionResponse}
+   */
+  createMeeting: function(e) {
     var state = JSON.parse(e.parameters.state);
     var eventTime = moment(parseInt(e.formInputs.time)).tz(state.timezone);
     var endTime = eventTime.clone().add(state.durationMinutes, "minutes");
@@ -176,11 +169,11 @@ var ActionHandlers = {
   },
 
   /**
-  * Shows the user settings card.
-  * @param {Event} e - Event from gmail
-  * @return {UniversalActionResponse}
-  */
-  ShowSettings: function(e) {
+   * Shows the user settings card.
+   * @param {Event} e - Event from Gmail
+   * @return {UniversalActionResponse}
+   */
+  showSettings: function(e) {
     var settings = getSettingsForUser();
     var card = buildSettingsCard({
       durationMinutes: settings.durationMinutes,
@@ -196,12 +189,12 @@ var ActionHandlers = {
   },
 
   /**
-  * Saves settings.
-  *
-  * @param {Event} e - Event from gmail
-  * @return {ActionResponse}
-  */
-  SaveSettings: function(e) {
+   * Saves the user's settings.
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {ActionResponse}
+   */
+  saveSettings: function(e) {
     var settings = {
       durationMintutes: parseInt(e.formInput.duration),
       startHour: parseInt(e.formInput.start),
@@ -222,11 +215,11 @@ var ActionHandlers = {
   },
 
   /**
-  * Resets the user settings to the defaults.
-  * @param {Event} e - Event from gmail
-  * @return {ActionResponse}
-  */
-  ResetSettings: function(e) {
+   * Resets the user settings to the defaults.
+   * @param {Event} e - Event from Gmail
+   * @return {ActionResponse}
+   */
+  resetSettings: function(e) {
     resetSettingsForUser(settings);
     var settings = getSettingsForUser();
     var card = buildSettingsCard({

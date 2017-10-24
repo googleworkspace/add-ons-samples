@@ -5,8 +5,7 @@
   "scripts": {
     "build": "gulp",
     "lint": "jshint src/*.gs",
-    "format": "prettier --write src/*.gs",
-    "push": "gasp push"
+    "format": "prettier --write src/*.gs"
   },
   "author": "Steven Bazyl",
   "license": "Apache-2.0",

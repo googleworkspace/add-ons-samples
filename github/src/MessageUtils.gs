@@ -13,11 +13,6 @@
 // limitations under the License.
 
 /**
- * Identifies the type of link.
- * @typedef {string} ItemType
- */
-
-/**
  * Extracted information from GitHub links.
  
  * @typedef {Object} GitHubLink

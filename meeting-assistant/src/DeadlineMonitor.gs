@@ -30,10 +30,11 @@ var DeadlineMonitorPrototype = {
 
   /**
    * Check to see if execution time was exceeded. Throws a DeadlineExceededError if so.
+   *
+   * @throws {DeadlineExceededError}
    */
   checkTimeout: function() {
-    var now = Date.now();
-    if (now >= this.deadline_) {
+    if (Date.now() >= this.deadline_) {
       console.warn("Stoped evaluation due to deadline exceeded.");
       throw new DeadlineExceededError();
     }
@@ -41,11 +42,12 @@ var DeadlineMonitorPrototype = {
 };
 
 /**
- * Creates a monitor to track total execution time. Each dds-ons action has a deadline of 30s. Since
+ * Creates a monitor to track total execution time. Each add-ons action has a deadline of 30s. Since
  * the search for free times can be complicated and long running, this allows it to short
  * circuit if taking too much time.
  *
  * @param {integer} timeoutSeconds
+ * @return Deadline monitor instance
  */
 function buildDeadlineMonitor(timeoutSeconds) {
   return _.assign(Object.create(DeadlineMonitorPrototype), {
