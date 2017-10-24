@@ -125,7 +125,7 @@ This sample is licensed under the [Apache 2 license][license].
 [apps-script]: https://script.google.com
 [github-repo]: https://github.com/googlesamples/gmail-add-ons-samples
 [github-zip]: https://github.com/googlesamples/gmail-add-ons-samples/archive/master.zip
-[contributing]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/CONTRIBUTING
+[contributing]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/CONTRIBUTING.md
 [license]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/LICENSE
 [gmail-setting]: https://mail.google.com/mail/#settings/addons
 [gmail]: https://mail.google.com/
