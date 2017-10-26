@@ -175,9 +175,8 @@ var SchedulerPrototype = {
   */
   createAdjustedPeriod_: function(startTime) {
     // Round up and make the time clean
-    var start = moment(startTime)
-      .tz(this.timezone)
-      .minutes(roundUpToNearest_(start.minutes(), this.meetingIntervalMinutes))
+    var start = moment(startTime).tz(this.timezone);
+    start.minutes(roundUpToNearest_(start.minutes(), this.meetingIntervalMinutes))
       .seconds(0)
       .milliseconds(0);
 
