@@ -141,7 +141,7 @@ var ActionHandlers = {
    */
   createMeeting: function(e) {
     var state = JSON.parse(e.parameters.state);
-    var eventTime = moment(parseInt(e.formInputs.time)).tz(state.timezone);
+    var eventTime = moment(parseFloat(e.formInputs.time)).tz(state.timezone);
     var endTime = eventTime.clone().add(state.durationMinutes, "minutes");
     var event = {
       attendees: _.map(state.emailAddresses, function(person) {
