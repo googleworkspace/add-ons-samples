@@ -34,7 +34,7 @@ services to bring rich information into Gmail.
 
 If you have questions or run into issues with Gmail add-ons, see:
 
-* Stack Overflow: tag questions with [`gmail-addons`](stackoverflow-link)
+* Stack Overflow: tag questions with [`gmail-addons`][stackoverflow-link]
 
 ## Contributing changes
 
