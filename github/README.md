@@ -12,13 +12,16 @@ Note: This is not an official Google product.
 
 ## Before you begin
 
-If you're new to add-on development or Apps Script, try the [quickstart](quickstart)
-before proceeding. 
- 
-These instructions assume [Node.js](node) is installed.
+If you're new to add-on development or Apps Script, try the
+[quickstart](quickstart) before proceeding.
 
-Using the add-on requires a [GitHub](github) account, as well as notification
-emails for an issue or pull request from from a hosted repostiory.
+This sample requires the following:
+
+-  [Node.js](node) is installed.
+-  [`clasp`](clasp) is installed. `clasp` is a tool for managing Apps Script
+   projects.
+-  A [GitHub](github) account, as well as notification emails for an issue or
+  pull request from from a hosted repository.
 
 ## Downloading the sample
 
@@ -39,36 +42,38 @@ Download the sample app and navigate into the app directory:
 3.  Initialize the project:
 
         npm install
-        
+
 4.  Bundle the dependencies:
 
         npm run build
-        
+
 ## Deploy the add-on
 
 Deploy the add-on by following these steps:
 
-1.  Create a new [Apps Script](apps-script) project in your web browser. Apps Script places the project file in your Drive root folder so you can find it later.
+1.  Create a new project:
 
-2.  Choose Blank Project if presented with a welcome screen.
+        claps create "Git Info"
 
-3.  For each file in the `src` and `dist` directories:
+2.  Push the code:
 
-    1. Click **File > New > Script file** to create a new file.
+        clasp push
 
-    2. Copy the contents of the source file to the newly created file.
-    
-4.  Click **View > Show manifest file**.
+4.  Tag a version:
 
-5.  Copy the contents of `appsscript.json` into the same file in the editor.
+        clasp version 'Push from github'
 
-6.  In the script editor, select **Publish > Deploy from manifest...**.
+5.  Deploy the add-on:
 
-7.  In the **Deployments** dialog, click the Get ID link for the **Head Deployment**.
+        clasp deploy 1 'test'
 
-8.  Locate the head deployment the **Deployment ID**. Copy this ID and then click **Close**.
+6.  Verify the deployments:
 
-9.  In the Deployments dialog, click **Cancel**. Creating a new deployment is not necessary, as you are using the head deployment only.
+        clasp deployments
+
+Note the deployment ids. There will be two deployments, one for the tagged
+version, another for the `@HEAD` version. Use the `@HEAD` deployment when
+installing the add on if you intend to modify or experiment with the code.
 
 ## Configure GitHub credentials
 
@@ -76,7 +81,7 @@ Access the GitHub API requires registration. To register your own application:
 
 1.  Open the script editor:
 
-        gasp open
+        clasp open
 
 2.  Get the script id by clicking on **File > Project properties** and note the value of the **Script ID** field.
 
@@ -86,17 +91,17 @@ Access the GitHub API requires registration. To register your own application:
 4.  Create a script property with the credentials:
 
     a. Click on **File > Project properties > Script properties**.
-	
+
 	b. Click **Add row**.
-	
+
 	c. Enter the property name `githubCredentials`.
-	
+
 	d. Click on the blank area in the **Value** column.
-	
+
 	e. Enter the value below, subsituting the `{CLIENT_ID}` and `{CLIENT_SECRET}` with the values provided
 	   by GitHub.
-	
-	    {"clientId": "{CLIENT_ID}", "clientSecret": "{CLIENT_SECRET}" } 
+
+	    {"clientId": "{CLIENT_ID}", "clientSecret": "{CLIENT_SECRET}" }
 
 	f. Click **Save**.
 
@@ -157,6 +162,7 @@ This sample is licensed under the [Apache 2 license][license].
 <!-- References -->
 [quickstart]:https://developers.google.com/gmail/add-ons/guides/quickstart
 [node]:https://nodejs.org/en/
+[clasp]:https://github.com/google/clasp
 [apps-script]: https://script.google.com
 [github]: https://github.com
 [github-repo]: https://github.com/googlesamples/gmail-add-ons-samples
