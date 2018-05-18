@@ -16,7 +16,7 @@ If you're new to add-on development or Apps Script, try the
 This sample requires the following:
 
 -  [Node.js][node] is installed.
--  [`clasp`][clasp] is installed. `clasp` is a tool for managing Apps Script
+-  [`clasp`][clasp-repo] is installed. `clasp` is a tool for managing Apps Script
    projects.
 
 ## Downloading the sample
@@ -54,12 +54,18 @@ Deploy the add-on by following these steps:
 2.  Push the code:
 
         clasp push
+        
+3.  Open the project
 
-4.  Tag a version:
+        clasp open
+
+4.  Enable the Calendar API by following the [instructions for enabling advanced services][advanced-services]:
+        
+5.  Tag a version:
 
         clasp version 'Push from github'
 
-5.  Deploy the add-on:
+6.  Deploy the add-on:
 
         clasp deploy 1 'test'
 
@@ -134,7 +140,8 @@ This sample is licensed under the [Apache 2 license][license].
 [github-zip]: https://github.com/googlesamples/gmail-add-ons-samples/archive/master.zip
 [contributing]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/CONTRIBUTING.md
 [license]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/LICENSE
-[gmail-setting]: https://mail.google.com/mail/#settings/addons
+[gmail-settings]: https://mail.google.com/mail/#settings/addons
 [gmail]: https://mail.google.com/
 [clasp-repo]: https://github.com/google/clasp
 [clasp-install]: https://github.com/google/clasp#install
+[advanced-services]: https://developers.google.com/apps-script/guides/services/advanced#enabling_advanced_services
