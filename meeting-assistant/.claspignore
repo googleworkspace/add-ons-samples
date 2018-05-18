@@ -1,6 +1,9 @@
+assets/**
 node_modules/**
 node_modules/**/.*/**
 node_modules/**/.*
 third_party/**
 package.json
+package-lock.json
 gulpfile.js
+README.md
