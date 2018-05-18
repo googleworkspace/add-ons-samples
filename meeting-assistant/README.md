@@ -7,15 +7,17 @@ Calendar API service to facilitate creating meetings based on email threads.
 
 Note: This is not an official Google product.
 
+
 ## Before you begin
 
-If you're new to add-on development or Apps Script, try the [quickstart](quickstart)
-before proceeding.
+If you're new to add-on development or Apps Script, try the
+[quickstart][quickstart] before proceeding.
 
-These instructions assume [Node.js](node) is installed along with
-`[clasp][clasp-repo]`. `Clasp` is a
-tool for managing Apps Script projects. See the
-[installation and usage](clasp-install) instructions to get started.
+This sample requires the following:
+
+-  [Node.js][node] is installed.
+-  [`clasp`][clasp] is installed. `clasp` is a tool for managing Apps Script
+   projects.
 
 ## Downloading the sample
 
@@ -24,14 +26,14 @@ Download the sample app and navigate into the app directory:
 1.  Clone the [Gmail add-ons samples][github-repo], to your local
     machine:
 
-        git clone https://github.com/googlesamples/gmail-add-ons-samples
+        git clone https://github.com/googlesamples/gmail-add-ons-samples.git
 
     Alternatively, you can [download the sample][github-zip] as a zip file and
     extract it.
 
-2.  Change to the sample directory.
+2.  Change to the sample directory:
 
-        cd gmail-add-on-samples/meeting-assistant
+        cd gmail-add-ons-samples/github
 
 3.  Initialize the project:
 
@@ -47,33 +49,33 @@ Deploy the add-on by following these steps:
 
 1.  Create a new project:
 
-        clasp create "Meeting assistant"
+        clasp create "Meeting Assistant"
 
 2.  Push the code:
 
         clasp push
 
-3.  Tag a version:
+4.  Tag a version:
 
         clasp version 'Push from github'
 
-4.  Deploy the add-on:
+5.  Deploy the add-on:
 
         clasp deploy 1 'test'
 
-5.  Verify the deployments:
+6.  Verify the deployments:
 
         clasp deployments
 
 Note the deployment ids. There will be two deployments, one for the tagged
-version, another for the `head` version. Use the `head` deployment when
+version, another for the `@HEAD` version. Use the `@HEAD` deployment when
 installing the add on if you intend to modify or experiment with the code.
 
 ## Install the add-on
 
 One the add-on is deployed, install the add-on on your account using these steps:
 
-1.  Open the [Gmail add-on settings](gmail-settings) tab.
+1.  Open the [Gmail add-on settings][gmail-settings] tab.
 
 2.  In the **Add-ons** tab, ensure that you have selected the **Enable developer
     add-ons for my account** checkbox.
@@ -91,7 +93,7 @@ occur during the execution of the add-on.
 
 ## Run the add-on
 
-1.  Open [Gmail](gmail). If Gmail was open prior to enabling the add-on,
+1.  Open [Gmail][gmail]. If Gmail was open prior to enabling the add-on,
     you may need to refresh the tab.
 
 2.  Open a message in Gmail.
