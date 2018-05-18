@@ -14,7 +14,7 @@
 
 /**
  * Extracted information from GitHub links.
- 
+
  * @typedef {Object} GitHubLink
  * @property {string} owner - User or organization that owns the repository.
  * @property {string} repo - Name of the repository.
@@ -58,13 +58,13 @@ function extractGitHubLinks(messageBodies) {
  * @return {GitHubLink[]} extracted link information, empty array if none found.
  */
 function extractGitHubLinksFromText_(text, appendTo) {
-  var re = /https:\/\/github.com\/([^\/]+?)\/([^\/]+?)\/(issues|pull)\/(\d+)/gi;
+  var re = /https:\/\/github.com\/(.+?)(?<!<)\/(?!>)(.+?)(?<!<)\/(?!>)(issues|pull)(?<!<)\/(?!>)(\d+)/gi;
   while ((match = re.exec(text)) !== null) {
-    var type = match[3];
+    var type = match[3].replace(/<.+?>/g,'');
     appendTo.push({
-      owner: match[1],
-      repo: match[2],
-      id: parseInt(match[4]),
+      owner: match[1].replace(/<.+?>/g,''),
+      repo: match[2].replace(/<.+?>/g,''),
+      id: parseInt(match[4].replace(/<.+?>/g,'')),
       type: type
     });
   }
