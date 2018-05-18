@@ -24,7 +24,7 @@ const third_party_source = [
 
 gulp.task('concat-third-party', function() {
 	return gulp.src(third_party_source)
-	    .pipe(concat('3p-bundle.gs'))
+	    .pipe(concat('3p-bundle.js'))
 	    .pipe(gulp.dest('./dist/'));
 });
 

@@ -3,7 +3,7 @@
 This is a sample add-on that demonstrates using external services to bring
 rich information into Gmail, as well as contextual triggering based on
 email content. It triggers in response to messages containing links
-[GitHub](github) issues or pull requests and displays additional relevant
+[GitHub][github] issues or pull requests and displays additional relevant
 information.
 
 ![Screenshot](assets/screenshot_1.png)
@@ -13,14 +13,14 @@ Note: This is not an official Google product.
 ## Before you begin
 
 If you're new to add-on development or Apps Script, try the
-[quickstart](quickstart) before proceeding.
+[quickstart][quickstart] before proceeding.
 
 This sample requires the following:
 
--  [Node.js](node) is installed.
--  [`clasp`](clasp) is installed. `clasp` is a tool for managing Apps Script
+-  [Node.js][node] is installed.
+-  [`clasp`][clasp] is installed. `clasp` is a tool for managing Apps Script
    projects.
--  A [GitHub](github) account, as well as notification emails for an issue or
+-  A [GitHub][github] account, as well as notification emails for an issue or
   pull request from from a hosted repository.
 
 ## Downloading the sample
@@ -53,7 +53,7 @@ Deploy the add-on by following these steps:
 
 1.  Create a new project:
 
-        claps create "Git Info"
+        clasp create "Git Info"
 
 2.  Push the code:
 
@@ -85,7 +85,7 @@ Access the GitHub API requires registration. To register your own application:
 
 2.  Get the script id by clicking on **File > Project properties** and note the value of the **Script ID** field.
 
-3.  Follow [GitHub's guide](github-oauth) to create an OAuth Application. Use the value `https://script.google.com/macros/d/{SCRIPT_ID}/usercallback` for the **Authorization callback URL**,
+3.  Follow [GitHub's guide][github-oauth] to create an OAuth Application. Use the value `https://script.google.com/macros/d/{SCRIPT_ID}/usercallback` for the **Authorization callback URL**,
     replacing `{SCRIPT_ID}` with the script id located in the previous step.
 
 4.  Create a script property with the credentials:
@@ -109,7 +109,7 @@ Access the GitHub API requires registration. To register your own application:
 
 One the add-on is deployed, install the add-on on your account using these steps:
 
-1.  Open the [Gmail add-on settings](gmail-settings) tab.
+1.  Open the [Gmail add-on settings][gmail-settings] tab.
 
 2.  In the **Add-ons** tab, ensure that you have selected the **Enable developer
     add-ons for my account** checkbox.
@@ -127,7 +127,7 @@ occur during the execution of the add-on.
 
 ## Run the add-on
 
-1.  Open [Gmail](gmail). If Gmail was open prior to enabling the add-on,
+1.  Open [Gmail][gmail]. If Gmail was open prior to enabling the add-on,
     you may need to refresh the tab.
 
 2.  Open a message in Gmail.

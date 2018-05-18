@@ -14,7 +14,7 @@
 
 /**
  * Extracted information from GitHub links.
- 
+
  * @typedef {Object} GitHubLink
  * @property {string} owner - User or organization that owns the repository.
  * @property {string} repo - Name of the repository.
@@ -58,14 +58,24 @@ function extractGitHubLinks(messageBodies) {
  * @return {GitHubLink[]} extracted link information, empty array if none found.
  */
 function extractGitHubLinksFromText_(text, appendTo) {
-  var re = /https:\/\/github.com\/([^\/]+?)\/([^\/]+?)\/(issues|pull)\/(\d+)/gi;
+  var re = /https:\/\/github.com\/(.+?)(?<!<)\/(?!>)(.+?)(?<!<)\/(?!>)(issues|pull)(?<!<)\/(?!>)(\d+)/gi;
   while ((match = re.exec(text)) !== null) {
-    var type = match[3];
+    var type = stripHtmlTags(match[3]);
     appendTo.push({
-      owner: match[1],
-      repo: match[2],
-      id: parseInt(match[4]),
+      owner: stripHtmlTags(match[1]),
+      repo: stripHtmlTags(match[2]),
+      id: parseInt(stripHtmlTags(match[4])),
       type: type
     });
   }
+}
+/**
+ * Strips HTML tags from a string. Not a general purpose implementation,
+ * just removes anything encased in <>.
+ *
+ * @param {string} text - text to strip tags from.
+ * @return {string}
+ */
+function stripHtmlTags(str) {
+  return str.replace(/<.+?>/g,'');
 }
