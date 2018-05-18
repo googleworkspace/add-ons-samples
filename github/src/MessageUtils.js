@@ -60,12 +60,22 @@ function extractGitHubLinks(messageBodies) {
 function extractGitHubLinksFromText_(text, appendTo) {
   var re = /https:\/\/github.com\/(.+?)(?<!<)\/(?!>)(.+?)(?<!<)\/(?!>)(issues|pull)(?<!<)\/(?!>)(\d+)/gi;
   while ((match = re.exec(text)) !== null) {
-    var type = match[3].replace(/<.+?>/g,'');
+    var type = stripHtmlTags(match[3]);
     appendTo.push({
-      owner: match[1].replace(/<.+?>/g,''),
-      repo: match[2].replace(/<.+?>/g,''),
-      id: parseInt(match[4].replace(/<.+?>/g,'')),
+      owner: stripHtmlTags(match[1]),
+      repo: stripHtmlTags(match[2]),
+      id: parseInt(stripHtmlTags(match[4])),
       type: type
     });
   }
+}
+/**
+ * Strips HTML tags from a string. Not a general purpose implementation,
+ * just removes anything encased in <>.
+ *
+ * @param {string} text - text to strip tags from.
+ * @return {string}
+ */
+function stripHtmlTags(str) {
+  return str.replace(/<.+?>/g,'');
 }
