@@ -53,7 +53,7 @@ Deploy the add-on by following these steps:
 
 1.  Create a new project:
 
-        claps create "Git Info"
+        clasp create "Git Info"
 
 2.  Push the code:
 

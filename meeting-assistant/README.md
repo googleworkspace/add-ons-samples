@@ -3,16 +3,19 @@
 This is a sample add-on that demonstrates interactivity and the use of the
 Calendar API service to facilitate creating meetings based on email threads.
 
-![Screenshot](assets/screenshot_1.png) 
+![Screenshot](assets/screenshot_1.png)
 
 Note: This is not an official Google product.
 
 ## Before you begin
 
 If you're new to add-on development or Apps Script, try the [quickstart](quickstart)
-before proceeding. 
- 
-These instructions assume [Node.js](node) is installed.
+before proceeding.
+
+These instructions assume [Node.js](node) is installed along with
+`[clasp][clasp-repo]`. `Clasp` is a
+tool for managing Apps Script projects. See the
+[installation and usage](clasp-install) instructions to get started.
 
 ## Downloading the sample
 
@@ -33,36 +36,38 @@ Download the sample app and navigate into the app directory:
 3.  Initialize the project:
 
         npm install
-        
+
 4.  Bundle the dependencies:
 
         npm run build
-        
+
 ## Deploy the add-on
 
 Deploy the add-on by following these steps:
 
-1.  Create a new [Apps Script](apps-script) project in your web browser. Apps Script places the project file in your Drive root folder so you can find it later.
+1.  Create a new project:
 
-2.  Choose Blank Project if presented with a welcome screen.
+        clasp create "Meeting assistant"
 
-3.  For each file in the `src` and `dist` directories:
+2.  Push the code:
 
-    1. Click **File > New > Script file** to create a new file.
+        clasp push
 
-    2. Copy the contents of the source file to the newly created file.
+3.  Tag a version:
 
-4.  Click **View > Show manifest file**.
+        clasp version 'Push from github'
 
-5.  Copy the contents of `appsscript.json` into the same file in the editor.
+4.  Deploy the add-on:
 
-6.  In the script editor, select **Publish > Deploy from manifest...**.
+        clasp deploy 1 'test'
 
-7.  In the **Deployments** dialog, click the Get ID link for the **Head Deployment**.
+5.  Verify the deployments:
 
-8.  Locate the head deployment the **Deployment ID**. Copy this ID and then click **Close**.
+        clasp deployments
 
-9.  In the Deployments dialog, click **Cancel**. Creating a new deployment is not necessary, as you are using the head deployment only.
+Note the deployment ids. There will be two deployments, one for the tagged
+version, another for the `head` version. Use the `head` deployment when
+installing the add on if you intend to modify or experiment with the code.
 
 ## Install the add-on
 
@@ -129,3 +134,5 @@ This sample is licensed under the [Apache 2 license][license].
 [license]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/LICENSE
 [gmail-setting]: https://mail.google.com/mail/#settings/addons
 [gmail]: https://mail.google.com/
+[clasp-repo]: https://github.com/google/clasp
+[clasp-install]: https://github.com/google/clasp#install
