@@ -48,4 +48,4 @@ Thes samples are licensed under the [Apache 2 license](LICENSE).
 <!-- references -->
 
 [stackoverflow-shield]: https://img.shields.io/badge/stackoverflow-gmail--add--ons-blue.svg
-[stackoverflow-link]: http://stackoverflow.com/search?q=[gmail-add-ons]
+[stackoverflow-link]: http://stackoverflow.com/search?q=[gmail-addons]
