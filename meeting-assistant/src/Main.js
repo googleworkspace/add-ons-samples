@@ -28,20 +28,20 @@ var WEEKDAYS = [1, 2, 3, 4, 5]; // Weekeday values used by momentjs
  * reference.
  *
  * @typedef {Object} Event
- * @property {Object} parameters - Request parameters. Must include a 
+ * @property {Object} parameters - Request parameters. Must include a
  *    key "action" with the name of the action to dispatch
  * @property {Object} formInput - Values of input fields
  */
 
 /**
  * Typedef for error handler callbacks. Provided for reference.
- * 
+ *
  * @callback ErrorHandler
  * @param {Error} exception - Exception to handle
  * @Return {Card|ActionResponse|UnivseralActionResponse} optional card or action response to render
  */
 
-/** 
+/**
  * Entry point for the add-on. Handles an user event and
  * invokes the corresponding action
  *
@@ -49,11 +49,14 @@ var WEEKDAYS = [1, 2, 3, 4, 5]; // Weekeday values used by momentjs
  * @return {UniversalActionResponse}
  */
 function handleShowScheduler(event) {
+  if (event.parameters == undefined) {
+    event.parameters = {};
+  }
   event.parameters.action = "showSearchForm";
   return dispatchActionInternal(event, universalActionErrorHandler);
 }
 
-/** 
+/**
  * Entry point for the add-on. Handles an user event and
  * invokes the corresponding action
  *
@@ -64,7 +67,7 @@ function handleShowSettings(event) {
   event.parameters.action = "showSettings";
   return dispatchActionInternal(event, universalActionErrorHandler);
 }
-/** 
+/**
  * Entry point for secondary actions. Handles an user event and
  * invokes the corresponding action
  *
@@ -79,7 +82,7 @@ function dispatchAction(event) {
  * Validates and dispatches an action.
  *
  * @param {Event} event - user event to process
- * @param {ErrorHandler} opt_errorHandler - Handles errors, optionally 
+ * @param {ErrorHandler} opt_errorHandler - Handles errors, optionally
  *        returning a card or action response.
  * @return {ActionResponse|UniversalActionResponse|Card}
  */

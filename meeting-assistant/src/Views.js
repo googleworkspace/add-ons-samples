@@ -37,18 +37,15 @@ function buildSearchCard(opts) {
   var participantSection = CardService.newCardSection().setHeader(
     "Participants"
   );
+
+  var checkboxGroup = CardService.newSelectionInput()
+    .setType(CardService.SelectionInputType.CHECK_BOX)
+    .setFieldName("participants");
   _.each(opts.emailAddresses, function(email) {
-    participantSection.addWidget(
-      CardService.newKeyValue()
-        .setContent(email)
-        .setSwitch(
-          CardService.newSwitch()
-            .setFieldName("participants")
-            .setSelected(true)
-            .setValue(email)
-        )
-    );
+    checkboxGroup.addItem(email, email, true);
   });
+  participantSection.addWidget(checkboxGroup);
+
   participantSection.addWidget(
     CardService.newButtonSet().addButton(
       CardService.newTextButton()

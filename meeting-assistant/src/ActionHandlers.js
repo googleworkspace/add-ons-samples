@@ -13,14 +13,14 @@
 // limitations under the License.
 
 /**
- * Collection of functions to handle user interactions with the add-on. 
+ * Collection of functions to handle user interactions with the add-on.
  *
  * @constant
  */
 var ActionHandlers = {
   /**
    * Displays the meeting search card.
-   * 
+   *
    * @param {Event} e - Event from Gmail
    * @return {UniversalActionResponse}
    */
@@ -42,14 +42,12 @@ var ActionHandlers = {
       }
     };
     var card = buildSearchCard(opts);
-    return CardService.newUniversalActionResponseBuilder()
-      .displayAddOnCards([card])
-      .build();
+    return [card];
   },
 
   /**
    * Searches for free times and displays a card with the results.
-   * 
+   *
    * @return {ActionResponse}
    */
   findTimes: function(e) {
@@ -135,7 +133,7 @@ var ActionHandlers = {
 
   /**
    * Creates an event and displays a confirmation card.
-   * 
+   *
    * @param {Event} e - Event from Gmail
    * @return {ActionResponse}
    */
