@@ -169,7 +169,7 @@ This sample is licensed under the [Apache 2 license][license].
 [github-zip]: https://github.com/googlesamples/gmail-add-ons-samples/archive/master.zip
 [contributing]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/CONTRIBUTING.md
 [license]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/LICENSE
-[gmail-setting]: https://mail.google.com/mail/#settings/addons
+[gmail-settings]: https://mail.google.com/mail/#settings/addons
 [gmail]: https://mail.google.com/
 [lodash]: https://lodash.com/
 [moment]: http://momentjs.com/
