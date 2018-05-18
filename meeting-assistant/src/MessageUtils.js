@@ -38,7 +38,7 @@ function extractRecipients(message, opt_blacklist) {
   if (!_.isEmpty(opt_blacklist)) {
     emails = _.difference(emails, opt_blacklist);
   }
-  return emails;
+  return emails.sort();
 }
 
 /**
