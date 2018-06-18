@@ -194,7 +194,7 @@ var ActionHandlers = {
    */
   saveSettings: function(e) {
     var settings = {
-      durationMintutes: parseInt(e.formInput.duration),
+      durationMinutes: parseInt(e.formInput.duration),
       startHour: parseInt(e.formInput.start),
       endHour: parseInt(e.formInput.end),
       meetingIntervalMinutes: parseInt(e.formInput.meetingInterval),
