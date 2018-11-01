@@ -33,7 +33,7 @@ Download the sample app and navigate into the app directory:
 
 2.  Change to the sample directory:
 
-        cd gmail-add-ons-samples/github
+        cd gmail-add-ons-samples/meeting-assistant
 
 3.  Initialize the project:
 
