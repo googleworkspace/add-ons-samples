@@ -18,8 +18,6 @@ If you're new to add-on development or Apps Script, try the
 This sample requires the following:
 
 -  [Node.js][node] is installed.
--  [`clasp`][clasp] is installed. `clasp` is a tool for managing Apps Script
-   projects.
 -  A [GitHub][github] account, as well as notification emails for an issue or
   pull request from from a hosted repository.
 
@@ -30,7 +28,7 @@ Download the sample app and navigate into the app directory:
 1.  Clone the [Gmail add-ons samples][github-repo], to your local
     machine:
 
-        git clone https://github.com/googlesamples/gmail-add-ons-samples.git
+        git clone https://github.com/gsuitedevs/gmail-add-ons-samples.git
 
     Alternatively, you can [download the sample][github-zip] as a zip file and
     extract it.
@@ -53,23 +51,23 @@ Deploy the add-on by following these steps:
 
 1.  Create a new project:
 
-        clasp create "Git Info"
+        npx clasp create "Git Info"
 
 2.  Push the code:
 
-        clasp push
+        npx clasp push
 
 4.  Tag a version:
 
-        clasp version 'Push from github'
+        npx clasp version 'Push from github'
 
 5.  Deploy the add-on:
 
-        clasp deploy 1 'test'
+        npx clasp deploy 1 'test'
 
 6.  Verify the deployments:
 
-        clasp deployments
+        npx clasp deployments
 
 Note the deployment ids. There will be two deployments, one for the tagged
 version, another for the `@HEAD` version. Use the `@HEAD` deployment when
@@ -81,7 +79,7 @@ Access the GitHub API requires registration. To register your own application:
 
 1.  Open the script editor:
 
-        clasp open
+        npx clasp open
 
 2.  Get the script id by clicking on **File > Project properties** and note the value of the **Script ID** field.
 
@@ -162,7 +160,6 @@ This sample is licensed under the [Apache 2 license][license].
 <!-- References -->
 [quickstart]:https://developers.google.com/gmail/add-ons/guides/quickstart
 [node]:https://nodejs.org/en/
-[clasp]:https://github.com/google/clasp
 [apps-script]: https://script.google.com
 [github]: https://github.com
 [github-repo]: https://github.com/googlesamples/gmail-add-ons-samples
