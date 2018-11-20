@@ -1,4 +1,4 @@
-name: "moment"
+name: "heap"
 description:
     "Heap data structure for JavaScript."
 
