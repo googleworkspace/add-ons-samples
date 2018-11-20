@@ -1,4 +1,4 @@
-name: "moment"
+name: "moment-timezone"
 description:
     "Parse and display dates in any timezone."
 
