@@ -58,7 +58,7 @@ function extractGitHubLinks(messageBodies) {
  * @return {GitHubLink[]} extracted link information, empty array if none found.
  */
 function extractGitHubLinksFromText_(text, appendTo) {
-  var re = /https:\/\/github.com\/(.+?)(?<!<)\/(?!>)(.+?)(?<!<)\/(?!>)(issues|pull)(?<!<)\/(?!>)(\d+)/gi;
+  var re = /https:\/\/github.com\/([^\/]+?)\/([^\/]+?)\/(issues|pull)\/(\d+)/gi;
   while ((match = re.exec(text)) !== null) {
     var type = stripHtmlTags(match[3]);
     appendTo.push({
