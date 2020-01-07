@@ -3,17 +3,18 @@
   "version": "1.0.0",
   "description": "Sample Gmail add-on. Quickly schedule a meeting in response to an email thread.",
   "scripts": {
-    "build": "gulp",
-    "lint": "jshint src/*.gs",
-    "format": "prettier --write src/*.gs"
+    "build": "mkdirp dist && npm run build:concat",
+    "build:concat": "concat -o dist/3p-bundle.js ../third_party/heap-js/*.js ../third_party/lodash/*.js ../third_party/moment/*.js ../third_party/moment-timezone/*.js",
+    "lint": "eslint -c .eslintrc.json src/*.js",
+    "lint:fix": "eslint -c .eslintrc.json --fix src/*.js"
   },
   "author": "Steven Bazyl",
   "license": "Apache-2.0",
   "devDependencies": {
-    "eslint": "^4.8.0",
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "jshint": "^2.9.5",
-    "prettier": "1.7.3"
+    "@google/clasp": "^2.3.0",
+    "concat": "^1.0.3",
+    "eslint": "^6.8.0",
+    "eslint-config-google": "^0.14.0",
+    "mkdirp": "^0.5.1"
   }
 }

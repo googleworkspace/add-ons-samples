@@ -23,7 +23,7 @@ function AuthorizationRequiredException() {}
  * Prototype object for the GitHub API client.
  */
 var GitHubClientPrototype = {
-  apiEndpoint: "https://api.github.com/graphql",
+  apiEndpoint: 'https://api.github.com/graphql',
   oauthService: null,
   /**
    * Execute a GraphQL query against the GitHub API.
@@ -34,7 +34,7 @@ var GitHubClientPrototype = {
    */
   query: function(query, vars) {
     if (DEBUG) {
-      console.time("query");
+      console.time('query');
     }
     try {
       if (!this.oauthService.hasAccess()) {
@@ -43,7 +43,7 @@ var GitHubClientPrototype = {
 
       var payload = JSON.stringify({
         query: query,
-        variables: vars
+        variables: vars,
       });
 
       if (DEBUG) {
@@ -52,16 +52,16 @@ var GitHubClientPrototype = {
 
       var headers = {
         Authorization: Utilities.formatString(
-          "Bearer %s",
-          this.oauthService.getAccessToken()
-        )
+            'Bearer %s',
+            this.oauthService.getAccessToken()
+        ),
       };
 
       var response = UrlFetchApp.fetch(this.apiEndpoint, {
-        method: "post",
+        method: 'post',
         headers: headers,
         payload: payload,
-        muteHttpExceptions: true
+        muteHttpExceptions: true,
       });
 
       if (DEBUG) {
@@ -75,14 +75,14 @@ var GitHubClientPrototype = {
         console.log(parsedResponse);
       }
 
-      if (parsedResponse.message == "Bad credentials") {
+      if (parsedResponse.message == 'Bad credentials') {
         throw new AuthorizationRequiredException();
       }
 
       return parsedResponse.data;
     } finally {
       if (DEBUG) {
-        console.timeEnd("query");
+        console.timeEnd('query');
       }
     }
   },
@@ -112,9 +112,9 @@ var GitHubClientPrototype = {
   handleOAuthResponse: function(oauthResponse) {
     var authorized = this.oauthService.handleCallback(oauthResponse);
     if (!authorized) {
-      throw new Error("Authorization declined.");
+      throw new Error('Authorization declined.');
     }
-  }
+  },
 };
 
 /**
@@ -131,19 +131,19 @@ function githubClient() {
   var credentials = getGithubCredentials();
   if (!credentials) {
     throw new Error(
-      "No credentials found. Set the script property `githubCredentials`"
+        'No credentials found. Set the script property `githubCredentials`'
     );
   }
-  var oauthService = OAuth2.createService("github")
-    .setAuthorizationBaseUrl("https://github.com/login/oauth/authorize")
-    .setTokenUrl("https://github.com/login/oauth/access_token")
-    .setClientId(credentials.clientId)
-    .setClientSecret(credentials.clientSecret)
-    .setCallbackFunction("handleGitHubOAuthResponse")
-    .setPropertyStore(PropertiesService.getUserProperties())
-    .setCache(CacheService.getUserCache())
-    .setScope("user user:email user:follow repo");
+  var oauthService = OAuth2.createService('github')
+      .setAuthorizationBaseUrl('https://github.com/login/oauth/authorize')
+      .setTokenUrl('https://github.com/login/oauth/access_token')
+      .setClientId(credentials.clientId)
+      .setClientSecret(credentials.clientSecret)
+      .setCallbackFunction('handleGitHubOAuthResponse')
+      .setPropertyStore(PropertiesService.getUserProperties())
+      .setCache(CacheService.getUserCache())
+      .setScope('user user:email user:follow repo');
   return _.assign(Object.create(GitHubClientPrototype), {
-    oauthService: oauthService
+    oauthService: oauthService,
   });
 }

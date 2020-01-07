@@ -52,7 +52,7 @@ function handleShowScheduler(event) {
   if (event.parameters == undefined) {
     event.parameters = {};
   }
-  event.parameters.action = "showSearchForm";
+  event.parameters.action = 'showSearchForm';
   return dispatchActionInternal(event, universalActionErrorHandler);
 }
 
@@ -64,7 +64,7 @@ function handleShowScheduler(event) {
  * @return {UniversalActionResponse}
  */
 function handleShowSettings(event) {
-  event.parameters.action = "showSettings";
+  event.parameters.action = 'showSettings';
   return dispatchActionInternal(event, universalActionErrorHandler);
 }
 /**
@@ -82,38 +82,38 @@ function dispatchAction(event) {
  * Validates and dispatches an action.
  *
  * @param {Event} event - user event to process
- * @param {ErrorHandler} opt_errorHandler - Handles errors, optionally
+ * @param {ErrorHandler} optErrorHandler - Handles errors, optionally
  *        returning a card or action response.
  * @return {ActionResponse|UniversalActionResponse|Card}
  */
-function dispatchActionInternal(event, opt_errorHandler) {
+function dispatchActionInternal(event, optErrorHandler) {
   if (DEBUG) {
-    console.time("dispatchActionInternal");
+    console.time('dispatchActionInternal');
     console.log(event);
   }
 
   try {
     var actionName = event.parameters.action;
     if (!actionName) {
-      throw new Error("Missing action name.");
+      throw new Error('Missing action name.');
     }
 
     var actionFn = ActionHandlers[actionName];
     if (!actionFn) {
-      throw new Error("Action not found: " + actionName);
+      throw new Error('Action not found: ' + actionName);
     }
 
     return actionFn(event);
   } catch (err) {
     console.error(err);
-    if (opt_errorHandler) {
-      return opt_errorHandler(err);
+    if (optErrorHandler) {
+      return optErrorHandler(err);
     } else {
       throw err;
     }
   } finally {
     if (DEBUG) {
-      console.timeEnd("dispatchActionInternal");
+      console.timeEnd('dispatchActionInternal');
     }
   }
 }
@@ -121,29 +121,31 @@ function dispatchActionInternal(event, opt_errorHandler) {
 /**
  * Handle unexpected errors for the main universal action entry points.
  *
- * @type ErrorHandler
+ * @param {Error} err - Exception to handle
+ * @Return {UnivseralActionResponse} - card or action response to render
  */
 function universalActionErrorHandler(err) {
   var card = buildErrorCard({
     exception: err,
-    showStackTrace: DEBUG
+    showStackTrace: DEBUG,
   });
   return CardService.newUniversalActionResponseBuilder()
-    .displayAddOnCards([card])
-    .build();
+      .displayAddOnCards([card])
+      .build();
 }
 
 /**
  * Handle unexpected errors for secondary actions.
  *
- * @type ErrorHandler
+ * @param {Error} err - Exception to handle
+ * @Return {ActionResponse} -  card or action response to render
  */
 function actionErrorHandler(err) {
   var card = buildErrorCard({
     exception: err,
-    showStackTrace: DEBUG
+    showStackTrace: DEBUG,
   });
   return CardService.newActionResponseBuilder()
-    .setNavigation(CardService.newNavigation().pushCard(card))
-    .build();
+      .setNavigation(CardService.newNavigation().pushCard(card))
+      .build();
 }

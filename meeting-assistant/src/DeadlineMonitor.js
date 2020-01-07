@@ -35,10 +35,10 @@ var DeadlineMonitorPrototype = {
    */
   checkTimeout: function() {
     if (Date.now() >= this.deadline_) {
-      console.warn("Stoped evaluation due to deadline exceeded.");
+      console.warn('Stoped evaluation due to deadline exceeded.');
       throw new DeadlineExceededError();
     }
-  }
+  },
 };
 
 /**
@@ -47,10 +47,10 @@ var DeadlineMonitorPrototype = {
  * circuit if taking too much time.
  *
  * @param {integer} timeoutSeconds
- * @return Deadline monitor instance
+ * @return {DeadlineMonitor} Deadline monitor instance
  */
 function buildDeadlineMonitor(timeoutSeconds) {
   return _.assign(Object.create(DeadlineMonitorPrototype), {
-    deadline: Date.now() + timeoutSeconds * 60 * 1000
+    deadline: Date.now() + timeoutSeconds * 60 * 1000,
   });
 }

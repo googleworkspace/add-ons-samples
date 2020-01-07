@@ -54,8 +54,8 @@ var TimePeriodPrototype = {
   */
   merge: function(period) {
     return timePeriod(
-      Math.min(this.start, period.start),
-      Math.max(this.end, period.end)
+        Math.min(this.start, period.start),
+        Math.max(this.end, period.end)
     );
   },
 
@@ -79,9 +79,9 @@ var TimePeriodPrototype = {
   toJSON: function() {
     return {
       start: moment(this.start).toISOString(),
-      end: moment(this.end).toISOString()
+      end: moment(this.end).toISOString(),
     };
-  }
+  },
 };
 
 /**
@@ -93,10 +93,10 @@ var TimePeriodPrototype = {
  */
 function timePeriod(start, end) {
   if (end <= start) {
-    throw new Error("Start must be before end");
+    throw new Error('Start must be before end');
   }
   return _.assign(Object.create(TimePeriodPrototype), {
     start: start,
-    end: end
+    end: end,
   });
 }

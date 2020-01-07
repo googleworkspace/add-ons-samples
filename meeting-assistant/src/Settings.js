@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var SETTINGS_KEY = "settings";
+var SETTINGS_KEY = 'settings';
 
 /**
  * Attempts to determine the user's timezone. Defaults to the script's
  * timezone if unable to do so.
- * 
+ *
  * @return {string}
  */
 function getUserTimezone() {
-  var result = Calendar.Settings.get("timezone");
+  var result = Calendar.Settings.get('timezone');
   return result.value ? result.value : Session.getScriptTimeZone();
 }
 
@@ -38,7 +38,7 @@ function getSettingsForUser() {
     endHour: DEFAULT_END_HOUR,
     meetingIntervalMinutes: DEFAULT_MEETING_INTERVAL_MINUTES,
     searchRangeDays: DEFAULT_SEARCH_RANGE_DAYS,
-    emailBlacklist: ""
+    emailBlacklist: '',
   });
 }
 
@@ -103,7 +103,7 @@ var cachedPropertiesPrototype = {
   clear: function(key) {
     this.cache.remove(key);
     this.properties.deleteProperty(key);
-  }
+  },
 };
 
 /**
@@ -114,6 +114,6 @@ var cachedPropertiesPrototype = {
 function cachedPropertiesForUser_() {
   return _.assign(Object.create(cachedPropertiesPrototype), {
     properties: PropertiesService.getUserProperties(),
-    cache: CacheService.getUserCache()
+    cache: CacheService.getUserCache(),
   });
 }

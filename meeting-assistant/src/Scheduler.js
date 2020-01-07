@@ -44,7 +44,7 @@ var SchedulerPrototype = {
   */
   findAvailableTimes: function() {
     if (DEBUG) {
-      console.time("findAvailableTimes");
+      console.time('findAvailableTimes');
     }
 
     if (DEBUG) {
@@ -54,18 +54,18 @@ var SchedulerPrototype = {
     try {
       this.timeMin_ = this.currentTime || Date.now();
       this.timeMax_ = moment(this.timeMin_)
-        .add(this.searchRangeDays, "days")
-        .valueOf();
+          .add(this.searchRangeDays, 'days')
+          .valueOf();
       var freeBusyResponse = this.queryFreeBusy_();
       var errors = collectErrors_(freeBusyResponse);
       var mergedCalendars = mergeCalendars_(
-        _.map(freeBusyResponse.calendars, "busy")
+          _.map(freeBusyResponse.calendars, 'busy')
       );
       var freeTimes = this.matchFreeTimes_(mergedCalendars);
 
       var response = {
         freeTimes: freeTimes,
-        isPartialResponse: !_.isEmpty(errors)
+        isPartialResponse: !_.isEmpty(errors),
       };
 
       if (DEBUG) {
@@ -75,7 +75,7 @@ var SchedulerPrototype = {
       return response;
     } finally {
       if (DEBUG) {
-        console.timeEnd("findAvailableTimes");
+        console.timeEnd('findAvailableTimes');
       }
     }
   },
@@ -88,15 +88,15 @@ var SchedulerPrototype = {
   */
   queryFreeBusy_: function() {
     if (DEBUG) {
-      console.time("queryFreeBusy");
+      console.time('queryFreeBusy');
     }
     try {
       var request = {
         timeMin: moment(this.timeMin_).toISOString(),
         timeMax: moment(this.timeMax_).toISOString(),
         items: _.map(this.emailAddresses, function(item) {
-          return { id: item };
-        })
+          return {id: item};
+        }),
       };
       var result = Calendar.Freebusy.query(request);
 
@@ -106,7 +106,7 @@ var SchedulerPrototype = {
       return result;
     } finally {
       if (DEBUG) {
-        console.timeEnd("queryFreeBusy");
+        console.timeEnd('queryFreeBusy');
       }
     }
   },
@@ -121,7 +121,7 @@ var SchedulerPrototype = {
   */
   matchFreeTimes_: function(iterator) {
     if (DEBUG) {
-      console.time("matchFreeTimes");
+      console.time('matchFreeTimes');
     }
     try {
       var nextPeriod = this.createAdjustedPeriod_(this.timeMin_);
@@ -130,7 +130,7 @@ var SchedulerPrototype = {
 
       // Keep proposing candidate times until enough valid times
       // are found or the end of the search range is hit. Skip
-      // ahead any time a busy period is found. 
+      // ahead any time a busy period is found.
       while (
         nextPeriod.end <= this.timeMax_ &&
         freeTimes.length < this.maxFreeTimes
@@ -150,14 +150,14 @@ var SchedulerPrototype = {
         }
 
         var nextStart = moment(nextPeriod.start)
-          .add(this.meetingIntervalMinutes, "minutes")
-          .valueOf();
+            .add(this.meetingIntervalMinutes, 'minutes')
+            .valueOf();
         nextPeriod = this.createAdjustedPeriod_(nextStart);
       }
       return freeTimes;
     } finally {
       if (DEBUG) {
-        console.timeEnd("matchFreeTimes");
+        console.timeEnd('matchFreeTimes');
       }
     }
   },
@@ -177,8 +177,8 @@ var SchedulerPrototype = {
     // Round up and make the time clean
     var start = moment(startTime).tz(this.timezone);
     start.minutes(roundUpToNearest_(start.minutes(), this.meetingIntervalMinutes))
-      .seconds(0)
-      .milliseconds(0);
+        .seconds(0)
+        .milliseconds(0);
 
     // Adjust start time if needed
     if (start.hour() < this.startHour) {
@@ -189,22 +189,22 @@ var SchedulerPrototype = {
     ) {
       // Would end after our end time, try next day
       start
-        .add(1, "days")
-        .hour(this.startHour)
-        .minute(0);
+          .add(1, 'days')
+          .hour(this.startHour)
+          .minute(0);
     }
 
     if (!(this.allowWeekends || _.includes(WEEKDAYS, start.day()))) {
       // Move to next weekday
       start
-        .add(start.day() == 0 ? 1 : 2, "day")
-        .hour(this.startHour)
-        .minutes(0);
+          .add(start.day() == 0 ? 1 : 2, 'day')
+          .hour(this.startHour)
+          .minutes(0);
     }
 
     // Adjust end if needed. This may create an invalid period that is too short, but
     // that is checked later on
-    var end = start.clone().add(this.durationMinutes, "minutes");
+    var end = start.clone().add(this.durationMinutes, 'minutes');
     if (end.hour() >= this.endHour) {
       end.hour(this.endHour).minutes(0);
     }
@@ -215,7 +215,7 @@ var SchedulerPrototype = {
   /**
   * Checks if a time period satisifies our meeting constraints.
   *
-  * @param {TimePeriod}
+  * @param {TimePeriod} timePeriod
   * @return {boolean}
   * @private
   */
@@ -223,10 +223,10 @@ var SchedulerPrototype = {
     var validDay =
       this.allowWeekends_ ||
       _.includes(
-        WEEKDAYS,
-        moment(timePeriod.start)
-          .tz(this.timezone)
-          .day()
+          WEEKDAYS,
+          moment(timePeriod.start)
+              .tz(this.timezone)
+              .day()
       );
     var validDuration = timePeriod.duration() >= this.durationMinutes;
     return validDuration && validDay;
@@ -234,19 +234,19 @@ var SchedulerPrototype = {
 
   toJSON: function() {
     return _.pick(this, [
-      "emailAddresses",
-      "durationMinutes",
-      "searchRangeDays",
-      "maxFreeTimes",
-      "allowWeekends",
-      "startHour",
-      "endHour",
-      "meetingIntervalMinutes",
-      "timezone",
-      "timeMin_",
-      "timeMax_"
+      'emailAddresses',
+      'durationMinutes',
+      'searchRangeDays',
+      'maxFreeTimes',
+      'allowWeekends',
+      'startHour',
+      'endHour',
+      'meetingIntervalMinutes',
+      'timezone',
+      'timeMin_',
+      'timeMax_',
     ]);
-  }
+  },
 };
 
 /**
@@ -256,7 +256,8 @@ var SchedulerPrototype = {
  * @param {number} opts.durationMinutes - Default meeting duration in minutes
  * @param {number} opts.startHour - Default start of workday, as hour of day (0-23)
  * @param {number} opts.endHour - Default end of workday, as hour of day (0-23)
- * @param {number} opts.meetingIntervalMinutes - Minute mark of the hour meetings can start on (15, 30, 60)
+ * @param {number} opts.meetingIntervalMinutes - Minute mark of the hour meetings
+ *        can start on (15, 30, 60)
  * @param {number} opts.searchRangeDays - How many days ahead to search calendars
  * @param {boolean} opts.allowWeekends - Whether or not to schedule on weekends.
  * @param {string} opts.timezone - User's timezone.
@@ -302,7 +303,7 @@ var MergedCalendarsIteratorPrototype = {
 
   /**
    * Gets the next busy period without removing it.
-   * 
+   *
    * @return {TimePeriod}
    * @private
    */
@@ -315,7 +316,7 @@ var MergedCalendarsIteratorPrototype = {
 
   /**
    * Removes the next busy period and re-populates the heap.
-   * 
+   *
    * @return {TimePeriod}
    * @private
    */
@@ -327,7 +328,7 @@ var MergedCalendarsIteratorPrototype = {
 
   /**
    * Inserts the next busy period from a calendar into the heap.
-   * 
+   *
    * @param {TimePeriod[]} calendar - busy calendar to read from.
    * @param {integer} index - Index of next item to load into the heap.
    * @private
@@ -337,11 +338,11 @@ var MergedCalendarsIteratorPrototype = {
       var period = calendar[index];
       var entry = {
         timePeriod: timePeriod(
-          Date.parse(period.start),
-          Date.parse(period.end)
+            Date.parse(period.start),
+            Date.parse(period.end)
         ),
         calendar: calendar,
-        index: index
+        index: index,
       };
       this.heap_.push(entry);
     }
@@ -360,7 +361,7 @@ var MergedCalendarsIteratorPrototype = {
     for (var i = 0; i < this.calendars.length; ++i) {
       this.queueNext_(this.calendars[i], 0);
     }
-  }
+  },
 };
 
 /**
@@ -370,10 +371,11 @@ var MergedCalendarsIteratorPrototype = {
  * Calendars are lazily merged using a varient of the direct k-way merge algorithm.
  *
  * @param {Array} calendars - array of busy calendars, assumed each sorted chronologically
+ * @return {MergedCalendarsIterator}
  */
 function mergeCalendars_(calendars) {
   var iterator = _.assign(Object.create(MergedCalendarsIteratorPrototype), {
-    calendars: calendars
+    calendars: calendars,
   });
   iterator.init_();
   return iterator;
@@ -381,18 +383,18 @@ function mergeCalendars_(calendars) {
 
 /**
  * Flattens all errors from the Calendar API free/busy response.
- * @params {Object} freeBusyResponse - Response from calendar API
+ * @param {Object} freeBusyResponse - Response from calendar API
  * @return {Object[]}
  */
 function collectErrors_(freeBusyResponse) {
   return _.reject(
-    _.flatten(
-      _.concat(
-        _.map(freeBusyResponse.calendars, "errors"),
-        _.map(freeBusyResponse.groups, "errors")
-      )
-    ),
-    _.isNil
+      _.flatten(
+          _.concat(
+              _.map(freeBusyResponse.calendars, 'errors'),
+              _.map(freeBusyResponse.groups, 'errors')
+          )
+      ),
+      _.isNil
   );
 }
 

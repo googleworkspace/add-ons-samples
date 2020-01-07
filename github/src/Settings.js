@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var CREDENTIALS_KEY = "githubCredentials";
+var CREDENTIALS_KEY = 'githubCredentials';
 
 /**
  * Get the effective settings for the current user.
@@ -68,7 +68,7 @@ var cachedPropertiesPrototype = {
   clear: function(key) {
     this.cache.remove(key);
     this.properties.deleteProperty(key);
-  }
+  },
 };
 
 /**
@@ -78,6 +78,6 @@ var cachedPropertiesPrototype = {
 function cachedPropertiesForScript_() {
   return _.assign(Object.create(cachedPropertiesPrototype), {
     properties: PropertiesService.getScriptProperties(),
-    cache: CacheService.getScriptCache()
+    cache: CacheService.getScriptCache(),
   });
 }
