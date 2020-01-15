@@ -18,22 +18,22 @@
  * @constant
  */
 var Icons = {
-  repository: buildIconUrl_("repo"),
-  contributedRepositories: buildIconUrl_("repo-push"),
-  state: buildIconUrl_("pulse"),
-  person: buildIconUrl_("person"),
-  calendar: buildIconUrl_("calendar"),
-  stars: buildIconUrl_("star"),
-  forks: buildIconUrl_("repo-forked"),
-  watchers: buildIconUrl_("eye"),
-  issues: buildIconUrl_("bug"),
-  pullRequests: buildIconUrl_("repo-pull"),
-  email: buildIconUrl_("mail"),
-  company: buildIconUrl_("organization"),
-  location: buildIconUrl_("location"),
-  bio: buildIconUrl_("note"),
-  followers: buildIconUrl_("radio-tower"),
-  labels: buildIconUrl_("tag")
+  repository: buildIconUrl_('repo'),
+  contributedRepositories: buildIconUrl_('repo-push'),
+  state: buildIconUrl_('pulse'),
+  person: buildIconUrl_('person'),
+  calendar: buildIconUrl_('calendar'),
+  stars: buildIconUrl_('star'),
+  forks: buildIconUrl_('repo-forked'),
+  watchers: buildIconUrl_('eye'),
+  issues: buildIconUrl_('bug'),
+  pullRequests: buildIconUrl_('repo-pull'),
+  email: buildIconUrl_('mail'),
+  company: buildIconUrl_('organization'),
+  location: buildIconUrl_('location'),
+  bio: buildIconUrl_('note'),
+  followers: buildIconUrl_('radio-tower'),
+  labels: buildIconUrl_('tag'),
 };
 
 /**
@@ -42,7 +42,7 @@ var Icons = {
  * @return {String} full URL to the hosted icon.
  */
 function buildIconUrl_(name) {
-  return "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/" + name + ".svg.png";
+  return 'https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/' + name + '.svg.png';
 }
 
 /**
@@ -54,26 +54,26 @@ function buildIconUrl_(name) {
  * @return {Card}
  */
 function buildAuthorizationCard(opts) {
-  var header = CardService.newCardHeader().setTitle("Authorization required");
+  var header = CardService.newCardHeader().setTitle('Authorization required');
   var section = CardService.newCardSection()
-    .addWidget(
-      CardService.newTextParagraph().setText(
-        'Please authorize access to your GitHub account.'
-      )
-    )
-    .addWidget(
-      CardService.newButtonSet().addButton(
-        CardService.newTextButton()
-          .setText("Authorize")
-          .setAuthorizationAction(
-            CardService.newAuthorizationAction()
-              .setAuthorizationUrl(opts.url)
+      .addWidget(
+          CardService.newTextParagraph().setText(
+              'Please authorize access to your GitHub account.'
           )
-      ) 
-    );
+      )
+      .addWidget(
+          CardService.newButtonSet().addButton(
+              CardService.newTextButton()
+                  .setText('Authorize')
+                  .setAuthorizationAction(
+                      CardService.newAuthorizationAction()
+                          .setAuthorizationUrl(opts.url)
+                  )
+          )
+      );
   var card = CardService.newCardBuilder()
-    .setHeader(header)
-    .addSection(section);
+      .setHeader(header)
+      .addSection(section);
   return card.build();
 }
 
@@ -94,25 +94,25 @@ function buildErrorCard(opts) {
   }
 
   if (!errorText) {
-    errorText = "No additional information is available.";
+    errorText = 'No additional information is available.';
   }
 
   var card = CardService.newCardBuilder();
   card.setHeader(
-    CardService.newCardHeader().setTitle("An unexpected error occurred")
+      CardService.newCardHeader().setTitle('An unexpected error occurred')
   );
   card.addSection(
-    CardService.newCardSection().addWidget(
-      CardService.newTextParagraph().setText(errorText)
-    )
+      CardService.newCardSection().addWidget(
+          CardService.newTextParagraph().setText(errorText)
+      )
   );
 
   if (opts.showStackTrace && opts.exception && opts.exception.stack) {
-    var stack = opts.exception.stack.replace(/\n/g, "<br/>");
+    var stack = opts.exception.stack.replace(/\n/g, '<br/>');
     card.addSection(
-      CardService.newCardSection()
-        .setHeader("Stack trace")
-        .addWidget(CardService.newTextParagraph().setText(stack))
+        CardService.newCardSection()
+            .setHeader('Stack trace')
+            .addWidget(CardService.newTextParagraph().setText(stack))
     );
   }
 
@@ -129,22 +129,22 @@ function buildErrorCard(opts) {
  */
 function buildSettingsCard(opts) {
   var header = CardService.newCardHeader()
-    .setTitle("Settings")
-    .setImageStyle(CardService.ImageStyle.CIRCLE)
-    .setImageUrl(opts.avatarUrl)
-    .setSubtitle(opts.login);
+      .setTitle('Settings')
+      .setImageStyle(CardService.ImageStyle.CIRCLE)
+      .setImageUrl(opts.avatarUrl)
+      .setSubtitle(opts.login);
 
   var card = CardService.newCardBuilder()
-    .setHeader(header)
-    .addSection(
-      CardService.newCardSection().addWidget(
-        CardService.newButtonSet().addButton(
-          CardService.newTextButton()
-            .setText("Disconnect account")
-            .setOnClickAction(createAction_("disconnectAccount"))
-        )
-      )
-    );
+      .setHeader(header)
+      .addSection(
+          CardService.newCardSection().addWidget(
+              CardService.newButtonSet().addButton(
+                  CardService.newTextButton()
+                      .setText('Disconnect account')
+                      .setOnClickAction(createAction_('disconnectAccount'))
+              )
+          )
+      );
   return card.build();
 }
 
@@ -168,43 +168,43 @@ function buildSettingsCard(opts) {
  */
 function buildIssueCard(opts) {
   var header = CardService.newCardHeader()
-    .setTitle(Utilities.formatString("Issue #%d", opts.number))
-    .setImageStyle(CardService.ImageStyle.CIRCLE)
-    .setImageUrl(opts.authorAvatarUrl)
-    .setSubtitle(opts.title);
+      .setTitle(Utilities.formatString('Issue #%d', opts.number))
+      .setImageStyle(CardService.ImageStyle.CIRCLE)
+      .setImageUrl(opts.authorAvatarUrl)
+      .setSubtitle(opts.title);
 
-  var labels = _.join(opts.labels, "<br/>");
+  var labels = _.join(opts.labels, '<br/>');
 
   var card = CardService.newCardBuilder()
-    .setHeader(header)
-    .addCardAction(
-      CardService.newCardAction()
-        .setText("View issue on GitHub")
-        .setOpenLink(createExternalLink_(opts.url))
-    )
-    .addSection(
-      CardService.newCardSection()
-        .setHeader("Details")
-        .addWidget(createRepositoryKeyValue_("Repository", opts.repositoryName))
-        .addWidget(createKeyValue_("State", Icons.state, opts.state))
-        .addWidget(createUserKeyValue_("Reported by", opts.author))
-        .addWidget(createUserKeyValue_("Assignee", opts.assignee))
-        .addWidget(
-          createKeyValue_(
-            "Created at",
-            Icons.calendar,
-            formatDateTime_(opts.createdAt)
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Updated at",
-            Icons.calendar,
-            formatDateTime_(opts.updatedAt)
-          )
-        )
-        .addWidget(createKeyValue_("Labels", Icons.labels, labels))
-    );
+      .setHeader(header)
+      .addCardAction(
+          CardService.newCardAction()
+              .setText('View issue on GitHub')
+              .setOpenLink(createExternalLink_(opts.url))
+      )
+      .addSection(
+          CardService.newCardSection()
+              .setHeader('Details')
+              .addWidget(createRepositoryKeyValue_('Repository', opts.repositoryName))
+              .addWidget(createKeyValue_('State', Icons.state, opts.state))
+              .addWidget(createUserKeyValue_('Reported by', opts.author))
+              .addWidget(createUserKeyValue_('Assignee', opts.assignee))
+              .addWidget(
+                  createKeyValue_(
+                      'Created at',
+                      Icons.calendar,
+                      formatDateTime_(opts.createdAt)
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Updated at',
+                      Icons.calendar,
+                      formatDateTime_(opts.updatedAt)
+                  )
+              )
+              .addWidget(createKeyValue_('Labels', Icons.labels, labels))
+      );
   return card.build();
 }
 
@@ -230,53 +230,53 @@ function buildIssueCard(opts) {
  */
 function buildPullRequestCard(opts) {
   var header = CardService.newCardHeader()
-    .setTitle(Utilities.formatString("Pull request #%d", opts.number))
-    .setImageStyle(CardService.ImageStyle.CIRCLE)
-    .setImageUrl(opts.authorAvatarUrl)
-    .setSubtitle(opts.title);
+      .setTitle(Utilities.formatString('Pull request #%d', opts.number))
+      .setImageStyle(CardService.ImageStyle.CIRCLE)
+      .setImageUrl(opts.authorAvatarUrl)
+      .setSubtitle(opts.title);
 
-  var labels = _.join(opts.labels, "<br/>");
+  var labels = _.join(opts.labels, '<br/>');
 
-  var closedOrMergedAt = opts.state == "MERGED" ? opts.mergedAt : opts.closedAt;
+  var closedOrMergedAt = opts.state == 'MERGED' ? opts.mergedAt : opts.closedAt;
   var lastEditedAt = opts.updatedAt ? opts.updatedAt : closedOrMergedAt;
 
   var card = CardService.newCardBuilder()
-    .setHeader(header)
-    .addCardAction(
-      CardService.newCardAction()
-        .setText("View pull request on GitHub")
-        .setOpenLink(createExternalLink_(opts.url))
-    )
-    .addSection(
-      CardService.newCardSection()
-        .setHeader("Details")
-        .addWidget(createRepositoryKeyValue_("Repository", opts.repositoryName))
-        .addWidget(createKeyValue_("State", Icons.state, opts.state))
-        .addWidget(createUserKeyValue_("Created by", opts.author))
-        .addWidget(createUserKeyValue_("Assignee", opts.assignee))
-        .addWidget(
-          createKeyValue_(
-            "Created at",
-            Icons.calendar,
-            formatDateTime_(opts.createdAt)
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Updated at",
-            Icons.calendar,
-            formatDateTime_(lastEditedAt)
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Closed at",
-            Icons.calendar,
-            formatDateTime_(closedOrMergedAt)
-          )
-        )
-        .addWidget(createKeyValue_("Labels", Icons.labels, labels))
-    );
+      .setHeader(header)
+      .addCardAction(
+          CardService.newCardAction()
+              .setText('View pull request on GitHub')
+              .setOpenLink(createExternalLink_(opts.url))
+      )
+      .addSection(
+          CardService.newCardSection()
+              .setHeader('Details')
+              .addWidget(createRepositoryKeyValue_('Repository', opts.repositoryName))
+              .addWidget(createKeyValue_('State', Icons.state, opts.state))
+              .addWidget(createUserKeyValue_('Created by', opts.author))
+              .addWidget(createUserKeyValue_('Assignee', opts.assignee))
+              .addWidget(
+                  createKeyValue_(
+                      'Created at',
+                      Icons.calendar,
+                      formatDateTime_(opts.createdAt)
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Updated at',
+                      Icons.calendar,
+                      formatDateTime_(lastEditedAt)
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Closed at',
+                      Icons.calendar,
+                      formatDateTime_(closedOrMergedAt)
+                  )
+              )
+              .addWidget(createKeyValue_('Labels', Icons.labels, labels))
+      );
   return card.build();
 }
 
@@ -296,48 +296,48 @@ function buildPullRequestCard(opts) {
  */
 function buildRepositoryCard(opts) {
   var header = CardService.newCardHeader()
-    .setTitle(opts.name)
-    .setImageStyle(CardService.ImageStyle.CIRCLE)
-    .setImageUrl(opts.ownerAvatarUrl);
+      .setTitle(opts.name)
+      .setImageStyle(CardService.ImageStyle.CIRCLE)
+      .setImageUrl(opts.ownerAvatarUrl);
 
   var card = CardService.newCardBuilder()
-    .setHeader(header)
-    .addCardAction(
-      CardService.newCardAction()
-        .setText("View repository on GitHub")
-        .setOpenLink(createExternalLink_(opts.url))
-    )
-    .addSection(
-      CardService.newCardSection()
-        .addWidget(
-          createKeyValue_("Stars", Icons.stars, opts.stargazers.toString())
-        )
-        .addWidget(createKeyValue_("Forks", Icons.forks, opts.forks.toString()))
-        .addWidget(
-          createKeyValue_("Watchers", Icons.watchers, opts.watchers.toString())
-        )
-        .addWidget(
-          createKeyValue_(
-            "Open Issues",
-            Icons.watchers,
-            opts.openIssues.toString()
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Open pull requests",
-            Icons.pullRequests,
-            opts.pullRequests.toString()
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Updated at",
-            Icons.calendar,
-            formatDateTime_(opts.updatedAt)
-          )
-        )
-    );
+      .setHeader(header)
+      .addCardAction(
+          CardService.newCardAction()
+              .setText('View repository on GitHub')
+              .setOpenLink(createExternalLink_(opts.url))
+      )
+      .addSection(
+          CardService.newCardSection()
+              .addWidget(
+                  createKeyValue_('Stars', Icons.stars, opts.stargazers.toString())
+              )
+              .addWidget(createKeyValue_('Forks', Icons.forks, opts.forks.toString()))
+              .addWidget(
+                  createKeyValue_('Watchers', Icons.watchers, opts.watchers.toString())
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Open Issues',
+                      Icons.watchers,
+                      opts.openIssues.toString()
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Open pull requests',
+                      Icons.pullRequests,
+                      opts.pullRequests.toString()
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Updated at',
+                      Icons.calendar,
+                      formatDateTime_(opts.updatedAt)
+                  )
+              )
+      );
   return card.build();
 }
 
@@ -355,62 +355,62 @@ function buildRepositoryCard(opts) {
  * @param {Date} opts.memberSince - Date user joined GitHub
  * @param {number} opts.repositoryCount - Number of repositories the user owns or forked
  * @param {number} opts.contributedRepositorytCount - Number of repositories the user contributed to
- * @param {number} opts.followerCount - Number of people following the user 
+ * @param {number} opts.followerCount - Number of people following the user
  * @return {Card}
  */
 function buildUserCard(opts) {
   var header = CardService.newCardHeader()
-    .setImageUrl(opts.avatarUrl)
-    .setImageStyle(CardService.ImageStyle.CIRCLE)
-    .setTitle(opts.login)
-    .setSubtitle(defaultTo_(opts.name, ""));
+      .setImageUrl(opts.avatarUrl)
+      .setImageStyle(CardService.ImageStyle.CIRCLE)
+      .setTitle(opts.login)
+      .setSubtitle(defaultTo_(opts.name, ''));
   var card = CardService.newCardBuilder()
-    .setHeader(header)
-    .addCardAction(
-      CardService.newCardAction()
-        .setText("View user on GitHub")
-        .setOpenLink(createExternalLink_(opts.url))
-    )
-    .addSection(
-      CardService.newCardSection()
-        .setHeader("About")
-        .addWidget(createKeyValue_("Email", Icons.email, opts.email))
-        .addWidget(createKeyValue_("Company", Icons.company, opts.company))
-        .addWidget(createKeyValue_("Location", Icons.location, opts.location))
-        .addWidget(createKeyValue_("Bio", Icons.bio, opts.bio))
-    )
-    .addSection(
-      CardService.newCardSection()
-        .setHeader("Statistics")
-        .addWidget(
-          createKeyValue_(
-            "Member since",
-            Icons.calendar,
-            formatDateTime_(opts.memberSince)
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Repositories",
-            Icons.repository,
-            opts.repositoryCount.toString()
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Contributed repositories",
-            Icons.contributedRepositories,
-            opts.contributedRepositoryCount.toString()
-          )
-        )
-        .addWidget(
-          createKeyValue_(
-            "Followers",
-            Icons.followers,
-            opts.followerCount.toString()
-          )
-        )
-    );
+      .setHeader(header)
+      .addCardAction(
+          CardService.newCardAction()
+              .setText('View user on GitHub')
+              .setOpenLink(createExternalLink_(opts.url))
+      )
+      .addSection(
+          CardService.newCardSection()
+              .setHeader('About')
+              .addWidget(createKeyValue_('Email', Icons.email, opts.email))
+              .addWidget(createKeyValue_('Company', Icons.company, opts.company))
+              .addWidget(createKeyValue_('Location', Icons.location, opts.location))
+              .addWidget(createKeyValue_('Bio', Icons.bio, opts.bio))
+      )
+      .addSection(
+          CardService.newCardSection()
+              .setHeader('Statistics')
+              .addWidget(
+                  createKeyValue_(
+                      'Member since',
+                      Icons.calendar,
+                      formatDateTime_(opts.memberSince)
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Repositories',
+                      Icons.repository,
+                      opts.repositoryCount.toString()
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Contributed repositories',
+                      Icons.contributedRepositories,
+                      opts.contributedRepositoryCount.toString()
+                  )
+              )
+              .addWidget(
+                  createKeyValue_(
+                      'Followers',
+                      Icons.followers,
+                      opts.followerCount.toString()
+                  )
+              )
+      );
   return card.build();
 }
 
@@ -441,52 +441,53 @@ function defaultTo_(value, defaultValue) {
  */
 function createKeyValue_(label, icon, value) {
   return CardService.newKeyValue()
-    .setTopLabel(label)
-    .setIconUrl(icon)
-    .setContent(defaultTo_(value, "---"));
+      .setTopLabel(label)
+      .setIconUrl(icon)
+      .setContent(defaultTo_(value, '---'));
 }
 
 /**
  * Creates an action that routes through the `dispatchAction` entry point.
  *
  * @param {string} name - Action handler name
- * @param {Object} opt_params - Additional parameters to pass through
+ * @param {Object} optParams - Additional parameters to pass through
  * @return {Action}
  * @private
  */
-function createAction_(name, opt_params) {
-  var params = _.extend({}, opt_params);
+function createAction_(name, optParams) {
+  var params = _.extend({}, optParams);
   params.action = name;
   return CardService.newAction()
-    .setFunctionName("dispatchAction")
-    .setParameters(params);
+      .setFunctionName('dispatchAction')
+      .setParameters(params);
 }
 
 /**
  * Creates a link to an external URL.
  *
- * @param {string} url - URL to link to 
+ * @param {string} url - URL to link to
  * @return {OpenLink}
  * @private
  */
 function createExternalLink_(url) {
   return CardService.newOpenLink()
-    .setUrl(url)
-    .setOpenAs(CardService.OpenAs.FULL_SIZE);
+      .setUrl(url)
+      .setOpenAs(CardService.OpenAs.FULL_SIZE);
 }
 
 /**
  * Creates a clickable key/value widget for a user. Links
  * to a user card if the user is not null.
  *
- * @param {string} url - URL to link to 
+ * @param {string} label - Display name
+ * @param {string} person - GitHub username
  * @return {KeyValue}
  * @private
  */
 function createUserKeyValue_(label, person) {
   var widget = createKeyValue_(label, Icons.person, person);
   if (person) {
-    widget.setOnClickAction(createAction_("showUser", { login: person }));
+    widget.setOnClickAction(createAction_('showUser', {login: person}));
   }
   return widget;
 }
@@ -495,21 +496,22 @@ function createUserKeyValue_(label, person) {
  * Creates a clickable key/value widget for a repository. Links to the
  * repository card.
  *
- * @param {string} url - URL to link to 
+ * @param {string} label - Display name
+ * @param {string} nameWithOwner - Fully qualified repo name
  * @return {KeyValue}
  * @private
  */
 function createRepositoryKeyValue_(label, nameWithOwner) {
-  var nameAndOwner = nameWithOwner.split("/");
-  var action = createAction_("showRepository", {
+  var nameAndOwner = nameWithOwner.split('/');
+  var action = createAction_('showRepository', {
     owner: nameAndOwner[0],
-    repo: nameAndOwner[1]
+    repo: nameAndOwner[1],
   });
 
   return createKeyValue_(
-    label,
-    Icons.repository,
-    nameWithOwner
+      label,
+      Icons.repository,
+      nameWithOwner
   ).setOnClickAction(action);
 }
 /**
@@ -520,5 +522,5 @@ function createRepositoryKeyValue_(label, nameWithOwner) {
  * @private
  */
 function formatDateTime_(value) {
-  return value ? moment(value).fromNow() : "---";
+  return value ? moment(value).fromNow() : '---';
 }

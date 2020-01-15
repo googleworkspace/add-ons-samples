@@ -55,7 +55,7 @@ function extractGitHubLinks(messageBodies) {
  * Extracts pull requests or issues from text.
  *
  * @param {string|string[]} text - raw text to scan for links.
- * @return {GitHubLink[]} extracted link information, empty array if none found.
+ * @param {GitHubLink[]} appendTo - Array to append results to.
  */
 function extractGitHubLinksFromText_(text, appendTo) {
   var re = /https:\/\/github.com\/([^\/]+?)\/([^\/]+?)\/(issues|pull)\/(\d+)/gi;
@@ -65,7 +65,7 @@ function extractGitHubLinksFromText_(text, appendTo) {
       owner: stripHtmlTags(match[1]),
       repo: stripHtmlTags(match[2]),
       id: parseInt(stripHtmlTags(match[4])),
-      type: type
+      type: type,
     });
   }
 }
@@ -73,9 +73,9 @@ function extractGitHubLinksFromText_(text, appendTo) {
  * Strips HTML tags from a string. Not a general purpose implementation,
  * just removes anything encased in <>.
  *
- * @param {string} text - text to strip tags from.
+ * @param {string} str - text to strip tags from.
  * @return {string}
  */
 function stripHtmlTags(str) {
-  return str.replace(/<.+?>/g,'');
+  return str.replace(/<.+?>/g, '');
 }

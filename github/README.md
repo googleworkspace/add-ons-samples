@@ -17,9 +17,7 @@ If you're new to add-on development or Apps Script, try the
 
 This sample requires the following:
 
--  [Node.js][node] is installed.
--  [`clasp`][clasp] is installed. `clasp` is a tool for managing Apps Script
-   projects.
+-  [Node.js][node] is installed with `npm` and `npx` commands.
 -  A [GitHub][github] account, as well as notification emails for an issue or
   pull request from from a hosted repository.
 
@@ -51,25 +49,29 @@ Download the sample app and navigate into the app directory:
 
 Deploy the add-on by following these steps:
 
-1.  Create a new project:
+1.  Authorize clasp to manage your scripts
 
-        clasp create "Git Info"
+        npx @google/clasp login
 
-2.  Push the code:
+2.  Create a new project:
 
-        clasp push
+        npx @google/clasp create --type standalone --title "GitHub Reader"
+
+3.  Push the code:
+
+        npx @google/clasp push -f
 
 4.  Tag a version:
 
-        clasp version 'Push from github'
+        npx @google/clasp version 'Push from github'
 
 5.  Deploy the add-on:
 
-        clasp deploy 1 'test'
+        npx @google/clasp deploy 1 'test'
 
 6.  Verify the deployments:
 
-        clasp deployments
+        npx @google/clasp deployments
 
 Note the deployment ids. There will be two deployments, one for the tagged
 version, another for the `@HEAD` version. Use the `@HEAD` deployment when
@@ -81,7 +83,7 @@ Access the GitHub API requires registration. To register your own application:
 
 1.  Open the script editor:
 
-        clasp open
+        npx @google/clasp open
 
 2.  Get the script id by clicking on **File > Project properties** and note the value of the **Script ID** field.
 
@@ -143,7 +145,7 @@ occur during the execution of the add-on.
 
     a.  Click **Advanced**.
 
-    b. At the bottom of the dialog, click **Go to Git Info (unsafe)**.
+    b. At the bottom of the dialog, click **Go to GitHub Reader (unsafe)**.
 
     c. In the new dialog, type "Continue" into the text field, then click **Next**.
 

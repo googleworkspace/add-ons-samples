@@ -28,15 +28,15 @@ function getCurrentMessage(event) {
  * Retrieve the list of all participants in a conversation.
  *
  * @param {Message} message - Gmail message to extract from
- * @param {string[]} opt_blacklist - Array of emails to exclude
+ * @param {string[]} optBlacklist - Array of emails to exclude
  * @return {string[]} email addresses
  */
-function extractRecipients(message, opt_blacklist) {
+function extractRecipients(message, optBlacklist) {
   var emails = collectEmails_(message);
   emails = normalizeEmails_(emails);
   emails = filterEmails_(emails);
-  if (!_.isEmpty(opt_blacklist)) {
-    emails = _.difference(emails, opt_blacklist);
+  if (!_.isEmpty(optBlacklist)) {
+    emails = _.difference(emails, optBlacklist);
   }
   return emails.sort();
 }
@@ -50,9 +50,9 @@ function extractRecipients(message, opt_blacklist) {
  */
 function collectEmails_(message) {
   return _.union(
-    splitRecipients_(message.getTo()),
-    splitRecipients_(message.getCc()),
-    splitRecipients_(message.getFrom())
+      splitRecipients_(message.getTo()),
+      splitRecipients_(message.getCc()),
+      splitRecipients_(message.getFrom())
   );
 }
 
@@ -75,7 +75,7 @@ function splitRecipients_(headerValue) {
 function normalizeEmails_(emailAddresses) {
   var re = /(.*)\+.*@(.*)/;
   return _.map(emailAddresses, function(email) {
-    return email.replace(re, "$1@$2");
+    return email.replace(re, '$1@$2');
   });
 }
 

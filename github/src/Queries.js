@@ -32,12 +32,12 @@ var Queries = {
   *
   */
   VIEWER:
-    "query { " + 
-    "  viewer {" + 
-    "    login" + 
-    "    avatarUrl" + 
-    "  }" +
-    "}",
+    'query { ' +
+    '  viewer {' +
+    '    login' +
+    '    avatarUrl' +
+    '  }' +
+    '}',
 
   /**
   * Retrieves a repostory.
@@ -46,31 +46,31 @@ var Queries = {
   * @constant
   */
   REPOSITORY:
-    "query($owner:String!, $repo:String!) { " +
-    "  repository(owner:$owner name:$repo) { " +
-    "    nameWithOwner " +
-    "    owner { " +
-    "      avatarUrl " +
-    "    } " +
-    "    stargazers { " +
-    "      totalCount " +
-    "    } " +
-    "    forks { " +
-    "      totalCount " +
-    "    } " +
-    "    watchers { " +
-    "      totalCount " +
-    "    } " +
-    "    issues(states:OPEN) { " +
-    "      totalCount " +
-    "    } " +
-    "    pullRequests(states:OPEN) { " +
-    "      totalCount " +
-    "    } " +
-    "    updatedAt " +
-    "    url " +
-    "  }" +
-    "}",
+    'query($owner:String!, $repo:String!) { ' +
+    '  repository(owner:$owner name:$repo) { ' +
+    '    nameWithOwner ' +
+    '    owner { ' +
+    '      avatarUrl ' +
+    '    } ' +
+    '    stargazers { ' +
+    '      totalCount ' +
+    '    } ' +
+    '    forks { ' +
+    '      totalCount ' +
+    '    } ' +
+    '    watchers { ' +
+    '      totalCount ' +
+    '    } ' +
+    '    issues(states:OPEN) { ' +
+    '      totalCount ' +
+    '    } ' +
+    '    pullRequests(states:OPEN) { ' +
+    '      totalCount ' +
+    '    } ' +
+    '    updatedAt ' +
+    '    url ' +
+    '  }' +
+    '}',
 
   /**
   * Retrieves an issue.
@@ -79,48 +79,48 @@ var Queries = {
   * @constant
   */
   ISSUE:
-    "query($owner:String!, $repo:String!, $issue:Int!) { " +
-    "  repository(owner:$owner name:$repo) { " +
-    "    nameWithOwner " +
-    "    issue(number: $issue) { " +
-    "      number " +
-    "      title " +
-    "      id " +
-    "      lastEditedAt " +
-    "      createdAt " +
-    "      closed " +
-    "      state " +
-    "      url " +
-    "      bodyHTML " +
-    "      assignees(first:1) { " +
-    "        nodes { " +
-    "          avatarUrl " +
-    "          url " +
-    "          login " +
-    "        } " +
-    "      } " +
-    "      author { " +
-    "        avatarUrl " +
-    "        url " +
-    "        login " +
-    "      } " +
-    "      milestone { " +
-    "        id " +
-    "        number " +
-    "        dueOn " +
-    "        title " +
-    "        url " +
-    "      } " +
-    "      labels(first:10) { " +
-    "        nodes { " +
-    "          id " +
-    "          color " +
-    "          name " +
-    "        } " +
-    "      } " +
-    "    } " +
-    "  } " +
-    "}",
+    'query($owner:String!, $repo:String!, $issue:Int!) { ' +
+    '  repository(owner:$owner name:$repo) { ' +
+    '    nameWithOwner ' +
+    '    issue(number: $issue) { ' +
+    '      number ' +
+    '      title ' +
+    '      id ' +
+    '      lastEditedAt ' +
+    '      createdAt ' +
+    '      closed ' +
+    '      state ' +
+    '      url ' +
+    '      bodyHTML ' +
+    '      assignees(first:1) { ' +
+    '        nodes { ' +
+    '          avatarUrl ' +
+    '          url ' +
+    '          login ' +
+    '        } ' +
+    '      } ' +
+    '      author { ' +
+    '        avatarUrl ' +
+    '        url ' +
+    '        login ' +
+    '      } ' +
+    '      milestone { ' +
+    '        id ' +
+    '        number ' +
+    '        dueOn ' +
+    '        title ' +
+    '        url ' +
+    '      } ' +
+    '      labels(first:10) { ' +
+    '        nodes { ' +
+    '          id ' +
+    '          color ' +
+    '          name ' +
+    '        } ' +
+    '      } ' +
+    '    } ' +
+    '  } ' +
+    '}',
 
   /**
   * Retrieves a pull request.
@@ -129,54 +129,54 @@ var Queries = {
   * @constant
   */
   PULL_REQUEST:
-    "query($owner:String!, $repo:String!, $pullRequest:Int!) { " +
-    "  repository(owner:$owner name:$repo) { " +
-    "    nameWithOwner " +
-    "    pullRequest(number: $pullRequest) { " +
-    "      title " +
-    "      id " +
-    "      number " +
-    "      publishedAt " +
-    "      mergeable " +
-    "      mergedAt " +
-    "      merged " +
-    "      lastEditedAt " +
-    "      createdAt " +
-    "      closed " +
-    "      state " +
-    "      url " +
-    "      bodyHTML " +
-    "      author { " +
-    "        avatarUrl " +
-    "        url " +
-    "        login " +
-    "      } " +
-    "      assignees(first:1) { " +
-    "        nodes { " +
-    "          avatarUrl " +
-    "          url " +
-    "          login " +
-    "        } " +
-    "      } " +
-    "      reviewRequests(first:5) { " +
-    "        nodes { " +
-    "          reviewer { " +
-    "            avatarUrl " +
-    "            login " +
-    "            id " +
-    "          } " +
-    "        } " +
-    "      } " +
-    "      labels(first:10) { " +
-    "        nodes { " +
-    "          id " +
-    "          color " +
-    "          name " +
-    "        } " +
-    "      } " +
-    "    } " +
-    "  } " +
-    "}",
+    'query($owner:String!, $repo:String!, $pullRequest:Int!) { ' +
+    '  repository(owner:$owner name:$repo) { ' +
+    '    nameWithOwner ' +
+    '    pullRequest(number: $pullRequest) { ' +
+    '      title ' +
+    '      id ' +
+    '      number ' +
+    '      publishedAt ' +
+    '      mergeable ' +
+    '      mergedAt ' +
+    '      merged ' +
+    '      lastEditedAt ' +
+    '      createdAt ' +
+    '      closed ' +
+    '      state ' +
+    '      url ' +
+    '      bodyHTML ' +
+    '      author { ' +
+    '        avatarUrl ' +
+    '        url ' +
+    '        login ' +
+    '      } ' +
+    '      assignees(first:1) { ' +
+    '        nodes { ' +
+    '          avatarUrl ' +
+    '          url ' +
+    '          login ' +
+    '        } ' +
+    '      } ' +
+    '      reviewRequests(first:5) { ' +
+    '        nodes { ' +
+    '          reviewer { ' +
+    '            avatarUrl ' +
+    '            login ' +
+    '            id ' +
+    '          } ' +
+    '        } ' +
+    '      } ' +
+    '      labels(first:10) { ' +
+    '        nodes { ' +
+    '          id ' +
+    '          color ' +
+    '          name ' +
+    '        } ' +
+    '      } ' +
+    '    } ' +
+    '  } ' +
+    '}',
 
   /**
   * Retrieves a user.
@@ -185,25 +185,25 @@ var Queries = {
   * @constant
   */
   USER:
-    "query($login:String!) { " +
-    "  user(login:$login) { " +
-    "    login " +
-    "    name " +
-    "    email " +
-    "    createdAt " +
-    "    avatarUrl " +
-    "    url " +
-    "    bioHTML " +
-    "    companyHTML " +
-    "    contributedRepositories { " +
-    "      totalCount " +
-    "    } " +
-    "    followers { " +
-    "      totalCount " +
-    "    } " +
-    "    repositories { " +
-    "      totalCount " +
-    "    } " +
-    "  } " +
-    "}"
+    'query($login:String!) { ' +
+    '  user(login:$login) { ' +
+    '    login ' +
+    '    name ' +
+    '    email ' +
+    '    createdAt ' +
+    '    avatarUrl ' +
+    '    url ' +
+    '    bioHTML ' +
+    '    companyHTML ' +
+    '    contributedRepositories { ' +
+    '      totalCount ' +
+    '    } ' +
+    '    followers { ' +
+    '      totalCount ' +
+    '    } ' +
+    '    repositories { ' +
+    '      totalCount ' +
+    '    } ' +
+    '  } ' +
+    '}',
 };

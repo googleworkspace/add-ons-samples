@@ -17,11 +17,11 @@
  */
 var linkHandlers = {
   issues: handleIssue_,
-  pull: handlePullRequest_
+  pull: handlePullRequest_,
 };
 
 /**
- * Collection of functions to handle user interactions with the add-on. 
+ * Collection of functions to handle user interactions with the add-on.
  *
  * @constant
  */
@@ -43,7 +43,7 @@ var ActionHandlers = {
 
     var cards = _.map(links, function(link) {
       if (!linkHandlers[link.type]) {
-        throw new Error("Invalid link type: " + link.type);
+        throw new Error('Invalid link type: ' + link.type);
       }
       return linkHandlers[link.type](link.owner, link.repo, link.id);
     });
@@ -61,12 +61,12 @@ var ActionHandlers = {
 
     var card = buildSettingsCard({
       avatarUrl: githubResponse.viewer.avatarUrl,
-      login: githubResponse.viewer.login
+      login: githubResponse.viewer.login,
     });
 
     return CardService.newUniversalActionResponseBuilder()
-      .displayAddOnCards([card])
-      .build();
+        .displayAddOnCards([card])
+        .build();
   },
 
   /**
@@ -87,7 +87,7 @@ var ActionHandlers = {
    */
   showUser: function(e) {
     var githubResponse = githubClient().query(Queries.USER, {
-      login: e.parameters.login
+      login: e.parameters.login,
     });
 
     var user = githubResponse.user;
@@ -103,12 +103,12 @@ var ActionHandlers = {
       memberSince: user.createdAt,
       repositoryCount: user.repositories.totalCount,
       contributedRepositoryCount: user.contributedRepositories.totalCount,
-      followerCount: user.followers.totalCount
+      followerCount: user.followers.totalCount,
     });
 
     return CardService.newActionResponseBuilder()
-      .setNavigation(CardService.newNavigation().pushCard(card))
-      .build();
+        .setNavigation(CardService.newNavigation().pushCard(card))
+        .build();
   },
 
   /**
@@ -120,7 +120,7 @@ var ActionHandlers = {
   showRepository: function(e) {
     var githubResponse = githubClient().query(Queries.REPOSITORY, {
       owner: e.parameters.owner,
-      repo: e.parameters.repo
+      repo: e.parameters.repo,
     });
 
     var repo = githubResponse.repository;
@@ -134,12 +134,12 @@ var ActionHandlers = {
       watchers: repo.watchers.totalCount,
       openIssues: repo.issues.totalCount,
       pullRequests: repo.pullRequests.totalCount,
-      updatedAt: repo.updatedAt
+      updatedAt: repo.updatedAt,
     });
 
     return CardService.newActionResponseBuilder()
-      .setNavigation(CardService.newNavigation().pushCard(card))
-      .build();
+        .setNavigation(CardService.newNavigation().pushCard(card))
+        .build();
   },
 
   /**
@@ -150,9 +150,9 @@ var ActionHandlers = {
    */
   showAuthorizationCard: function(e) {
     return buildAuthorizationCard({
-      url: githubClient().authorizationUrl()
+      url: githubClient().authorizationUrl(),
     });
-  }
+  },
 };
 
 /**
@@ -168,7 +168,7 @@ function handleIssue_(owner, repoName, id) {
   var githubResponse = githubClient().query(Queries.ISSUE, {
     owner: owner,
     repo: repoName,
-    issue: id
+    issue: id,
   });
 
   var repo = githubResponse.repository;
@@ -181,12 +181,12 @@ function handleIssue_(owner, repoName, id) {
     url: issue.url,
     authorAvatarUrl: issue.author.avatarUrl,
     repositoryName: repo.nameWithOwner,
-    labels: _.map(issue.labels.nodes, "name"),
+    labels: _.map(issue.labels.nodes, 'name'),
     state: issue.state,
     author: issue.author.login,
-    assignee: _.get(issue, "assignees.nodes[0].login"),
+    assignee: _.get(issue, 'assignees.nodes[0].login'),
     createdAt: issue.createdAt,
-    updatedAt: issue.lastEditedAt
+    updatedAt: issue.lastEditedAt,
   });
 
   return card;
@@ -205,7 +205,7 @@ function handlePullRequest_(owner, repoName, id) {
   var githubResponse = githubClient().query(Queries.PULL_REQUEST, {
     owner: owner,
     repo: repoName,
-    pullRequest: id
+    pullRequest: id,
   });
 
   var repo = githubResponse.repository;
@@ -218,14 +218,14 @@ function handlePullRequest_(owner, repoName, id) {
     url: pullRequest.url,
     authorAvatarUrl: pullRequest.author.avatarUrl,
     repositoryName: repo.nameWithOwner,
-    labels: _.map(pullRequest.labels.nodes, "name"),
+    labels: _.map(pullRequest.labels.nodes, 'name'),
     state: pullRequest.state,
     author: pullRequest.author.login,
-    assignee: _.get(pullRequest, "assignees.nodes[0].login"),
+    assignee: _.get(pullRequest, 'assignees.nodes[0].login'),
     createdAt: pullRequest.createdAt,
     updatedAt: pullRequest.lastEditedAt,
     mergedAt: pullRequest.mergedAt,
-    closedAt: pullRequest.closedAt
+    closedAt: pullRequest.closedAt,
   });
   return card;
 }
