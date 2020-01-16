@@ -148,6 +148,37 @@ function buildSettingsCard(opts) {
   return card.build();
 }
 
+
+/**
+ * Creates a card displaying the home page.
+ *
+ * @param {Object} opts Parameters for building the card
+ * @param {number} opts.issues[].title - Issue title
+ * @param {GithubLink} opts.issues[].link - Issue link details
+ * @return {Card}
+ */
+function buildHomeCard(opts) {
+  var issuesSection = CardService.newCardSection()
+      .setHeader('Recent open issues and pull requests')
+  if (opts.issues.length == 0) {
+    var message = CardService.newTextParagraph()
+    .setText('You have no open issues.');
+    issuesSection.addWidget(message);
+  }
+  opts.issues.forEach(function(issue) {
+    var icon = issue.link.type == 'issues' ? Icons.issues : Icons.pullRequests;
+    var action = createAction_('showIssueOrPullRequest', issue.link);
+    var widget = CardService.newKeyValue()
+        .setContent(issue.title)
+        .setIconUrl(icon)
+        .setOnClickAction(action);
+    issuesSection.addWidget(widget);
+  });
+  var card = CardService.newCardBuilder()
+      .addSection(issuesSection);
+  return card.build();
+}
+
 /**
  * Creates a card displaying details about an issue.
  *
@@ -514,6 +545,7 @@ function createRepositoryKeyValue_(label, nameWithOwner) {
       nameWithOwner
   ).setOnClickAction(action);
 }
+
 /**
  * Formats a date/time into a relative time (e.g. 1 day ago).
  *

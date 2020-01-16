@@ -61,22 +61,6 @@ Deploy the add-on by following these steps:
 
         npx @google/clasp push -f
 
-4.  Tag a version:
-
-        npx @google/clasp version 'Push from github'
-
-5.  Deploy the add-on:
-
-        npx @google/clasp deploy 1 'test'
-
-6.  Verify the deployments:
-
-        npx @google/clasp deployments
-
-Note the deployment ids. There will be two deployments, one for the tagged
-version, another for the `@HEAD` version. Use the `@HEAD` deployment when
-installing the add on if you intend to modify or experiment with the code.
-
 ## Configure GitHub credentials
 
 Access the GitHub API requires registration. To register your own application:
@@ -107,25 +91,19 @@ Access the GitHub API requires registration. To register your own application:
 
 	f. Click **Save**.
 
+
 ## Install the add-on
 
 One the add-on is deployed, install the add-on on your account using these steps:
 
-1.  Open the [Gmail add-on settings][gmail-settings] tab.
+1.  Open the project
 
-2.  In the **Add-ons** tab, ensure that you have selected the **Enable developer
-    add-ons for my account** checkbox.
+        npx @google/clasp open
+        
+2. In the Apps Script editor, select **Publish > Deploy from manifest...** to open the *Deployments* dialog.
 
-3.  Paste your add-on's deployment ID into the **Install developer add-on** textbox
-    and click **Install**.
+3. In the **Latest Version (Head)** row, click **Install add-on** to install the currently saved version of the add-on in development-mode. 
 
-4. In the **Install developer add-on** dialog that appears, click the checkbox to
-   indicate that you trust this developer (yourself), then click **Install**.
-
-The add-on appears in the **Developer add-ons** list at this point. The
-**Enable debugging information** checkbox (which is checked by default) instructs
-Gmail to create and display an error report card when script or runtime errors
-occur during the execution of the add-on.
 
 ## Run the add-on
 
@@ -140,18 +118,9 @@ occur during the execution of the add-on.
 
 4.  Select the account that should authorize the add-on.
 
-5.  The next dialog may inform you that the app is not verified. In this case you
-    can proceed by doing the following:
+5.  Read the notice in the next dialog carefully, then click **Allow**.
 
-    a.  Click **Advanced**.
-
-    b. At the bottom of the dialog, click **Go to GitHub Reader (unsafe)**.
-
-    c. In the new dialog, type "Continue" into the text field, then click **Next**.
-
-6.  Read the notice in the next dialog carefully, then click **Allow**.
-
-7.  Once authorized, the add-on should automatically refresh and start operating.
+6.  Once authorized, the add-on should automatically refresh and start operating.
 
 ## Contributing
 

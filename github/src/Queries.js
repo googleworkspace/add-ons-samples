@@ -197,4 +197,39 @@ var Queries = {
     '    } ' +
     '  } ' +
     '}',
+  /**
+  * Query for home page - fetches user's top open issues, PRs.
+  * and starred repositories.
+  *
+  * @type {Query}
+  * @constant
+  */
+  HOMEPAGE:
+    'query($query:String!) { ' +
+    '  search(type:ISSUE, query:$query, first: 10) { ' +
+    '    nodes { ' +
+    '      __typename ' +
+    '      ... on Issue { ' +
+    '        title ' +
+    '        number ' +
+    '        repository { ' +
+    '          name ' +
+    '          owner { ' +
+    '            login ' +
+    '          } ' +
+    '        } ' +
+    '      } ' +
+    '      ... on PullRequest { ' +
+    '        title ' +
+    '        number ' +
+    '        repository { ' +
+    '          name ' +
+    '          owner { ' +
+    '            login ' +
+    '          } ' +
+    '        } ' +
+    '      } ' +
+    '    } ' +
+    '  } ' +
+    '}',
 };

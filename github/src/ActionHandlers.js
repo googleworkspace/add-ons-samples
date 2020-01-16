@@ -27,18 +27,57 @@ var linkHandlers = {
  */
 var ActionHandlers = {
   /**
-   * Primary handler for the add-on. Displays cards about a pull or issue
+   * Home page/contextless handler.
+   *
+   * @param {Event} e - Add-on event
+   * @return {Card[]}
+   */
+  showHomePage: function(e) {
+    var userResponse = githubClient().query(Queries.VIEWER, {});
+    var login = userResponse.viewer.login;
+    var issueQuery = Utilities.formatString('is:open sort:updated-desc involves:%s', login);
+    var githubResponse = githubClient().query(Queries.HOMEPAGE, {
+      query: issueQuery
+    });
+    var issues = githubResponse.search.nodes.map(function(issue) {
+      var type;
+      if (issue.__typename == 'Issue') {
+        type = 'issues';
+      } else if (issue.__typename == 'PullRequest') {
+        type = 'pull';
+      } else {
+        return null;
+      }
+      return {
+        title: issue.title,
+        link: {
+          owner: issue.repository.owner.login,
+          repo: issue.repository.name,
+          id: issue.number.toString(),
+          type: type
+        },
+      };
+    });
+    var card = buildHomeCard({
+      issues: issues
+    });
+
+    return [card];
+  },
+
+  /**
+   * Gmail contextual handler for the add-on. Displays cards about a pull or issue
    * if referenced in the email.
    *
    * @param {Event} e - Event from Gmail
    * @return {Card[]}
    */
-  showAddOn: function(e) {
+  showGmailContext: function(e) {
     var message = getCurrentMessage(e);
     var links = extractGitHubLinks(message.getBody());
 
     if (_.isEmpty(links)) {
-      return [];
+      return ActionHandlers['showHomePage'](e);
     }
 
     var cards = _.map(links, function(link) {
@@ -51,14 +90,31 @@ var ActionHandlers = {
   },
 
   /**
+   * Displays an issue or pull request linked from home page/
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {Card[]}
+   */
+  showIssueOrPullRequest: function(e) {
+    var owner = e.parameters.owner;
+    var repo = e.parameters.repo;
+    var id = parseInt(e.parameters.id);
+    var type = e.parameters.type;
+
+    var card = linkHandlers[type](owner, repo, id);
+    return CardService.newActionResponseBuilder()
+        .setNavigation(CardService.newNavigation().pushCard(card))
+        .build();
+  },
+
+  /**
    * Displays the add-on settings card.
    *
    * @param {Event} e - Event from Gmail
-   * @return {CardService.FormAction}
+   * @return {CardService.ActionResponse}
    */
   showSettings: function(e) {
     var githubResponse = githubClient().query(Queries.VIEWER, {});
-
     var card = buildSettingsCard({
       avatarUrl: githubResponse.viewer.avatarUrl,
       login: githubResponse.viewer.login,
@@ -73,6 +129,7 @@ var ActionHandlers = {
    * Disconnects the user's GitHub account.
    *
    * @param {Event} e - Event from Gmail
+   * @return {CardService.ActionResponse}
    */
   disconnectAccount: function(e) {
     githubClient().disconnect();
@@ -83,7 +140,7 @@ var ActionHandlers = {
    * Shows a card displaying details about a GitHub user (name, employer, location, etc.)
    *
    * @param {Event} e - Event from Gmail
-   * @return {CardService.FormAction}
+   * @return {CardService.ActionResponse}
    */
   showUser: function(e) {
     var githubResponse = githubClient().query(Queries.USER, {
@@ -210,7 +267,6 @@ function handlePullRequest_(owner, repoName, id) {
 
   var repo = githubResponse.repository;
   var pullRequest = repo.pullRequest;
-
   var card = buildPullRequestCard({
     id: pullRequest.id,
     number: pullRequest.number,
