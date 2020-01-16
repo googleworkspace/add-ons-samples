@@ -52,18 +52,18 @@ Deploy the add-on by following these steps:
 
         npx @google/clasp push -f
         
-4.  Open the project
-
-        npx @google/clasp open
-        
 
 ## Install the add-on
 
 One the add-on is deployed, install the add-on on your account using these steps:
 
-1. In the Apps Script editor previously openend, select **Publish > Deploy from manifest...** to open the *Deployments* dialog.
+1.  Open the project
 
-1. In the **Latest Version (Head)** row, click **Install add-on** to install the currently saved version of the add-on in development-mode. 
+        npx @google/clasp open
+        
+2. In the Apps Script editor, select **Publish > Deploy from manifest...** to open the *Deployments* dialog.
+
+3. In the **Latest Version (Head)** row, click **Install add-on** to install the currently saved version of the add-on in development-mode. 
 
 
 ## Run the add-on
@@ -79,18 +79,9 @@ One the add-on is deployed, install the add-on on your account using these steps
 
 4.  Select the account that should authorize the add-on.
 
-5.  The next dialog may inform you that the app is not verified. In this case you
-    can proceed by doing the following:
+5.  Read the notice in the next dialog carefully, then click **Allow**.
 
-    a.  Click **Advanced**.
-
-    b. At the bottom of the dialog, click **Go to Meeting Assistant (unsafe)**.
-
-    c. In the new dialog, type "Continue" into the text field, then click **Next**.
-
-6.  Read the notice in the next dialog carefully, then click **Allow**.
-
-7.  Once authorized, the add-on should automatically refresh and start operating.
+6.  Once authorized, the add-on should automatically refresh and start operating.
 
 ## Contributing
 
