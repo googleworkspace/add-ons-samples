@@ -12,8 +12,8 @@ Note: This is not an official Google product.
 
 ## Before you begin
 
-If you're new to add-on development or Apps Script, try the
-[quickstart][quickstart] before proceeding.
+If you're new to add-on development or [Apps Script][apps-script],
+try the [quickstart][quickstart] before proceeding.
 
 This sample requires the following:
 
@@ -131,17 +131,13 @@ Please read our [guidelines for contributors][contributing].
 This sample is licensed under the [Apache 2 license][license].
 
 <!-- References -->
-[quickstart]:https://developers.google.com/gmail/add-ons/guides/quickstart
+[quickstart]:https://developers.google.com/gsuite/add-ons/cats-quickstart
 [node]:https://nodejs.org/en/
-[clasp]:https://github.com/google/clasp
 [apps-script]: https://script.google.com
-[github]: https://github.com
-[github-repo]: https://github.com/googlesamples/gmail-add-ons-samples
-[github-zip]: https://github.com/googlesamples/gmail-add-ons-samples/archive/master.zip
-[contributing]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/CONTRIBUTING.md
-[license]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/LICENSE
-[gmail-settings]: https://mail.google.com/mail/#settings/addons
+[github-repo]: https://github.com/gsuitedevs/add-ons-samples
+[github-zip]: https://github.com/gsuitedevs/add-ons-samples/archive/master.zip
+[contributing]: https://github.com/gsuitedevs/add-ons-samples/blob/master/CONTRIBUTING.md
+[license]: https://github.com/gsuitedevs/add-ons-samples/blob/master/LICENSE
 [gmail]: https://mail.google.com/
-[lodash]: https://lodash.com/
-[moment]: http://momentjs.com/
+[github]: https://github.com
 [github-oauth]: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/
