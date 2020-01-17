@@ -42,6 +42,20 @@ var WEEKDAYS = [1, 2, 3, 4, 5]; // Weekeday values used by momentjs
  */
 
 /**
+ * Entry point for the add-on home page.
+ *
+ * @param {Event} event - user event to process
+ * @return {UniversalActionResponse}
+ */
+function handleShowHomePage(event) {
+  if (event.parameters == undefined) {
+    event.parameters = {};
+  }
+  event.parameters.action = 'showHomePage';
+  return dispatchActionInternal(event, addOnErrorHandler);
+}
+
+/**
  * Entry point for the add-on. Handles an user event and
  * invokes the corresponding action
  *
@@ -53,7 +67,7 @@ function handleShowScheduler(event) {
     event.parameters = {};
   }
   event.parameters.action = 'showSearchForm';
-  return dispatchActionInternal(event, universalActionErrorHandler);
+  return dispatchActionInternal(event, addOnErrorHandler);
 }
 
 /**
@@ -117,6 +131,21 @@ function dispatchActionInternal(event, optErrorHandler) {
     }
   }
 }
+
+/**
+ * Handle unexpected errors for the main entry points.
+ *
+ * @param {Error} err - Exception to handle
+ * @return {Card|ActionResponse|UnivseralActionResponse} optional card or action response to render
+ */
+function addOnErrorHandler(err) {
+  var card = buildErrorCard({
+    exception: err,
+    showStackTrace: DEBUG,
+  });
+  return [card];
+}
+
 
 /**
  * Handle unexpected errors for the main universal action entry points.
