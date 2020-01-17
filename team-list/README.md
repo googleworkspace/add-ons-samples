@@ -9,8 +9,9 @@ Note: This is not an official Google product.
 
 ## Before you begin
 
-If you're new to add-on development or Apps Script, try the
-[quickstart][quickstart] before proceeding.
+If you're new to add-on development or [Apps Script][apps-script],
+try the [quickstart][quickstart] before proceeding.
+
 
 This sample requires the following:
 
@@ -93,15 +94,12 @@ This sample is licensed under the [Apache 2 license][license].
 
 
 <!-- References -->
-[quickstart]:https://developers.google.com/gmail/add-ons/guides/quickstart
+<!-- References -->
+[quickstart]:https://developers.google.com/gsuite/add-ons/cats-quickstart
 [node]:https://nodejs.org/en/
 [apps-script]: https://script.google.com
-[github-repo]: https://github.com/googlesamples/add-ons-samples
-[github-zip]: https://github.com/googlesamples/add-ons-samples/archive/master.zip
-[contributing]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/CONTRIBUTING.md
-[license]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/LICENSE
-[gmail-settings]: https://mail.google.com/mail/#settings/addons
+[github-repo]: https://github.com/gsuitedevs/add-ons-samples
+[github-zip]: https://github.com/gsuitedevs/add-ons-samples/archive/master.zip
+[contributing]: https://github.com/gsuitedevs/add-ons-samples/blob/master/CONTRIBUTING.md
+[license]: https://github.com/gsuitedevs/add-ons-samples/blob/master/LICENSE
 [gmail]: https://mail.google.com/
-[clasp-repo]: https://github.com/google/clasp
-[clasp-install]: https://github.com/google/clasp#install
-[advanced-services]: https://developers.google.com/apps-script/guides/services/advanced#enabling_advanced_services
