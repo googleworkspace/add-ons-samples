@@ -102,7 +102,7 @@ var ActionHandlers = {
       bio: user.bio,
       memberSince: user.createdAt,
       repositoryCount: user.repositories.totalCount,
-      contributedRepositoryCount: user.contributedRepositories.totalCount,
+      contributedRepositoryCount: user.repositoriesContributedTo.totalCount,
       followerCount: user.followers.totalCount,
     });
 

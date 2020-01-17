@@ -158,15 +158,6 @@ var Queries = {
     '          login ' +
     '        } ' +
     '      } ' +
-    '      reviewRequests(first:5) { ' +
-    '        nodes { ' +
-    '          reviewer { ' +
-    '            avatarUrl ' +
-    '            login ' +
-    '            id ' +
-    '          } ' +
-    '        } ' +
-    '      } ' +
     '      labels(first:10) { ' +
     '        nodes { ' +
     '          id ' +
@@ -195,7 +186,7 @@ var Queries = {
     '    url ' +
     '    bioHTML ' +
     '    companyHTML ' +
-    '    contributedRepositories { ' +
+    '    repositoriesContributedTo { ' +
     '      totalCount ' +
     '    } ' +
     '    followers { ' +
