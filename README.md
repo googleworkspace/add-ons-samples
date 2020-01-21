@@ -7,7 +7,7 @@ See sub-directories for more detailed descriptions of individual samples.
 
 ## Questions and discussions
 
-If you have questions or run into issues with G Auite add-ons, see:
+If you have questions or run into issues with G Suite add-ons, see:
 
 * Stack Overflow: tag questions with [`gsuite-addons`][stackoverflow-link]
 
