@@ -6,12 +6,10 @@ a G Suite account.
 
 Note: This is not an official Google product.
 
-
 ## Before you begin
 
 If you're new to add-on development or [Apps Script][apps-script],
 try the [quickstart][quickstart] before proceeding.
-
 
 This sample requires the following:
 
@@ -56,7 +54,7 @@ Deploy the add-on by following these steps:
 
 ## Install the add-on
 
-One the add-on is deployed, install the add-on on your account using these steps:
+Once the add-on is deployed, install the add-on on your account using these steps:
 
 1.  Open the project
 
