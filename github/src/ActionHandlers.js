@@ -69,7 +69,6 @@ var ActionHandlers = {
         .build();
   },
 
-
   /**
    * Disconnects the user's GitHub account.
    *
