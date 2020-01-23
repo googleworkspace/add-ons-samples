@@ -73,10 +73,20 @@ var ActionHandlers = {
    * Disconnects the user's GitHub account.
    *
    * @param {Event} e - Event from Gmail
+   * @return {CardService.ActionResponse}
    */
   disconnectAccount: function(e) {
     githubClient().disconnect();
-    throw new AuthorizationRequiredException();
+    var authCard = buildAuthorizationCard({
+      url: githubClient().authorizationUrl(),
+    });
+    var navigation = CardService.newNavigation()
+        .popToRoot()
+        .updateCard(authCard);
+    return CardService.newActionResponseBuilder()
+        .setNavigation(navigation)
+        .setStateChanged(true)
+        .build();
   },
 
   /**

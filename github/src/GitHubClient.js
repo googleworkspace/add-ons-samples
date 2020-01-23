@@ -51,7 +51,7 @@ var GitHubClientPrototype = {
       }
 
       var headers = {
-        Authorization: Utilities.formatString(
+        'Authorization': Utilities.formatString(
             'Bearer %s',
             this.oauthService.getAccessToken()
         ),
@@ -91,6 +91,39 @@ var GitHubClientPrototype = {
    * De-authorizes the GitHub client.
    */
   disconnect: function() {
+    if (!this.oauthService.hasAccess()) {
+      return;
+    }
+
+    var url = Utilities.formatString(
+        'https://api.github.com/applications/%s/grant',
+        this.credentials.clientId);
+    var basicAuthInfo = this.credentials.clientId + ':' + this.credentials.clientSecret;
+    var headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.github.doctor-strange-preview+json',
+      'Authorization': Utilities.formatString(
+          'Basic %s',
+          Utilities.base64Encode(basicAuthInfo)
+      ),
+    };
+    var payload = JSON.stringify({
+      access_token: this.oauthService.getAccessToken(),
+    });
+
+    if (DEBUG) {
+      console.log('Deleting access token');
+    }
+    var response = UrlFetchApp.fetch(url, {
+      method: 'delete',
+      headers: headers,
+      payload: payload,
+      muteHttpExceptions: true,
+    });
+
+    if (DEBUG) {
+      console.log(response);
+    }
     this.oauthService.reset();
   },
 
@@ -145,5 +178,6 @@ function githubClient() {
       .setScope('user user:email user:follow repo');
   return _.assign(Object.create(GitHubClientPrototype), {
     oauthService: oauthService,
+    credentials: credentials,
   });
 }
