@@ -57,10 +57,9 @@ Deploy the add-on by following these steps:
 
         npx @google/clasp push -f
 
-
 ## Install the add-on
 
-One the add-on is deployed, install the add-on on your account using these steps:
+Once the add-on is deployed, install the add-on on your account using these steps:
 
 1.  Open the project
 
