@@ -133,7 +133,6 @@ function buildSettingsCard(opts) {
       .setImageStyle(CardService.ImageStyle.CIRCLE)
       .setImageUrl(opts.avatarUrl)
       .setSubtitle(opts.login);
-
   var card = CardService.newCardBuilder()
       .setHeader(header)
       .addSection(
@@ -160,13 +159,15 @@ function buildSettingsCard(opts) {
 function buildHomeCard(opts) {
   var issuesSection = CardService.newCardSection()
       .setHeader('Recent open issues and pull requests')
+
   if (opts.issues.length == 0) {
     var message = CardService.newTextParagraph()
-    .setText('You have no open issues.');
+    .setText('You have no open issues or pull requests.');
     issuesSection.addWidget(message);
   }
+
   opts.issues.forEach(function(issue) {
-    var icon = issue.link.type == 'issues' ? Icons.issues : Icons.pullRequests;
+    var icon = issue.link.type == LinkType.ISSUE? Icons.issues : Icons.pullRequests;
     var action = createAction_('showIssueOrPullRequest', issue.link);
     var widget = CardService.newKeyValue()
         .setContent(issue.title)
@@ -174,6 +175,7 @@ function buildHomeCard(opts) {
         .setOnClickAction(action);
     issuesSection.addWidget(widget);
   });
+
   var card = CardService.newCardBuilder()
       .addSection(issuesSection);
   return card.build();
@@ -203,9 +205,7 @@ function buildIssueCard(opts) {
       .setImageStyle(CardService.ImageStyle.CIRCLE)
       .setImageUrl(opts.authorAvatarUrl)
       .setSubtitle(opts.title);
-
   var labels = _.join(opts.labels, '<br/>');
-
   var card = CardService.newCardBuilder()
       .setHeader(header)
       .addCardAction(
@@ -265,12 +265,9 @@ function buildPullRequestCard(opts) {
       .setImageStyle(CardService.ImageStyle.CIRCLE)
       .setImageUrl(opts.authorAvatarUrl)
       .setSubtitle(opts.title);
-
   var labels = _.join(opts.labels, '<br/>');
-
   var closedOrMergedAt = opts.state == 'MERGED' ? opts.mergedAt : opts.closedAt;
   var lastEditedAt = opts.updatedAt ? opts.updatedAt : closedOrMergedAt;
-
   var card = CardService.newCardBuilder()
       .setHeader(header)
       .addCardAction(
@@ -330,7 +327,6 @@ function buildRepositoryCard(opts) {
       .setTitle(opts.name)
       .setImageStyle(CardService.ImageStyle.CIRCLE)
       .setImageUrl(opts.ownerAvatarUrl);
-
   var card = CardService.newCardBuilder()
       .setHeader(header)
       .addCardAction(

@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Enum of issue types
+var LinkType = {
+  ISSUE: 'issue',
+  PULL_REQUEST: 'pull'
+}
+
 /**
  * Map of internal functions for handling various types of github links.
  */
-var linkHandlers = {
-  issues: handleIssue_,
-  pull: handlePullRequest_,
-};
+var linkHandlers = {};
+linkHandlers[LinkType.ISSUE] = handleIssue_;
+linkHandlers[LinkType.PULL_REQUEST] = handlePullRequest_;
 
 /**
  * Collection of functions to handle user interactions with the add-on.
@@ -42,9 +47,9 @@ var ActionHandlers = {
     var issues = githubResponse.search.nodes.map(function(issue) {
       var type;
       if (issue.__typename == 'Issue') {
-        type = 'issues';
+        type = LinkType.ISSUE;
       } else if (issue.__typename == 'PullRequest') {
-        type = 'pull';
+        type = LinkType.PULL_REQUEST;
       } else {
         return null;
       }

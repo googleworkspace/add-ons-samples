@@ -60,7 +60,7 @@ function extractGitHubLinks(messageBodies) {
 function extractGitHubLinksFromText_(text, appendTo) {
   var re = /https:\/\/github.com\/([^\/]+?)\/([^\/]+?)\/(issues|pull)\/(\d+)/gi;
   while ((match = re.exec(text)) !== null) {
-    var type = stripHtmlTags(match[3]);
+    var type = stripHtmlTags(match[3]) == 'issues' ? LinkType.ISSUE : LinkType.PULL_REQUEST;
     appendTo.push({
       owner: stripHtmlTags(match[1]),
       repo: stripHtmlTags(match[2]),
