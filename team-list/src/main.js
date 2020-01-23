@@ -22,6 +22,8 @@
 // such as integration with a CRM where the focus may be on external email
 // addresses/customers.
 
+// Load lodash library -- used for a handful of helper methods
+// to process collections
 // See https://github.com/contributorpw/lodashgs
 var _ = LodashGS.load();
 
@@ -30,61 +32,56 @@ var _ = LodashGS.load();
 * no context selected.
 *
 * @param {Object} event - current add-on event
-* @return {Card[]} Card(s) to display
+* @return {Card[]} Search form to display
 */
 function onHomePage(event) {
-  var card = buildSearchCard_();
-  return [card];
+  return [buildSearchCard_()];
 }
 
 /**
 * Renders the contextual interface for a Gmail message.
 *
 * @param {Object} event - current add-on event
-* @return {Card[]} Card(s) to display
+* @return {Card[]} - Team list or search form card to display
 */
 function onGmailMessageSelected(event) {
   var emails = extractEmailsFromMessage_(event);
   var people = fetchPeople_(emails);
   if (people.length == 0) {
-    var card = buildSearchCard_('No team members found for current message.');
-    return [card];
+    var message = 'No team members found for current message.';
+    return [buildSearchCard_(message)];
   }
-  var card = buildTeamListCard_(people);
-  return [card];
+  return [buildTeamListCard_(people)];
 }
 
 /**
 * Renders the contextual interface for a calendar event.
 *
 * @param {Object} event - current add-on event
-* @return {Card[]} Card(s) to display
+* @return {Card[]} - Team list or search form card to display
 */
 function onCalendarEventOpen(event) {
   var emails = extractEmailsFromCalendarEvent_(event);
   var people = fetchPeople_(emails);
   if (people.length == 0) {
-    var card = buildSearchCard_('No team members found for current event.');
-    return [card];
+    var message = 'No team members found for current event.';
+    return [buildSearchCard_(message)];
   }
-  var card = buildTeamListCard_(people);
-  return [card];
+  return [buildTeamListCard_(people)];
 }
 
 /**
 * Renders the contextual interface for a selected Drive file.
 *
 * @param {Object} event - current add-on event
-* @return {Card[]} Card(s) to display
+* @return {Card[]} - Team list or search form card to display
 */
 function onDriveItemsSelected(event) {
   // For demo, only allow single select on files.
   if (event.drive.selectedItems.length != 1) {
     var message = 'To view team members collaborating on a file, select one file only.';
-    var card = buildSearchCard_(message);
-    return [card];
+    return [buildSearchCard_(message)];
   }
-
   var selectedItem = event.drive.selectedItems[0];
   if (!selectedItem.addonHasFileScopePermission) {
     // Need file access to read ACL, ask user to authorize.
@@ -106,16 +103,14 @@ function onDriveItemsSelected(event) {
         .build();
     return [card];
   }
-
   // Have access, extract ACLs to find co-workers
   var emails = extractEmailsFromDrivePermissions_(event);
   var people = fetchPeople_(emails);
   if (people.length == 0) {
-    var card = buildSearchCard_('No team members found for current file.');
-    return [card];
+    var message = 'No team members found for current file.';
+    return [ buildSearchCard_(message)];
   }
-  var card = buildTeamListCard_(people);
-  return [card];
+  return [buildTeamListCard_(people)];
 }
 
 /**
@@ -145,17 +140,15 @@ function onSearch(event) {
         .setNotification(notification)
         .build();
   }
-
   var query = event.formInputs.query[0];
   var people = queryPeople_(query);
-
   if (!people || people.length == 0) {
-    var notification = CardService.newNotification().setText('No people found.');
+    var notification = CardService.newNotification()
+        .setText('No people found.');
     return CardService.newActionResponseBuilder()
         .setNotification(notification)
         .build();
   }
-
   var card = buildTeamListCard_(people);
   var navigation = CardService.newNavigation().pushCard(card);
   return CardService.newActionResponseBuilder()
@@ -171,8 +164,7 @@ function onSearch(event) {
 */
 function onShowPersonDetails(event) {
   var person = fetchPerson_(event.parameters.email);
-  var card = buildPersonDetailsCard_(person);
-  return [card];
+  return [buildPersonDetailsCard_(person)];
 }
 
 /**
@@ -213,7 +205,6 @@ function buildPersonDetailsCard_(person) {
           .setContent(org.department));
     });
   }
-
   if (person.locations) {
     person.locations.forEach(function(location) {
       var formattedLocation = Utilities.formatString('%s<br>%s',
@@ -224,7 +215,6 @@ function buildPersonDetailsCard_(person) {
           .setContent(formattedLocation));
     });
   }
-
   return CardService.newCardBuilder()
       .setHeader(cardHeader)
       .addSection(section)
@@ -242,7 +232,6 @@ function buildTeamListCard_(people) {
   people.forEach(function(person) {
     var photoUrl = person.thumbnailPhotoUrl ?
         person.thumbnailPhotoUrl : 'https://ssl.gstatic.com/s2/profiles/images/silhouette200.png';
-    var title = person.organizations ? person.organizations[0].title : null;
     var clickAction = CardService.newAction()
         .setFunctionName('onShowPersonDetails')
         .setLoadIndicator(CardService.LoadIndicator.SPINNER)
@@ -270,33 +259,26 @@ function buildTeamListCard_(people) {
 function buildSearchCard_(optError) {
   var banner = CardService.newImage()
       .setImageUrl('https://storage.googleapis.com/gweb-cloudblog-publish/original_images/Workforce_segmentation_1.png');
-
   var searchField = CardService.newTextInput()
       .setFieldName('query')
       .setHint('Name or email address')
       .setTitle('Search for people');
-
   var onSubmitAction = CardService.newAction()
       .setFunctionName('onSearch')
       .setLoadIndicator(CardService.LoadIndicator.SPINNER)
       .setPersistValues(true);
-
   var submitButton = CardService.newTextButton()
       .setText('Search')
       .setOnClickAction(onSubmitAction);
-
   var section = CardService.newCardSection()
       .addWidget(banner)
       .addWidget(searchField)
       .addWidget(submitButton);
-
   if (optError) {
     var message = CardService.newTextParagraph()
         .setText('Note: ' + optError);
     section.addWidget(message);
   }
-
-
   return CardService.newCardBuilder()
       .addSection(section)
       .build();
@@ -315,11 +297,9 @@ function extractEmailsFromMessage_(event) {
   var messageId = event.messageMetadata.messageId;
   GmailApp.setCurrentMessageAccessToken(accessToken);
   var message = GmailApp.getMessageById(messageId);
-
   if (!message) {
     return [];
   }
-
   // Parse/emit any email addresses in the to/cc/from headers
   var splitEmailsRegexp = /\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,6}\b/gi;
   var emails = _.union(
@@ -327,14 +307,11 @@ function extractEmailsFromMessage_(event) {
       message.getCc().match(splitEmailsRegexp),
       message.getFrom().match(splitEmailsRegexp)
   );
-
-
   // Remove any +suffixes in the user name portion to get the canonical email
   var normalizeRegexp = /(.*)\+.*@(.*)/;
   emails = emails.map(function(email) {
     return email.replace(normalizeRegexp, '$1@$2');
   });
-
   return filterAndSortEmails_(emails);
 }
 
@@ -350,10 +327,8 @@ function extractEmailsFromDrivePermissions_(event) {
   if (event.drive.selectedItems.length != 1) {
     return [];
   }
-
   var itemId = event.drive.selectedItems[0].id;
   var emails = [];
-
   var item = Drive.Files.get(itemId, {fields: 'owners, sharingUser'});
   if (item.sharingUser) {
     emails.push(item.sharingUser.emailAddress);
@@ -376,7 +351,6 @@ function extractEmailsFromDrivePermissions_(event) {
     // Ignore inability to fetch permissions, may not have access
     console.warn(e);
   }
-
   return filterAndSortEmails_(emails);
 }
 
@@ -390,7 +364,6 @@ function extractEmailsFromCalendarEvent_(event) {
   if (!event.calendar || !event.calendar.attendees) {
     return [];
   }
-
   var emails = event.calendar.attendees.map(function(attendee) {
     return attendee.email;
   });
@@ -408,10 +381,8 @@ function filterAndSortEmails_(emails) {
   if (!emails) {
     return [];
   }
-
   var userEmail = Session.getActiveUser().getEmail();
   var domain = userEmail.slice(userEmail.indexOf('@') + 1);
-
   emails = emails.filter(function(email) {
     return _.endsWith(email, domain) && email != userEmail;
   });
@@ -430,7 +401,6 @@ function fetchPeople_(emails) {
   if (!emails || emails.length == 0) {
     return [];
   }
-
   return emails.map(fetchPerson_).filter(function(item) {
     return item != null && item.primaryEmail;
   });
@@ -446,13 +416,11 @@ function fetchPerson_(email) {
   if (!email) {
     return null;
   }
-
   // Check cache first
   var person = CacheService.getUserCache().get(email);
   if (person && person.primaryEmail) {
     return JSON.parse(person);
   }
-
   try {
     person = AdminDirectory.Users.get(email, {projection: 'full', viewType: 'domain_public'});
     CacheService.getUserCache().put(email, JSON.stringify(person));
