@@ -91,10 +91,9 @@ Access the GitHub API requires registration. To register your own application:
 
 	f. Click **Save**.
 
-
 ## Install the add-on
 
-One the add-on is deployed, install the add-on on your account using these steps:
+Once the add-on is deployed, install the add-on on your account using these steps:
 
 1.  Open the project
 
@@ -103,7 +102,6 @@ One the add-on is deployed, install the add-on on your account using these steps
 2. In the Apps Script editor, select **Publish > Deploy from manifest...** to open the *Deployments* dialog.
 
 3. In the **Latest Version (Head)** row, click **Install add-on** to install the currently saved version of the add-on in development-mode. 
-
 
 ## Run the add-on
 
