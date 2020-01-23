@@ -146,7 +146,6 @@ function addOnErrorHandler(err) {
   return [card];
 }
 
-
 /**
  * Handle unexpected errors for the main universal action entry points.
  *

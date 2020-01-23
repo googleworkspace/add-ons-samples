@@ -75,7 +75,6 @@ var ActionHandlers = {
    */
   findTimes: function(e) {
     var deadlineMonitor = buildDeadlineMonitor(DEFAULT_DEADLINE_SECONDS);
-    var settings = getSettingsForUser();
     var formInputs = e.commonEventObject.formInputs;
     var emailAddresses = _.union(
       formInputs.participants ? 
@@ -92,7 +91,7 @@ var ActionHandlers = {
       endHour: parseInt(formInputs.end[''].stringInputs.value[0]),
     });
 
-    // Validate time ranges -- start must be befor end
+    // Validate time ranges -- start must be before end
     if (state.endHour <= state.startHour) {
       return CardService.newActionResponseBuilder()
           .setNotification(
@@ -116,6 +115,7 @@ var ActionHandlers = {
           .build();
     }
 
+    var settings = getSettingsForUser();
     var scheduler = buildScheduler({
       durationMinutes: state.durationMinutes,
       startHour: state.startHour,
