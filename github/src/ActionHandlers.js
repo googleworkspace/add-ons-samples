@@ -15,8 +15,8 @@
 // Enum of issue types
 var LinkType = {
   ISSUE: 'issue',
-  PULL_REQUEST: 'pull'
-}
+  PULL_REQUEST: 'pull',
+};
 
 /**
  * Map of internal functions for handling various types of github links.
@@ -42,7 +42,7 @@ var ActionHandlers = {
     var login = userResponse.viewer.login;
     var issueQuery = Utilities.formatString('is:open sort:updated-desc involves:%s', login);
     var githubResponse = githubClient().query(Queries.HOMEPAGE, {
-      query: issueQuery
+      query: issueQuery,
     });
     var issues = githubResponse.search.nodes.map(function(issue) {
       var type;
@@ -59,12 +59,12 @@ var ActionHandlers = {
           owner: issue.repository.owner.login,
           repo: issue.repository.name,
           id: issue.number.toString(),
-          type: type
+          type: type,
         },
       };
     });
     var card = buildHomeCard({
-      issues: issues
+      issues: issues,
     });
 
     return [card];

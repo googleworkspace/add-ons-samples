@@ -158,11 +158,11 @@ function buildSettingsCard(opts) {
  */
 function buildHomeCard(opts) {
   var issuesSection = CardService.newCardSection()
-      .setHeader('Recent open issues and pull requests')
+      .setHeader('Recent open issues and pull requests');
 
   if (opts.issues.length == 0) {
     var message = CardService.newTextParagraph()
-    .setText('You have no open issues or pull requests.');
+        .setText('You have no open issues or pull requests.');
     issuesSection.addWidget(message);
   }
 
