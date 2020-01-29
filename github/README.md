@@ -28,14 +28,14 @@ Download the sample app and navigate into the app directory:
 1.  Clone the [Gmail add-ons samples][github-repo], to your local
     machine:
 
-        git clone https://github.com/googlesamples/gmail-add-ons-samples.git
+        git clone https://github.com/googlesamples/add-ons-samples.git
 
     Alternatively, you can [download the sample][github-zip] as a zip file and
     extract it.
 
 2.  Change to the sample directory:
 
-        cd gmail-add-ons-samples/github
+        cd add-ons-samples/github
 
 3.  Initialize the project:
 
