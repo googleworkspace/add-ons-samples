@@ -1,0 +1,16 @@
+{
+  "name": "cats-add-on-sample",
+  "version": "1.0.0",
+  "description": "Sample G Suite add-on",
+  "scripts": {
+    "lint": "eslint -c .eslintrc.json src/*.js",
+    "lint:fix": "eslint -c .eslintrc.json --fix src/*.js"
+  },
+  "author": "Eric Koleda",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@google/clasp": "^2.3.0",
+    "eslint": "^6.8.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}

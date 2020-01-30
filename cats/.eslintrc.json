@@ -1,0 +1,12 @@
+{
+  "extends": "google",
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
+  "rules": {
+    "no-var": "off",
+    "no-unused-vars": "off",
+    "max-len": ["error", {"code": 100, "ignoreUrls": true}]
+  }
+}
+

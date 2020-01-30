@@ -1,0 +1,5 @@
+.DS_store/
+.clasp.json
+dist
+node_modules/
+
