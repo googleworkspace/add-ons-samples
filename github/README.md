@@ -12,8 +12,8 @@ Note: This is not an official Google product.
 
 ## Before you begin
 
-If you're new to add-on development or Apps Script, try the
-[quickstart][quickstart] before proceeding.
+If you're new to add-on development or [Apps Script][apps-script],
+try the [quickstart][quickstart] before proceeding.
 
 This sample requires the following:
 
@@ -28,14 +28,14 @@ Download the sample app and navigate into the app directory:
 1.  Clone the [Gmail add-ons samples][github-repo], to your local
     machine:
 
-        git clone https://github.com/googlesamples/gmail-add-ons-samples.git
+        git clone https://github.com/googlesamples/add-ons-samples.git
 
     Alternatively, you can [download the sample][github-zip] as a zip file and
     extract it.
 
 2.  Change to the sample directory:
 
-        cd gmail-add-ons-samples/github
+        cd add-ons-samples/github
 
 3.  Initialize the project:
 
@@ -60,22 +60,6 @@ Deploy the add-on by following these steps:
 3.  Push the code:
 
         npx @google/clasp push -f
-
-4.  Tag a version:
-
-        npx @google/clasp version 'Push from github'
-
-5.  Deploy the add-on:
-
-        npx @google/clasp deploy 1 'test'
-
-6.  Verify the deployments:
-
-        npx @google/clasp deployments
-
-Note the deployment ids. There will be two deployments, one for the tagged
-version, another for the `@HEAD` version. Use the `@HEAD` deployment when
-installing the add on if you intend to modify or experiment with the code.
 
 ## Configure GitHub credentials
 
@@ -109,23 +93,15 @@ Access the GitHub API requires registration. To register your own application:
 
 ## Install the add-on
 
-One the add-on is deployed, install the add-on on your account using these steps:
+Once the add-on is deployed, install the add-on on your account using these steps:
 
-1.  Open the [Gmail add-on settings][gmail-settings] tab.
+1.  Open the project
 
-2.  In the **Add-ons** tab, ensure that you have selected the **Enable developer
-    add-ons for my account** checkbox.
+        npx @google/clasp open
+        
+2. In the Apps Script editor, select **Publish > Deploy from manifest...** to open the *Deployments* dialog.
 
-3.  Paste your add-on's deployment ID into the **Install developer add-on** textbox
-    and click **Install**.
-
-4. In the **Install developer add-on** dialog that appears, click the checkbox to
-   indicate that you trust this developer (yourself), then click **Install**.
-
-The add-on appears in the **Developer add-ons** list at this point. The
-**Enable debugging information** checkbox (which is checked by default) instructs
-Gmail to create and display an error report card when script or runtime errors
-occur during the execution of the add-on.
+3. In the **Latest Version (Head)** row, click **Install add-on** to install the currently saved version of the add-on in development-mode. 
 
 ## Run the add-on
 
@@ -140,18 +116,9 @@ occur during the execution of the add-on.
 
 4.  Select the account that should authorize the add-on.
 
-5.  The next dialog may inform you that the app is not verified. In this case you
-    can proceed by doing the following:
+5.  Read the notice in the next dialog carefully, then click **Allow**.
 
-    a.  Click **Advanced**.
-
-    b. At the bottom of the dialog, click **Go to GitHub Reader (unsafe)**.
-
-    c. In the new dialog, type "Continue" into the text field, then click **Next**.
-
-6.  Read the notice in the next dialog carefully, then click **Allow**.
-
-7.  Once authorized, the add-on should automatically refresh and start operating.
+6.  Once authorized, the add-on should automatically refresh and start operating.
 
 ## Contributing
 
@@ -162,17 +129,13 @@ Please read our [guidelines for contributors][contributing].
 This sample is licensed under the [Apache 2 license][license].
 
 <!-- References -->
-[quickstart]:https://developers.google.com/gmail/add-ons/guides/quickstart
+[quickstart]:https://developers.google.com/gsuite/add-ons/cats-quickstart
 [node]:https://nodejs.org/en/
-[clasp]:https://github.com/google/clasp
 [apps-script]: https://script.google.com
-[github]: https://github.com
-[github-repo]: https://github.com/googlesamples/gmail-add-ons-samples
-[github-zip]: https://github.com/googlesamples/gmail-add-ons-samples/archive/master.zip
-[contributing]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/CONTRIBUTING.md
-[license]: https://github.com/googlesamples/gmail-add-ons-samples/blob/master/LICENSE
-[gmail-settings]: https://mail.google.com/mail/#settings/addons
+[github-repo]: https://github.com/gsuitedevs/add-ons-samples
+[github-zip]: https://github.com/gsuitedevs/add-ons-samples/archive/master.zip
+[contributing]: https://github.com/gsuitedevs/add-ons-samples/blob/master/CONTRIBUTING.md
+[license]: https://github.com/gsuitedevs/add-ons-samples/blob/master/LICENSE
 [gmail]: https://mail.google.com/
-[lodash]: https://lodash.com/
-[moment]: http://momentjs.com/
+[github]: https://github.com
 [github-oauth]: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/

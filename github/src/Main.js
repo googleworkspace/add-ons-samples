@@ -32,14 +32,23 @@ var DEBUG = true;
  */
 
 /**
- * Entry point for the add-on. Handles an user event and
- * invokes the corresponding action
+ * Home page (contextless) entry point for the add-on.
  *
  * @param {Event} event - user event to process
  * @return {Card[]}
  */
-function getContextualAddOn(event) {
-  event.parameters = {action: 'showAddOn'};
+function handleHomePage(event) {
+  event.parameters = {action: 'showHomePage'};
+  return dispatchActionInternal_(event, addOnErrorHandler);
+}
+/**
+ * Main Gmail entry point for the add-on.
+ *
+ * @param {Event} event - user event to process
+ * @return {Card[]}
+ */
+function handleGmailContext(event) {
+  event.parameters = {action: 'showGmailContext'};
   return dispatchActionInternal_(event, addOnErrorHandler);
 }
 

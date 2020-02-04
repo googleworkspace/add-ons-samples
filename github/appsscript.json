@@ -4,35 +4,48 @@
     "libraries": [{
       "userSymbol": "OAuth2",
       "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF",
-      "version": "21"
+      "version": "35"
     }]
   },
-  "exceptionLogging": "CLOUD",
+  "exceptionLogging": "STACKDRIVER",
   "oauthScopes": [
     "https://www.googleapis.com/auth/script.storage",
+    "https://www.googleapis.com/auth/calendar.addons.execute",
     "https://www.googleapis.com/auth/gmail.addons.execute",
     "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
     "https://www.googleapis.com/auth/script.external_request"
   ],
-  "gmail": {
-    "name": "GitHub Reader",
-    "logoUrl": "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/git-branch.svg.png",
-    "contextualTriggers": [{
-      "unconditional": {
-      },
-      "onTriggerFunction": "getContextualAddOn"
-    }],
-    "universalActions": [{
-      "text": "Settings",
-      "runFunction": "handleShowSettings"
-    }],
-    "openLinkUrlPrefixes": [
-        "https://github.com"
-    ],
-    "primaryColor": "#111111"
-  },
   "urlFetchWhitelist": [
     "https://api.github.com/",
     "https://github.com/"
-  ]
+  ],
+  "addOns": {
+    "common": {
+      "name": "GitHub Reader (demo)",
+      "logoUrl": "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/git-branch.svg.png", 
+      "homepageTrigger": {
+        "runFunction": "handleHomePage"
+      },
+      "universalActions": [{
+        "label": "Settings",
+        "runFunction": "handleShowSettings"
+      }],
+      "openLinkUrlPrefixes": [
+          "https://github.com"
+      ],
+      "layoutProperties": {
+        "primaryColor": "#111111",
+        "secondaryColor": "#2B2B2B"
+      }
+    },
+    "gmail": {
+      "contextualTriggers": [{
+        "unconditional": {
+        },
+        "onTriggerFunction": "handleGmailContext"
+      }]
+    },
+    "drive": {},
+    "calendar": {}
+  }
 }

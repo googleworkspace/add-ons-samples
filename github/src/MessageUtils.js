@@ -18,7 +18,7 @@
  * @typedef {Object} GitHubLink
  * @property {string} owner - User or organization that owns the repository.
  * @property {string} repo - Name of the repository.
- * @property {string} action - Action to dispatch.
+ * @property {string} type - type of link, either 'issues' or 'pull'.
  * @property {number} id - ID of the issue or pull request.
  */
 
@@ -60,7 +60,7 @@ function extractGitHubLinks(messageBodies) {
 function extractGitHubLinksFromText_(text, appendTo) {
   var re = /https:\/\/github.com\/([^\/]+?)\/([^\/]+?)\/(issues|pull)\/(\d+)/gi;
   while ((match = re.exec(text)) !== null) {
-    var type = stripHtmlTags(match[3]);
+    var type = stripHtmlTags(match[3]) == 'issues' ? LinkType.ISSUE : LinkType.PULL_REQUEST;
     appendTo.push({
       owner: stripHtmlTags(match[1]),
       repo: stripHtmlTags(match[2]),
