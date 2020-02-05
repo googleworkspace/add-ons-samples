@@ -1,4 +1,4 @@
-# Sample Gmail add-on: Team List
+# Sample Gmail add-on: Cats
 
 This add-on creates contextual and non-contextual sidebars in Gmail, Calendar, and Drive. The sidebar presents a random image of a cat with text overlaying it. The text is either static (for homepages) or taken from the host application context (for contextual triggers).
 
@@ -65,9 +65,9 @@ Once the add-on is deployed, install the add-on on your account using these step
 1.  Open [Gmail][gmail]. If Gmail was open prior to enabling the add-on,
     you may need to refresh the tab.
 
-2.  Open a message in Gmail.
+2.  Click the paw print icon in the right icon column to open the add-on.
 
-3.  The add-on should place a contextual card on the right-side of the window,
+3.  The add-on should place a card on the right-side of the window,
     with a message asking for authorization. Click the **Authorize access** link
     to open a dialog where you can authorize the add-on.
 
@@ -87,10 +87,8 @@ This sample is licensed under the [Apache 2 license][license].
 
 
 <!-- References -->
-<!-- References -->
 [quickstart]:https://developers.google.com/gsuite/add-ons/cats-quickstart
 [node]:https://nodejs.org/en/
-[apps-script]: https://script.google.com
 [github-repo]: https://github.com/gsuitedevs/add-ons-samples
 [github-zip]: https://github.com/gsuitedevs/add-ons-samples/archive/master.zip
 [contributing]: https://github.com/gsuitedevs/add-ons-samples/blob/master/CONTRIBUTING.md

@@ -19,9 +19,6 @@
  * with the text taken from that context (such as a message's subject line)
  * overlaying the image. There is also a button that updates the card with a
  * new random cat image.
- *
- * Click "File > Make a copy..." to copy the script, and "Publish > Deploy from
- * manifest > Install add-on" to install it.
  */
 
 /**
