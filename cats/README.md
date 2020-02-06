@@ -1,4 +1,4 @@
-# Sample Gmail add-on: Cats
+# Sample G Suite add-on: Cats
 
 This add-on creates contextual and non-contextual sidebars in Gmail, Calendar, and Drive. The sidebar presents a random image of a cat with text overlaying it. The text is either static (for homepages) or taken from the host application context (for contextual triggers).
 
@@ -87,7 +87,6 @@ This sample is licensed under the [Apache 2 license][license].
 
 
 <!-- References -->
-[quickstart]:https://developers.google.com/gsuite/add-ons/cats-quickstart
 [node]:https://nodejs.org/en/
 [github-repo]: https://github.com/gsuitedevs/add-ons-samples
 [github-zip]: https://github.com/gsuitedevs/add-ons-samples/archive/master.zip
