@@ -1,4 +1,4 @@
-# Sample Gmail add-on: Team List
+# Sample G Suite add-on: Team List
 
 This is a sample add-on that demonstrates how to create contextual and
 home page experiences across different host apps. This add-on requires
