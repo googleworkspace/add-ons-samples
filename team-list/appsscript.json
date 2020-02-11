@@ -1,0 +1,87 @@
+{
+  "timeZone": "America/Denver",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Drive",
+        "serviceId": "drive",
+        "version": "v3"
+      },
+      {
+        "userSymbol": "AdminDirectory",
+        "serviceId": "admin",
+        "version": "directory_v1"
+      }
+    ],
+    "libraries": [
+      {
+        "userSymbol": "LodashGS",
+        "libraryId": "1SQ0PlSMwndIuOAgtVJdjxsuXueECtY9OGejVDS37ckSVbMll73EXf2PW",
+        "version": "5"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/admin.directory.user.readonly",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
+    "https://www.googleapis.com/auth/calendar.addons.execute",
+    "https://www.googleapis.com/auth/calendar.addons.current.event.read",
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+    "https://www.googleapis.com/auth/drive.file"
+  ],
+  "urlFetchWhitelist": [],
+  "runtimeVersion": "DEPRECATED_ES5",
+  "addOns": {
+    "common": {
+      "name": "Team Directory (demo)",
+      "logoUrl": "https://github.com/google/material-design-icons/raw/master/social/2x_web/ic_people_black_48dp.png",
+      "layoutProperties": {
+        "primaryColor": "#4285f4",
+        "secondaryColor": "#ea4335"
+      },
+      "homepageTrigger": {
+        "runFunction": "onHomePage",
+        "enabled": true
+      },
+      "universalActions": [
+        {
+          "label": "Feedback",
+          "openLink": "https://github.com/gsuitedevs/add-ons-samples/issues"
+        }
+      ],
+      "openLinkUrlPrefixes": [
+        "https://github.com/gsuitedevs/add-ons-samples/"
+      ]
+    },
+    "gmail": {
+      "contextualTriggers": [
+        {
+          "unconditional": {},
+          "onTriggerFunction": "onGmailMessageSelected"
+        }
+      ]
+    },
+    "drive": {
+      "homepageTrigger": {
+        "runFunction": "onHomePage",
+        "enabled": true
+      },
+      "onItemsSelectedTrigger": {
+        "runFunction": "onDriveItemsSelected"
+      }
+    },
+    "calendar": {
+      "homepageTrigger": {
+        "runFunction": "onHomePage",
+        "enabled": true
+      },
+      "eventOpenTrigger": {
+        "runFunction": "onCalendarEventOpen"
+      },
+      "currentEventAccess": "READ"
+    }
+  }
+}
