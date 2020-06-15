@@ -7,26 +7,49 @@
       "version": "v3"
     }]
   },
-  "exceptionLogging": "CLOUD",
+  "exceptionLogging": "STACKDRIVER",
   "oauthScopes": [
     "https://www.googleapis.com/auth/script.storage",
     "https://www.googleapis.com/auth/gmail.addons.execute",
     "https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
-    "https://www.googleapis.com/auth/calendar"
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.addons.execute"
   ],
-  "gmail": {
-    "name": "Meeting assistant",
-    "logoUrl": "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/clock.svg.png",
-    "contextualTriggers": [{
-      "unconditional": {},
-      "onTriggerFunction": "handleShowScheduler"
-    }],
-    "universalActions": [{
-      "text": "Settings",
-      "runFunction": "handleShowSettings"
-    }],
-    "openLinkUrlPrefixes": [
-      "https://calendar.google.com"
-    ]
+  "runtimeVersion": "DEPRECATED_ES5",
+  "addOns": {
+    "common": {
+      "name": "Meeting assistant (demo)",
+      "logoUrl": "https://cdn.rawgit.com/webdog/octicons-png/bd02e5bc/clock.svg.png",
+      "layoutProperties": {
+        "primaryColor": "#4285f4",
+        "secondaryColor": "#ea4335"
+      },
+      "homepageTrigger": {
+        "runFunction": "handleShowHomePage",
+        "enabled": true
+      },
+      "universalActions": [
+        {
+          "label": "Settings",
+          "runFunction": "handleShowSettings"
+         },
+         {
+          "label": "Feedback",
+          "openLink": "https://github.com/gsuitedevs/add-ons-samples/issues"
+        }
+      ],
+      "openLinkUrlPrefixes": [
+        "https://github.com/gsuitedevs/add-ons-samples/",
+        "https://calendar.google.com"
+      ]
+    },
+    "gmail": {
+      "contextualTriggers": [{
+        "unconditional": {},
+        "onTriggerFunction": "handleShowScheduler"
+      }]
+    },
+    "drive": {},
+    "calendar": {} 
   }
 }

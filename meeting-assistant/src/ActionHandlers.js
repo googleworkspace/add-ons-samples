@@ -19,10 +19,32 @@
  */
 var ActionHandlers = {
   /**
+   * Displays the home page card -- form that asks for people to meet with.
+   *
+   * @param {Event} e - Event from Gmail
+   * @return {Card[]}
+   */
+  showHomePage: function(e) {
+    var settings = getSettingsForUser();
+    var opts = {
+      startHour: settings.startHour,
+      endHour: settings.endHour,
+      durationMinutes: settings.durationMinutes,
+      emailAddresses: [],
+      state: {
+        subject: 'Meeting request',
+        timezone: getUserTimezone(),
+      },
+    };
+    var card = buildSearchCard(opts);
+    return [card];
+  },
+
+  /**
    * Displays the meeting search card.
    *
    * @param {Event} e - Event from Gmail
-   * @return {UniversalActionResponse}
+   * @return {Card[]}
    */
   showSearchForm: function(e) {
     var settings = getSettingsForUser();
@@ -53,15 +75,23 @@ var ActionHandlers = {
    */
   findTimes: function(e) {
     var deadlineMonitor = buildDeadlineMonitor(DEFAULT_DEADLINE_SECONDS);
-    var settings = getSettingsForUser();
+    var formInputs = e.commonEventObject.formInputs;
+    var emailAddresses = _.union(
+      formInputs.participants ? 
+        formInputs.participants[''].stringInputs.value :
+        [],
+      formInputs.additionalParticipants ?
+        formInputs.additionalParticipants[''].stringInputs.value[0].split(/[\s,]+/) :
+        []
+    );
     var state = _.assign(JSON.parse(e.parameters.state), {
-      emailAddresses: e.formInputs.participants,
-      durationMinutes: parseInt(e.formInput.duration),
-      startHour: parseInt(e.formInput.start),
-      endHour: parseInt(e.formInput.end),
+      emailAddresses: emailAddresses,
+      durationMinutes: parseInt(formInputs.duration[''].stringInputs.value[0]),
+      startHour: parseInt(formInputs.start[''].stringInputs.value[0]),
+      endHour: parseInt(formInputs.end[''].stringInputs.value[0]),
     });
 
-    // Validate time ranges -- start must be befor end
+    // Validate time ranges -- start must be before end
     if (state.endHour <= state.startHour) {
       return CardService.newActionResponseBuilder()
           .setNotification(
@@ -85,6 +115,7 @@ var ActionHandlers = {
           .build();
     }
 
+    var settings = getSettingsForUser();
     var scheduler = buildScheduler({
       durationMinutes: state.durationMinutes,
       startHour: state.startHour,
@@ -140,7 +171,10 @@ var ActionHandlers = {
    */
   createMeeting: function(e) {
     var state = JSON.parse(e.parameters.state);
-    var eventTime = moment(parseFloat(e.formInputs.time)).tz(state.timezone);
+    var formInputs = e.commonEventObject.formInputs;
+    var eventTime = moment(
+        parseFloat(formInputs.time[''].stringInputs.value[0])
+    ).tz(state.timezone);
     var endTime = eventTime.clone().add(state.durationMinutes, 'minutes');
     var event = {
       attendees: _.map(state.emailAddresses, function(person) {
@@ -152,8 +186,8 @@ var ActionHandlers = {
       end: {
         dateTime: endTime.toISOString(),
       },
-      summary: e.formInputs.subject,
-      description: e.formInputs.note,
+      summary: formInputs.subject[''].stringInputs.value[0],
+      description: formInputs.note[''].stringInputs.value[0],
     };
 
     event = Calendar.Events.insert(event, 'primary');
@@ -194,13 +228,14 @@ var ActionHandlers = {
    * @return {ActionResponse}
    */
   saveSettings: function(e) {
+    var formInputs = e.commonEventObject.formInputs;
     var settings = {
-      durationMinutes: parseInt(e.formInput.duration),
-      startHour: parseInt(e.formInput.start),
-      endHour: parseInt(e.formInput.end),
-      meetingIntervalMinutes: parseInt(e.formInput.meetingInterval),
-      searchRangeDays: parseInt(e.formInput.searchRange),
-      emailBlacklist: _.split(e.formInput.emailBlacklist, /\s/),
+      durationMinutes: parseInt(formInputs.duration[''].stringValues.values[0]),
+      startHour: parseInt(formInputs.start[''].stringValues.values[0]),
+      endHour: parseInt(formInputs.end[''].stringValues.values[0]),
+      meetingIntervalMinutes: parseInt(formInputs.meetingInterval[''].stringValues.values[0]),
+      searchRangeDays: parseInt(formInputs.searchRange[''].stringValues.values[0]),
+      emailBlacklist: _.split(formInputs.emailBlacklist[''].stringValues.values[0], /\s/),
     };
     updateSettingsForUser(settings);
     return CardService.newActionResponseBuilder()

@@ -38,13 +38,24 @@ function buildSearchCard(opts) {
       'Participants'
   );
 
-  var checkboxGroup = CardService.newSelectionInput()
-      .setType(CardService.SelectionInputType.CHECK_BOX)
-      .setFieldName('participants');
-  _.each(opts.emailAddresses, function(email) {
-    checkboxGroup.addItem(email, email, true);
-  });
-  participantSection.addWidget(checkboxGroup);
+  var additionalParticipantsMessage = 'Email addresses to invite';
+  if (opts.emailAddresses && opts.emailAddresses.length) {
+    var checkboxGroup = CardService.newSelectionInput()
+        .setType(CardService.SelectionInputType.CHECK_BOX)
+        .setFieldName('participants');
+    _.each(opts.emailAddresses, function(email) {
+      checkboxGroup.addItem(email, email, true);
+    });
+    participantSection.addWidget(checkboxGroup);
+    additionalParticipantsMessage = 'Additional email addresses to invite';
+  }
+
+  var additionalParticipantsInput = CardService.newTextInput()
+      .setMultiline(true)
+      .setTitle(additionalParticipantsMessage)
+      .setFieldName('additionalParticipants')
+      .setValue('');
+  participantSection.addWidget(additionalParticipantsInput);
 
   participantSection.addWidget(
       CardService.newButtonSet().addButton(
