@@ -1,0 +1,51 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/documents.currentonly",
+    "https://www.googleapis.com/auth/presentations", 
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.addons.current.action.compose"
+  ],
+  "runtimeVersion": "V8",
+  "urlFetchWhitelist": [
+    "https://api.qrserver.com/"
+  ],
+  "addOns": {
+    "common": {
+      "name": "QR Code Generator",
+      "logoUrl": "https://github.com/google/material-design-icons/blob/master/png/communication/qr_code_2/materialicons/48dp/2x/baseline_qr_code_2_black_48dp.png?raw=true",
+      "layoutProperties": {
+        "primaryColor": "#2772ed"
+      }
+    },
+    "docs": {
+      "homepageTrigger": {
+        "runFunction": "onHomepage"
+      }
+    },
+    "sheets": {
+      "homepageTrigger": {
+        "runFunction": "onHomepage"
+      }
+    },
+    "slides": {
+      "homepageTrigger": {
+        "runFunction": "onHomepage"
+      }
+    },
+    "gmail": {
+      "composeTrigger": {
+        "draftAccess": "NONE",
+        "selectActions": [{
+          "runFunction": "onHomepage",
+          "text": "Insert QR Code"
+        }]
+      }
+    }
+  }
+}
