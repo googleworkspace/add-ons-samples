@@ -1,13 +1,13 @@
-# G Suite Add-ons samples
+# Google Workspace Add-ons samples
 
 [![Stack Overflow][stackoverflow-shield]][stackoverflow-link]
 
-This repository contains samples [G Suite add-ons](https://developers.google.com/gsuite/add-ons/overview).
+This repository contains samples [Google Workspace Add-ons](https://developers.google.com/gsuite/add-ons/overview).
 See sub-directories for more detailed descriptions of individual samples.
 
 ## Questions and discussions
 
-If you have questions or run into issues with G Suite add-ons, see:
+If you have questions or run into issues with Google Workspace Add-ons, see:
 
 * Stack Overflow: tag questions with [`gsuite-addons`][stackoverflow-link]
 
