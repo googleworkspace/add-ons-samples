@@ -5,8 +5,8 @@
   "exceptionLogging": "STACKDRIVER",
   "oauthScopes": [
     "https://www.googleapis.com/auth/documents.currentonly",
-    "https://www.googleapis.com/auth/presentations", 
-    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/presentations.currentonly", 
+    "https://www.googleapis.com/auth/spreadsheets.currentonly",
     "https://www.googleapis.com/auth/script.external_request",
     "https://www.googleapis.com/auth/gmail.addons.execute",
     "https://www.googleapis.com/auth/gmail.addons.current.action.compose"
