@@ -113,7 +113,7 @@ function onGenerateImage(e) {
     case 'gmail':
       const html = `<img style="display: block" src="${imageUrl}"/>`;
       const updateAction = CardService.newUpdateDraftBodyAction()
-          .addUpdateContent(content, CardService.ContentType.MUTABLE_HTML)
+          .addUpdateContent(html, CardService.ContentType.MUTABLE_HTML)
           .setUpdateType(CardService.UpdateDraftBodyType.IN_PLACE_INSERT);
       return CardService.newUpdateDraftActionResponseBuilder()
           .setUpdateDraftBodyAction(updateAction)
