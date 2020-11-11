@@ -5,7 +5,7 @@
       {
         "userSymbol": "Drive",
         "serviceId": "drive",
-        "version": "v3"
+        "version": "v2"
       },
       {
         "userSymbol": "AdminDirectory",
