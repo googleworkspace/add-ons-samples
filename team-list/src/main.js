@@ -265,8 +265,8 @@ function buildSearchCard_(optError) {
       .setTitle('Search for people');
   var onSubmitAction = CardService.newAction()
       .setFunctionName('onSearch')
-      .setLoadIndicator(CardService.LoadIndicator.SPINNER)
-      .setPersistValues(true);
+      .setLoadIndicator(CardService.LoadIndicator.SPINNER);
+     /// .setPersistValues(true);
   var submitButton = CardService.newTextButton()
       .setText('Search')
       .setOnClickAction(onSubmitAction);
