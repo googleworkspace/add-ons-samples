@@ -99,8 +99,8 @@ This sample is licensed under the [Apache 2 license][license].
 [quickstart]:https://developers.google.com/gsuite/add-ons/cats-quickstart
 [node]:https://nodejs.org/en/
 [apps-script]: https://script.google.com
-[github-repo]: https://github.com/gsuitedevs/add-ons-samples
-[github-zip]: https://github.com/gsuitedevs/add-ons-samples/archive/master.zip
-[contributing]: https://github.com/gsuitedevs/add-ons-samples/blob/master/CONTRIBUTING.md
-[license]: https://github.com/gsuitedevs/add-ons-samples/blob/master/LICENSE
+[github-repo]: https://github.com/googleworkspace/add-ons-samples
+[github-zip]: https://github.com/googleworkspace/add-ons-samples/archive/master.zip
+[contributing]: https://github.com/googleworkspace/add-ons-samples/blob/master/CONTRIBUTING.md
+[license]: https://github.com/googleworkspace/add-ons-samples/blob/master/LICENSE
 [gmail]: https://mail.google.com/

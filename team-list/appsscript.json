@@ -49,11 +49,11 @@
       "universalActions": [
         {
           "label": "Feedback",
-          "openLink": "https://github.com/gsuitedevs/add-ons-samples/issues"
+          "openLink": "https://github.com/googleworkspace/add-ons-samples/issues"
         }
       ],
       "openLinkUrlPrefixes": [
-        "https://github.com/gsuitedevs/add-ons-samples/"
+        "https://github.com/googleworkspace/add-ons-samples/"
       ]
     },
     "gmail": {
