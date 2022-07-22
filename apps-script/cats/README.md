@@ -89,8 +89,8 @@ This sample is licensed under the [Apache 2 license][license].
 <!-- References -->
 [node]:https://nodejs.org/en/
 [github-repo]: https://github.com/googleworkspace/add-ons-samples
-[github-zip]: https://github.com/googleworkspace/add-ons-samples/archive/master.zip
-[contributing]: https://github.com/googleworkspace/add-ons-samples/blob/master/CONTRIBUTING.md
-[license]: https://github.com/googleworkspace/add-ons-samples/blob/master/LICENSE
+[github-zip]: https://github.com/googleworkspace/add-ons-samples/archive/main.zip
+[contributing]: https://github.com/googleworkspace/add-ons-samples/blob/main/CONTRIBUTING.md
+[license]: https://github.com/googleworkspace/add-ons-samples/blob/main/LICENSE
 [gmail]: https://mail.google.com/
 
