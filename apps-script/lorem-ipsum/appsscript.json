@@ -13,7 +13,8 @@
   ],
   "runtimeVersion": "V8",
   "urlFetchWhitelist": [
-    "https://api.qrserver.com/"
+    "https://api.qrserver.com/",
+    "https://loripsum.net/api/"
   ],
   "addOns": {
     "common": {
