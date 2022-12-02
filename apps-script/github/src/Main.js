@@ -94,7 +94,7 @@ function handleAuthorizationRequired() {
  * See the Apps Script OAuth2 Library documentation for more
  * information:
  *
- * https://github.com/googlesamples/apps-script-oauth2#1-create-the-oauth2-service
+ * https://github.com/googleworkspace/apps-script-oauth2#1-create-the-oauth2-service
  *
  * @param {Object} oauthResponse - The request data received from the
  *     callback function. Pass it to the service"s handleCallback() method
