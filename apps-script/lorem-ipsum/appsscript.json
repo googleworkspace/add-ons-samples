@@ -13,12 +13,12 @@
   ],
   "runtimeVersion": "V8",
   "urlFetchWhitelist": [
-    "https://api.qrserver.com/"
+    "https://loripsum.net/"
   ],
   "addOns": {
     "common": {
-      "name": "QR Code Generator",
-      "logoUrl": "https://github.com/google/material-design-icons/blob/master/png/communication/qr_code_2/materialicons/48dp/2x/baseline_qr_code_2_black_48dp.png?raw=true",
+      "name": "Lorem ipsum Generator",
+      "logoUrl": "https://github.com/google/material-design-icons/blob/master/png/editor/short_text/materialicons/48dp/2x/baseline_short_text_black_48dp.png?raw=true",
       "layoutProperties": {
         "primaryColor": "#2772ed"
       }
@@ -43,7 +43,7 @@
         "draftAccess": "NONE",
         "selectActions": [{
           "runFunction": "onHomepage",
-          "text": "Insert QR Code"
+          "text": "Insert generated text"
         }]
       }
     }
