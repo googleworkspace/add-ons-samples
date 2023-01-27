@@ -50,7 +50,6 @@
     "glob": "^8.0.3",
     "graphql": "github:graphql/graphql-js#npm",
     "rollup": "^3.2.5",
-    "rollup-plugin-strip-exports": "^2.0.7",
     "type-fest": "^3.2.0",
     "typescript": "^4.6.4"
   }

@@ -32,7 +32,7 @@ export function onOpen() {
 
 /**
  * Runs when the add-on is installed; calls onOpen() to ensure menu creation and
- * any other initializion work is done immediately.
+ * any other initialization work is done immediately.
  */
 export function onInstall() {
   onOpen();
@@ -61,7 +61,7 @@ export function showFunctionBuilder() {
 }
 
 /**
- * Fetch the currently seleccted for editing.
+ * Fetch the currently selected for editing.
  *
  * @return The location & value of the active cell.
  */

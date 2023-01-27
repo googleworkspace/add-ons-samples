@@ -38,7 +38,7 @@ For production:
 npm i
 ```
 
-1. Buid the app:
+1. Build the app:
 
 ```sh
 npm run build
@@ -71,7 +71,7 @@ The sample requires a GitHub OAuth App to run.
 * In the Apps Script project, set the script properties `CLIENT_ID` and `CLIENT_SECRET` with the respective values from GitHub.
 
 
-## Projecct structure
+## Project structure
 
 * `./pages/` contains client-side HTML, javascript, and CSS files.
 * `./server/` contains apps-script code executed server side
@@ -79,7 +79,7 @@ The sample requires a GitHub OAuth App to run.
 
 ## Rollup.js config
 
-While Apps Script supports modern Javascript syntax, the environment is different from Node.js and browser runtimes:
+While Apps Script supports modern Javascript syntax, the environment is different from Node.js and browser environments:
 
 * Modules are not supported. All script files exist in the same namespace.
 * Only HTML files can be served as web content. Scripts and CSS must be inlined or served from an external service.
@@ -98,8 +98,8 @@ For Apps Script code:
   globals should work correctly. Imported packages are inlined
   in the transpiled script.
 * The `rollup-plugin-strip-exports` plugin removes `export` statements
-  from entrypoints. This is combined with a custom plugin to
-  disable treeshaking in entry points as they no longer have exported
+  from entry points. This is combined with a custom plugin to
+  disable tree shaking in entry points as they no longer have exported
   symbols.
 
 For client-side HTML:

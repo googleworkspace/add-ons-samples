@@ -16,13 +16,13 @@
 
 /**
  * Wraps a call to an Apps Script function in a promise
- * intead of using callbacks. Also adds type constraints
+ * instead of using callbacks. Also adds type constraints
  * for arguments and return values.
  * 
  * @template {any[]} T - Argument types
  * @template {any} R - Return value type
  * @param {string} fn - Apps Script function name
- * @return {(...args:A) => Promise<R>} wraped function
+ * @return {(...args:A) => Promise<R>} wrapped function
  */
 export function asyncAppsScriptFunction<A extends google.script.Parameter[], R>(fn: string): (...args:A) => Promise<R> {
     if (google.script.run[fn] === undefined) {
