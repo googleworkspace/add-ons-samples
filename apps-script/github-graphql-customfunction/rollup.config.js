@@ -18,17 +18,16 @@ import { rollupPluginHTML as html } from '@web/rollup-plugin-html';
 import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import stripExports from 'rollup-plugin-strip-exports';
 import glob from 'glob';
 
 /**
- * Rollup plugin to disable treeshaking entry points.
+ * Rollup plugin to disable tree shaking entry points.
  * 
  * Used for apps script code in combination with the stripExports
  * plugin. Apps Script doesn't support import/export statement. 
  * While rollup + stripExports correctly removes them, the lack
  * of exported entry points results in an empty bundle. This
- * disables treeshaking on the entry point modules to preserve
+ * disables tree shaking on the entry point modules to preserve
  * the bundles.
  * 
  * @return plugin
@@ -39,11 +38,15 @@ const disableEntryPointTreeShaking = () => {
         async resolveId(source, importer, options) {
             if (!importer) {
                 const resolution = await this.resolve(source, importer, { skipSelf: true, ...options });
-                // let's not theeshake entry points, as we're not exporting anything in Apps Script files
+                // let's not tree shake entry points, as we're not exporting anything in Apps Script files
                 resolution.moduleSideEffects = 'no-treeshake';
                 return resolution;
             }
             return null;
+        },
+        async renderChunk(code) {
+            // Strip final export statement
+            return code.replace(/\nexport\s+\{.*\};/g,'');
         }
     }
 }
@@ -148,7 +151,6 @@ export default [
             nodeResolve(),
             commonjs(),
             typescript(),
-            stripExports(),
         ]
     }
 ];
