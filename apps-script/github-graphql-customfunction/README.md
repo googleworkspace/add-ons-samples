@@ -97,10 +97,8 @@ For Apps Script code:
   packages. Any package that does not rely on node or browser
   globals should work correctly. Imported packages are inlined
   in the transpiled script.
-* The `rollup-plugin-strip-exports` plugin removes `export` statements
-  from entry points. This is combined with a custom plugin to
-  disable tree shaking in entry points as they no longer have exported
-  symbols.
+* A custom plugin to disable tree shaking in entry points
+  and strip the final exports.
 
 For client-side HTML:
 
