@@ -1,0 +1,54 @@
+{
+  "timeZone": "America/New_York",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/workspace.linkpreview"
+  ],
+  "addOns": {
+    "common": {
+      "name": "Preview support cases",
+      "logoUrl": "https://developers.google.com/workspace/add-ons/images/link-icon.png",
+      "layoutProperties": {
+        "primaryColor": "#dd4b39"
+      }
+    },
+    "docs": {
+      "linkPreviewTriggers": [
+        {
+          "runFunction": "caseLinkPreview",
+          "patterns": [
+            {
+              "hostPattern": "example.com",
+              "pathPrefix": "support/cases"
+            },
+            {
+              "hostPattern": "*.example.com",
+              "pathPrefix": "cases"
+            },
+            {
+              "hostPattern": "cases.example.com"
+            }
+          ],
+          "labelText": "Support case",
+          "localizedLabelText": {
+            "es": "Caso de soporte"
+          }
+        },
+        {
+          "runFunction": "peopleLinkPreview",
+          "patterns": [
+            {
+              "hostPattern": "example.com",
+              "pathPrefix": "people"
+            }
+          ],
+          "labelText": "People",
+          "localizedLabelText": {
+            "es": "Personas"
+          }
+        }
+      ]
+    }
+  }
+}
