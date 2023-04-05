@@ -1,0 +1,16 @@
+{
+  "name": "preview-link",
+  "version": "1.0.0",
+  "description": "Preview support cases",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googleworkspace/add-ons-samples.git"
+  },
+  "author": "https://github.com/vinay-google",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/googleworkspace/add-ons-samples/issues"
+  },
+  "homepage": "https://github.com/googleworkspace/add-ons-samples#readme"
+}
