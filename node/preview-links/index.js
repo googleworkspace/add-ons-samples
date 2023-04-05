@@ -38,7 +38,7 @@ exports.createLinkPreview = (req, res) => {
  */
 function createCard(url) {
   const parsedUrl = UrlParser.parse(url);
-  if (parsedUrl.hostname !== 'www.example.com') {
+  if (parsedUrl.hostname === 'www.example.com') {
     if (parsedUrl.path.startsWith('/support/cases/')) {
       return caseLinkPreview(url);
     }
