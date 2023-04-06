@@ -34,6 +34,12 @@ import java.util.List;
 public class PreviewLink implements HttpFunction {
   private static final Gson gson = new Gson();
 
+  /**
+   * Responds to any HTTP request.
+   *
+   * @param request  An HTTP request context.
+   * @param response An HTTP response context.
+   */
   @Override
   public void service(HttpRequest request, HttpResponse response) throws Exception {
     JsonObject body = gson.fromJson(request.getReader(), JsonObject.class);
@@ -45,6 +51,12 @@ public class PreviewLink implements HttpFunction {
     response.getWriter().write(gson.toJson(createCard(url)));
   }
 
+  /**
+   * Creates a preview link card for either a case link or people link.
+   *
+   * @param url A URL.
+   * @return A case link preview card or a people link preview card.
+   */
   Card createCard(String url) throws MalformedURLException {
     URL parsedURL = new URL(url);
 
@@ -65,6 +77,12 @@ public class PreviewLink implements HttpFunction {
 
   // [START add_ons_case_preview_link]
 
+  /**
+   * Creates a case link preview card.
+   *
+   * @param url A URL.
+   * @return A case link preview card.
+   */
   Card caseLinkPreview(String url) {
     String[] segments = url.split("/");
     String caseId = segments[segments.length - 1];
@@ -90,6 +108,11 @@ public class PreviewLink implements HttpFunction {
   // [END add_ons_case_preview_link]
   // [START add_ons_people_preview_link]
 
+  /**
+   * Creates a people link preview card.
+   *
+   * @return A people link preview card.
+   */
   Card peopleLinkPreview() {
     CardHeader cardHeader = new CardHeader();
     cardHeader.setTitle("Rosario Cruz");
