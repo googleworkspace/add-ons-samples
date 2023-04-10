@@ -1,7 +1,7 @@
 # Preview Links with Smart Chips
 
-<!-- TODO: Replace guide link -->
-For more information on preview link with Smart Chips, please read the [guide]().
+For more information on preview link with Smart Chips, please read the
+[guide](https://developers.google.com/workspace/add-ons/guides/preview-links-smart-chips).
 
 This Cloud Function specifies link previews for two link preview triggers.
 Alternatively, you can specify a Cloud Function for each trigger.
