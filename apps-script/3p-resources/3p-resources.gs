@@ -30,13 +30,13 @@ function caseLinkPreview(event) {
 
     // Uses the event object to parse the URL and identify the case ID.
     const segments = event.docs.matchedUrl.url.split('/');
-    const caseId = segments[segments.length - 1];
+    const caseDetails = JSON.parse(decodeURIComponent(segments[segments.length - 1]));
 
     // Builds a preview card with the case ID, title, and description
     const caseHeader = CardService.newCardHeader()
-      .setTitle(`Case ${caseId}: Title bar is broken.`);
+      .setTitle(`Case: ${caseDetails.name}`);
     const caseDescription = CardService.newTextParagraph()
-      .setText('Customer can\'t view title on mobile device.');
+      .setText(caseDetails.description);
 
     // Returns the card.
     // Uses the text from the card's header for the title of the smart chip.
