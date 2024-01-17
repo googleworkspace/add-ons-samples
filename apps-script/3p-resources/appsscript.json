@@ -3,12 +3,13 @@
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
   "oauthScopes": [
-    "https://www.googleapis.com/auth/workspace.linkpreview"
+    "https://www.googleapis.com/auth/workspace.linkpreview",
+    "https://www.googleapis.com/auth/workspace.linkcreate"
   ],
   "addOns": {
     "common": {
-      "name": "Preview support cases",
-      "logoUrl": "https://developers.google.com/workspace/add-ons/images/link-icon.png",
+      "name": "Manage support cases",
+      "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png",
       "layoutProperties": {
         "primaryColor": "#dd4b39"
       }
@@ -49,6 +50,26 @@
             "es": "Personas"
           },
           "logoUrl": "https://developers.google.com/workspace/add-ons/images/person-icon.png"
+        }
+      ],
+      "createActionTriggers": [
+        {
+          "id": "createCase",
+          "labelText": "Create support case",
+          "localizedLabelText": {
+            "es": "Crear caso de soporte"
+          },
+          "runFunction": "createCaseInputCard",
+          "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png"
+        },
+        {
+          "id": "createHotlist",
+          "labelText": "Create a hotlist",
+          "localizedLabelText": {
+            "es": "Crear una hotlist"
+          },
+          "runFunction": "createHotlistInputCard",
+          "logoUrl": "https://developers.google.com/workspace/add-ons/images/link-icon.png"
         }
       ]
     }
