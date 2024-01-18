@@ -28,11 +28,11 @@ function caseLinkPreview(event) {
   // If the event object URL matches a specified pattern for support case links.
   if (event.docs.matchedUrl.url) {
 
-    // Uses the event object to parse the URL and identify the case ID.
+    // Uses the event object to parse the URL and identify the case details.
     const segments = event.docs.matchedUrl.url.split('/');
     const caseDetails = JSON.parse(decodeURIComponent(segments[segments.length - 1]));
 
-    // Builds a preview card with the case ID, title, and description
+    // Builds a preview card with the case name, and description
     const caseHeader = CardService.newCardHeader()
       .setTitle(`Case: ${caseDetails.name}`);
     const caseDescription = CardService.newTextParagraph()
@@ -254,7 +254,10 @@ function createLinkRenderAction(title, url) {
   return {
     renderActions: {
       action: {
-        links: [{ title, url }]
+        links: [{
+          title: title,
+          url: url
+        }]
       }
     }
   };

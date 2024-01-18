@@ -1,13 +1,16 @@
 {
-  "name": "preview-link",
+  "name": "3p-resources",
   "version": "1.0.0",
-  "description": "Preview support cases",
+  "description": "Manage support cases",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/googleworkspace/add-ons-samples.git"
   },
   "author": "https://github.com/vinay-google",
+  "contributors": [
+    "https://github.com/PierrickVoulet"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/googleworkspace/add-ons-samples/issues"

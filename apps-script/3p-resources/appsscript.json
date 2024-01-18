@@ -61,15 +61,6 @@
           },
           "runFunction": "createCaseInputCard",
           "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png"
-        },
-        {
-          "id": "createHotlist",
-          "labelText": "Create a hotlist",
-          "localizedLabelText": {
-            "es": "Crear una hotlist"
-          },
-          "runFunction": "createHotlistInputCard",
-          "logoUrl": "https://developers.google.com/workspace/add-ons/images/link-icon.png"
         }
       ]
     }
