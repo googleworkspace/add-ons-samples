@@ -34,7 +34,7 @@ function caseLinkPreview(event) {
 
     // Builds a preview card with the case name, and description
     const caseHeader = CardService.newCardHeader()
-      .setTitle(`Case: ${caseDetails.name}`);
+      .setTitle(`Case ${caseDetails.name}`);
     const caseDescription = CardService.newTextParagraph()
       .setText(caseDetails.description);
 
@@ -196,7 +196,7 @@ function submitCaseCreationForm(event) {
   if (Object.keys(errors).length > 0) {
     return createCaseInputCard(event, errors, /* isUpdate= */ true);
   } else {
-    const title = caseDetails.name;
+    const title = `Case ${caseDetails.name}`;
     const url = 'https://example.com/support/cases/' + encodeURIComponent(JSON.stringify(caseDetails));
     return createLinkRenderAction(title, url);
   }
