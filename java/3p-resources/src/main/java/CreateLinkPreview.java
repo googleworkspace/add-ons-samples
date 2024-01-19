@@ -27,15 +27,15 @@ import com.google.cloud.functions.HttpRequest;
 import com.google.cloud.functions.HttpResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.List;
 
-public class PreviewLink implements HttpFunction {
+public class CreateLinkPreview implements HttpFunction {
   private static final Gson gson = new Gson();
 
   /**
-   * Responds to any HTTP request.
+   * Responds to any HTTP request related to link previews.
    *
    * @param request  An HTTP request context.
    * @param response An HTTP response context.
@@ -47,32 +47,21 @@ public class PreviewLink implements HttpFunction {
         .getAsJsonObject("matchedUrl")
         .get("url")
         .getAsString();
-
-    response.getWriter().write(gson.toJson(createCard(url)));
-  }
-
-  /**
-   * Creates a preview link card for either a case link or people link.
-   *
-   * @param url A URL.
-   * @return A case link preview card or a people link preview card.
-   */
-  Card createCard(String url) throws MalformedURLException {
     URL parsedURL = new URL(url);
+    if ("example.com".equals(parsedURL.getHost())) {
+      if (parsedURL.getPath().startsWith("/support/cases/")) {
+        response.getWriter().write(gson.toJson(caseLinkPreview(url)));
+        return;
+      }
 
-    if (!parsedURL.getHost().equals("www.example.com")) {
-      return new Card();
+      if (parsedURL.getPath().startsWith("/people/")) {
+        response.getWriter().write(gson.toJson(peopleLinkPreview()));
+        return;
+      }
     }
 
-    if (parsedURL.getPath().startsWith("/support/cases/")) {
-      return caseLinkPreview(url);
-    }
-
-    if (parsedURL.getPath().startsWith("/people/")) {
-      return peopleLinkPreview();
-    }
-
-    return new Card();
+    // TODO Change for the Action type with link preview
+    response.getWriter().write(gson.toJson(new Card()));
   }
 
   // [START add_ons_case_preview_link]
@@ -85,13 +74,13 @@ public class PreviewLink implements HttpFunction {
    */
   Card caseLinkPreview(String url) {
     String[] segments = url.split("/");
-    String caseId = segments[segments.length - 1];
+    JsonObject caseDetails = gson.fromJson(URLDecoder.decode(segments[segments.length - 1].replace("+", "%2B"), "UTF-8").replace("%2B", "+"), JsonObject.class);
 
     CardHeader cardHeader = new CardHeader();
-    cardHeader.setTitle(String.format("Case %s: Title bar is broken.", caseId));
+    cardHeader.setTitle(String.format("Case %s", caseDetails.get("name")));
 
     TextParagraph textParagraph = new TextParagraph();
-    textParagraph.setText("Customer can't view title on mobile device.");
+    textParagraph.setText(caseDetails.get("description").toString());
 
     WidgetMarkup widget = new WidgetMarkup();
     widget.setTextParagraph(textParagraph);
@@ -102,6 +91,7 @@ public class PreviewLink implements HttpFunction {
     card.setHeader(cardHeader);
     card.setSections(List.of(section));
 
+    // TODO Change for the Action type with link preview
     return card;
   }
 
@@ -138,6 +128,7 @@ public class PreviewLink implements HttpFunction {
     card.setHeader(cardHeader);
     card.setSections(List.of(section));
 
+    // TODO Change for the Action type with link preview
     return card;
   }
 

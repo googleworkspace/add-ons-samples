@@ -43,6 +43,7 @@ limitations under the License.
         <version>2.9.1</version>
     </dependency>
 
+    <!-- TODO: Replace this with Add-Ons resource -->
     <dependency>
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-chat</artifactId>
