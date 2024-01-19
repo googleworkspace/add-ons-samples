@@ -223,7 +223,7 @@ function validateFormInputs(caseDetails) {
   if (caseDetails.priority === undefined) {
     errors.priority = 'You must provide a priority';
   }
-  if (caseDetails.impact && caseDetails.priority === 'P2' || caseDetails.impact && caseDetails.priority === 'P3') {
+  if (caseDetails.impact && !(['P0', 'P1']).includes(caseDetails.priority)) {
     errors.impact = 'If an issue blocks a critical customer operation, priority must be P0 or P1';
   }
 

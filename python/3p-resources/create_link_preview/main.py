@@ -16,9 +16,9 @@
 from typing import Any, Mapping
 from urllib.parse import urlparse, unquote
 
+import json
 import flask
 import functions_framework
-import json
 
 
 @functions_framework.http
@@ -57,7 +57,6 @@ def case_link_preview(url):
     # Parses the URL to identify the case details.
     segments = url.split("/")
     case_details = json.loads(unquote(segments[len(segments) - 1]));
-    print(case_details)
 
     # Returns the card.
     # Uses the text from the card's header for the title of the smart chip.
