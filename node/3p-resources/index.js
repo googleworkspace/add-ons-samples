@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ exports.createLinkPreview = (req, res) => {
  */
 function caseLinkPreview(url) {
 
-  // Parses the URL to identify the case ID.
+  // Parses the URL to identify the case details.
   const segments = url.split('/');
   const caseDetails = JSON.parse(decodeURIComponent(segments[segments.length - 1]));
 
@@ -120,8 +120,10 @@ function peopleLinkPreview() {
   };
 }
 
+// [END add_ons_people_preview_link]
+// [END add_ons_preview_link]
+
 // [START add_ons_3p_resources]
-// [START add_ons_3p_resources_create_case_card]
 
 /**
  * Responds to any HTTP request related to 3P resource creations.
@@ -137,6 +139,8 @@ exports.create3pResources = (req, res) => {
     res.json(createCaseInputCard(event));
   }
 };
+
+// [START add_ons_3p_resources_create_case_card]
 
 /**
  * Produces a support case creation form.

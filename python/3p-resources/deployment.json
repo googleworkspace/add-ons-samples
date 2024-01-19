@@ -1,11 +1,12 @@
 {
   "oauthScopes": [
-    "https://www.googleapis.com/auth/workspace.linkpreview"
+    "https://www.googleapis.com/auth/workspace.linkpreview",
+    "https://www.googleapis.com/auth/workspace.linkcreate"
   ],
   "addOns": {
     "common": {
-      "name": "Preview support cases",
-      "logoUrl": "https://developers.google.com/workspace/add-ons/images/link-icon.png",
+      "name": "Manage support cases",
+      "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png",
       "layoutProperties": {
         "primaryColor": "#dd4b39"
       }
@@ -13,7 +14,7 @@
     "docs": {
       "linkPreviewTriggers": [
         {
-          "runFunction": "$URL",
+          "runFunction": "$URL1",
           "patterns": [
             {
               "hostPattern": "example.com",
@@ -34,7 +35,7 @@
           "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png"
         },
         {
-          "runFunction": "$URL",
+          "runFunction": "$URL1",
           "patterns": [
             {
               "hostPattern": "example.com",
@@ -46,6 +47,17 @@
             "es": "Personas"
           },
           "logoUrl": "https://developers.google.com/workspace/add-ons/images/person-icon.png"
+        }
+],
+      "createActionTriggers": [
+        {
+          "id": "createCase",
+          "labelText": "Create support case",
+          "localizedLabelText": {
+            "es": "Crear caso de soporte"
+          },
+          "runFunction": "$URL2",
+          "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png"
         }
       ]
     }
