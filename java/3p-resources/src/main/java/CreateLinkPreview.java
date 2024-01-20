@@ -19,14 +19,13 @@ import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
 import com.google.cloud.functions.HttpResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class CreateLinkPreview implements HttpFunction {
   private static final Gson gson = new Gson();
@@ -68,35 +67,43 @@ public class CreateLinkPreview implements HttpFunction {
    * @param url A URL.
    * @return A case link preview card.
    */
-  Map caseLinkPreview(String url) throws UnsupportedEncodingException {
+  JsonObject caseLinkPreview(String url) throws UnsupportedEncodingException {
     String[] segments = url.split("/");
     JsonObject caseDetails = gson.fromJson(URLDecoder.decode(segments[segments.length - 1].replace("+", "%2B"), "UTF-8").replace("%2B", "+"), JsonObject.class);
+    String caseName = String.format("Case %s", caseDetails.get("name").getAsString());
+    String caseDescription = caseDetails.get("description").getAsString();
 
-    Map cardHeader = new HashMap();
-    cardHeader.put("title", String.format("Case %s", caseDetails.get("name").getAsString()));
+    JsonObject cardHeader = new JsonObject();
+    cardHeader.add("title", new JsonPrimitive(caseName));
 
-    Map textParagraph = new HashMap();
-    textParagraph.put("text", caseDetails.get("description").getAsString());
+    JsonObject textParagraph = new JsonObject();
+    textParagraph.add("text", new JsonPrimitive(caseDescription));
 
-    Map widget = new HashMap();
-    widget.put("textParagraph", textParagraph);
+    JsonObject widget = new JsonObject();
+    widget.add("textParagraph", textParagraph);
 
-    Map section = new HashMap();
-    section.put("widgets", List.of(widget));
+    JsonArray widgets = new JsonArray();
+    widgets.add(widget);
 
-    Map previewCard = new HashMap();
-    previewCard.put("header", cardHeader);
-    previewCard.put("sections", List.of(section));
+    JsonObject section = new JsonObject();
+    section.add("widgets", widgets);
 
-    Map linkPreview = new HashMap();
-    linkPreview.put("title", String.format("Case %s", caseDetails.get("name").getAsString()));
-    linkPreview.put("previewCard", previewCard);
+    JsonArray sections = new JsonArray();
+    sections.add(section);
 
-    Map action = new HashMap();
-    action.put("linkPreview", linkPreview);
+    JsonObject previewCard = new JsonObject();
+    previewCard.add("header", cardHeader);
+    previewCard.add("sections", sections);
 
-    Map renderActions = new HashMap();
-    renderActions.put("action", action);
+    JsonObject linkPreview = new JsonObject();
+    linkPreview.add("title", new JsonPrimitive(caseName));
+    linkPreview.add("previewCard", previewCard);
+
+    JsonObject action = new JsonObject();
+    action.add("linkPreview", linkPreview);
+
+    JsonObject renderActions = new JsonObject();
+    renderActions.add("action", action);
 
     return renderActions;
   }
@@ -109,43 +116,50 @@ public class CreateLinkPreview implements HttpFunction {
    *
    * @return A people link preview card.
    */
-  Map peopleLinkPreview() {
-    Map cardHeader = new HashMap();
-    cardHeader.put("title", "Rosario Cruz");
+  JsonObject peopleLinkPreview() {
+    JsonObject cardHeader = new JsonObject();
+    cardHeader.add("title", new JsonPrimitive("Rosario Cruz"));
 
-    Map image = new HashMap();
-    image.put("imageUrl", "https://developers.google.com/workspace/add-ons/images/employee-profile.png");
+    JsonObject image = new JsonObject();
+    image.add("imageUrl", new JsonPrimitive("https://developers.google.com/workspace/add-ons/images/employee-profile.png"));
 
-    Map imageWidget = new HashMap();
-    imageWidget.put("image", image);
+    JsonObject imageWidget = new JsonObject();
+    imageWidget.add("image", image);
 
-    Map startIcon = new HashMap();
-    startIcon.put("knownIcon", "EMAIL");
+    JsonObject startIcon = new JsonObject();
+    startIcon.add("knownIcon", new JsonPrimitive("EMAIL"));
 
-    Map decoratedText = new HashMap();
-    decoratedText.put("startIcon", startIcon);
-    decoratedText.put("text", "rosario@example.com");
-    decoratedText.put("bottomLabel", "Case Manager");
+    JsonObject decoratedText = new JsonObject();
+    decoratedText.add("startIcon", startIcon);
+    decoratedText.add("text", new JsonPrimitive("rosario@example.com"));
+    decoratedText.add("bottomLabel", new JsonPrimitive("Case Manager"));
 
-    Map decoratedTextWidget = new HashMap();
-    decoratedTextWidget.put("decoratedText", decoratedText);
+    JsonObject decoratedTextWidget = new JsonObject();
+    decoratedTextWidget.add("decoratedText", decoratedText);
 
-    Map section = new HashMap();
-    section.put("widgets", List.of(imageWidget, decoratedTextWidget));
+    JsonArray widgets = new JsonArray();
+    widgets.add(imageWidget);
+    widgets.add(decoratedTextWidget);
 
-    Map previewCard = new HashMap();
-    previewCard.put("header", cardHeader);
-    previewCard.put("sections", List.of(section));
+    JsonObject section = new JsonObject();
+    section.add("widgets", widgets);
 
-    Map linkPreview = new HashMap();
-    linkPreview.put("title", "Rosario Cruz");
-    linkPreview.put("previewCard", previewCard);
+    JsonArray sections = new JsonArray();
+    sections.add(section);
 
-    Map action = new HashMap();
-    action.put("linkPreview", linkPreview);
+    JsonObject previewCard = new JsonObject();
+    previewCard.add("header", cardHeader);
+    previewCard.add("sections", sections);
 
-    Map renderActions = new HashMap();
-    renderActions.put("action", action);
+    JsonObject linkPreview = new JsonObject();
+    linkPreview.add("title", new JsonPrimitive("Rosario Cruz"));
+    linkPreview.add("previewCard", previewCard);
+
+    JsonObject action = new JsonObject();
+    action.add("linkPreview", linkPreview);
+
+    JsonObject renderActions = new JsonObject();
+    renderActions.add("action", action);
 
     return renderActions;
   }

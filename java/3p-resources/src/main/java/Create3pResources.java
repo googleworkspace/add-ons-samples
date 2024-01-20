@@ -17,17 +17,17 @@
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
 import com.google.cloud.functions.HttpResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class Create3pResources implements HttpFunction {
   private static final Gson gson = new Gson();
@@ -46,7 +46,7 @@ public class Create3pResources implements HttpFunction {
       response.getWriter().write(gson.toJson(submitCaseCreationForm(event)));
       return;
     } else {
-      response.getWriter().write(gson.toJson(createCaseInputCard(event, new HashMap(), false)));
+      response.getWriter().write(gson.toJson(createCaseInputCard(event, new HashMap<String, String>(), false)));
       return;
     }
   }
@@ -61,102 +61,102 @@ public class Create3pResources implements HttpFunction {
    * @param isUpdate Whether to return the form as an updateCard navigation.
    * @return A support case creation form card.
    */
-  Map createCaseInputCard(JsonObject event, Map errors, boolean isUpdate) {
+  JsonObject createCaseInputCard(JsonObject event, Map<String, String> errors, boolean isUpdate) {
 
-    Map cardHeader1 = new HashMap();
-    cardHeader1.put("title", "Create a support case");
+    JsonObject cardHeader1 = new JsonObject();
+    cardHeader1.add("title", new JsonPrimitive("Create a support case"));
 
-    Map cardSection1TextInput1 = new HashMap();
-    cardSection1TextInput1.put("name", "name");
-    cardSection1TextInput1.put("label", "Name");
+    JsonObject cardSection1TextInput1 = new JsonObject();
+    cardSection1TextInput1.add("name", new JsonPrimitive("name"));
+    cardSection1TextInput1.add("label", new JsonPrimitive("Name"));
 
-    Map cardSection1TextInput1Widget = new HashMap();
-    cardSection1TextInput1Widget.put("textInput", cardSection1TextInput1);
+    JsonObject cardSection1TextInput1Widget = new JsonObject();
+    cardSection1TextInput1Widget.add("textInput", cardSection1TextInput1);
 
-    Map cardSection1TextInput2 = new HashMap();
-    cardSection1TextInput2.put("name", "description");
-    cardSection1TextInput2.put("label", "Description");
-    cardSection1TextInput2.put("type", "MULTIPLE_LINE");
+    JsonObject cardSection1TextInput2 = new JsonObject();
+    cardSection1TextInput2.add("name", new JsonPrimitive("description"));
+    cardSection1TextInput2.add("label", new JsonPrimitive("Description"));
+    cardSection1TextInput2.add("type", new JsonPrimitive("MULTIPLE_LINE"));
 
-    Map cardSection1TextInput2Widget = new HashMap();
-    cardSection1TextInput2Widget.put("textInput", cardSection1TextInput2);
+    JsonObject cardSection1TextInput2Widget = new JsonObject();
+    cardSection1TextInput2Widget.add("textInput", cardSection1TextInput2);
 
-    Map cardSection1SelectionInput1ItemsItem1 = new HashMap();
-    cardSection1SelectionInput1ItemsItem1.put("text", "P0");
-    cardSection1SelectionInput1ItemsItem1.put("value", "P0");
+    JsonObject cardSection1SelectionInput1ItemsItem1 = new JsonObject();
+    cardSection1SelectionInput1ItemsItem1.add("text", new JsonPrimitive("P0"));
+    cardSection1SelectionInput1ItemsItem1.add("value", new JsonPrimitive("P0"));
 
-    Map cardSection1SelectionInput1ItemsItem2 = new HashMap();
-    cardSection1SelectionInput1ItemsItem2.put("text", "P1");
-    cardSection1SelectionInput1ItemsItem2.put("value", "P1");
+    JsonObject cardSection1SelectionInput1ItemsItem2 = new JsonObject();
+    cardSection1SelectionInput1ItemsItem2.add("text", new JsonPrimitive("P1"));
+    cardSection1SelectionInput1ItemsItem2.add("value", new JsonPrimitive("P1"));
 
-    Map cardSection1SelectionInput1ItemsItem3 = new HashMap();
-    cardSection1SelectionInput1ItemsItem3.put("text", "P2");
-    cardSection1SelectionInput1ItemsItem3.put("value", "P2");
+    JsonObject cardSection1SelectionInput1ItemsItem3 = new JsonObject();
+    cardSection1SelectionInput1ItemsItem3.add("text", new JsonPrimitive("P2"));
+    cardSection1SelectionInput1ItemsItem3.add("value", new JsonPrimitive("P2"));
 
-    Map cardSection1SelectionInput1ItemsItem4 = new HashMap();
-    cardSection1SelectionInput1ItemsItem4.put("text", "P3");
-    cardSection1SelectionInput1ItemsItem4.put("value", "P3");
+    JsonObject cardSection1SelectionInput1ItemsItem4 = new JsonObject();
+    cardSection1SelectionInput1ItemsItem4.add("text", new JsonPrimitive("P3"));
+    cardSection1SelectionInput1ItemsItem4.add("value", new JsonPrimitive("P3"));
 
-    List cardSection1SelectionInput1Items = new ArrayList();
+    JsonArray cardSection1SelectionInput1Items = new JsonArray();
     cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem1);
     cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem2);
     cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem3);
     cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem4);
 
-    Map cardSection1SelectionInput1 = new HashMap();
-    cardSection1SelectionInput1.put("name", "priority");
-    cardSection1SelectionInput1.put("label", "Priority");
-    cardSection1SelectionInput1.put("type", "DROPDOWN");
-    cardSection1SelectionInput1.put("items", cardSection1SelectionInput1Items);
+    JsonObject cardSection1SelectionInput1 = new JsonObject();
+    cardSection1SelectionInput1.add("name", new JsonPrimitive("priority"));
+    cardSection1SelectionInput1.add("label", new JsonPrimitive("Priority"));
+    cardSection1SelectionInput1.add("type", new JsonPrimitive("DROPDOWN"));
+    cardSection1SelectionInput1.add("items", cardSection1SelectionInput1Items);
 
-    Map cardSection1SelectionInput1Widget = new HashMap();
-    cardSection1SelectionInput1Widget.put("selectionInput", cardSection1SelectionInput1);
+    JsonObject cardSection1SelectionInput1Widget = new JsonObject();
+    cardSection1SelectionInput1Widget.add("selectionInput", cardSection1SelectionInput1);
 
-    Map cardSection1SelectionInput2ItemsItem1 = new HashMap();
-    cardSection1SelectionInput2ItemsItem1.put("text", "Blocks a critical customer operation");
-    cardSection1SelectionInput2ItemsItem1.put("value", "Blocks a critical customer operation");
-
-    List cardSection1SelectionInput2Items = new ArrayList();
+    JsonObject cardSection1SelectionInput2ItemsItem1 = new JsonObject();
+    cardSection1SelectionInput2ItemsItem1.add("text", new JsonPrimitive("Blocks a critical customer operation"));
+    cardSection1SelectionInput2ItemsItem1.add("value", new JsonPrimitive("Blocks a critical customer operation"));
+    
+    JsonArray cardSection1SelectionInput2Items = new JsonArray();
     cardSection1SelectionInput2Items.add(cardSection1SelectionInput2ItemsItem1);
 
-    Map cardSection1SelectionInput2 = new HashMap();
-    cardSection1SelectionInput2.put("name", "impact");
-    cardSection1SelectionInput2.put("label", "Impact");
-    cardSection1SelectionInput2.put("items", cardSection1SelectionInput2Items);
+    JsonObject cardSection1SelectionInput2 = new JsonObject();
+    cardSection1SelectionInput2.add("name", new JsonPrimitive("impact"));
+    cardSection1SelectionInput2.add("label", new JsonPrimitive("Impact"));
+    cardSection1SelectionInput2.add("items", cardSection1SelectionInput2Items);
 
-    Map cardSection1SelectionInput2Widget = new HashMap();
-    cardSection1SelectionInput2Widget.put("selectionInput", cardSection1SelectionInput2);
+    JsonObject cardSection1SelectionInput2Widget = new JsonObject();
+    cardSection1SelectionInput2Widget.add("selectionInput", cardSection1SelectionInput2);
 
-    Map cardSection1ButtonList1Button1Action1ParametersParameter1 = new HashMap();
-    cardSection1ButtonList1Button1Action1ParametersParameter1.put("key", "submitCaseCreationForm");
-    cardSection1ButtonList1Button1Action1ParametersParameter1.put("value", true);
+    JsonObject cardSection1ButtonList1Button1Action1ParametersParameter1 = new JsonObject();
+    cardSection1ButtonList1Button1Action1ParametersParameter1.add("key", new JsonPrimitive("submitCaseCreationForm"));
+    cardSection1ButtonList1Button1Action1ParametersParameter1.add("value", new JsonPrimitive(true));
 
-    List cardSection1ButtonList1Button1Action1Parameters = new ArrayList();
+    JsonArray cardSection1ButtonList1Button1Action1Parameters = new JsonArray();
     cardSection1ButtonList1Button1Action1Parameters.add(cardSection1ButtonList1Button1Action1ParametersParameter1);
 
-    Map cardSection1ButtonList1Button1Action1 = new HashMap();
-    cardSection1ButtonList1Button1Action1.put("function", System.getenv().get("URL"));
-    cardSection1ButtonList1Button1Action1.put("parameters", cardSection1ButtonList1Button1Action1Parameters);
-    cardSection1ButtonList1Button1Action1.put("persistValues", true);
+    JsonObject cardSection1ButtonList1Button1Action1 = new JsonObject();
+    cardSection1ButtonList1Button1Action1.add("function", new JsonPrimitive(System.getenv().get("URL")));
+    cardSection1ButtonList1Button1Action1.add("parameters", cardSection1ButtonList1Button1Action1Parameters);
+    cardSection1ButtonList1Button1Action1.add("persistValues", new JsonPrimitive(true));
 
-    Map cardSection1ButtonList1Button1OnCLick = new HashMap();
-    cardSection1ButtonList1Button1OnCLick.put("action", cardSection1ButtonList1Button1Action1);
+    JsonObject cardSection1ButtonList1Button1OnCLick = new JsonObject();
+    cardSection1ButtonList1Button1OnCLick.add("action", cardSection1ButtonList1Button1Action1);
 
-    Map cardSection1ButtonList1Button1 = new HashMap();
-    cardSection1ButtonList1Button1.put("text", "Create");
-    cardSection1ButtonList1Button1.put("onClick", cardSection1ButtonList1Button1OnCLick);
+    JsonObject cardSection1ButtonList1Button1 = new JsonObject();
+    cardSection1ButtonList1Button1.add("text", new JsonPrimitive("Create"));
+    cardSection1ButtonList1Button1.add("onClick", cardSection1ButtonList1Button1OnCLick);
     
-    List cardSection1ButtonList1Buttons = new ArrayList();
+    JsonArray cardSection1ButtonList1Buttons = new JsonArray();
     cardSection1ButtonList1Buttons.add(cardSection1ButtonList1Button1);
 
-    Map cardSection1ButtonList1 = new HashMap();
-    cardSection1ButtonList1.put("buttons", cardSection1ButtonList1Buttons);
+    JsonObject cardSection1ButtonList1 = new JsonObject();
+    cardSection1ButtonList1.add("buttons", cardSection1ButtonList1Buttons);
 
-    Map cardSection1ButtonList1Widget = new HashMap();
-    cardSection1ButtonList1Widget.put("buttonList", cardSection1ButtonList1);
+    JsonObject cardSection1ButtonList1Widget = new JsonObject();
+    cardSection1ButtonList1Widget.add("buttonList", cardSection1ButtonList1);
 
     // Builds the creation form and adds error text for invalid inputs.
-    List cardSection1 = new ArrayList();
+    JsonArray cardSection1 = new JsonArray();
     if (errors.containsKey("name")) {
       cardSection1.add(createErrorTextParagraph(errors.get("name").toString()));
     }
@@ -176,38 +176,38 @@ public class Create3pResources implements HttpFunction {
     cardSection1.add(cardSection1SelectionInput2Widget);
     cardSection1.add(cardSection1ButtonList1Widget);
 
-    Map cardSection1Widgets = new HashMap();
-    cardSection1Widgets.put("widgets", cardSection1);
+    JsonObject cardSection1Widgets = new JsonObject();
+    cardSection1Widgets.add("widgets", cardSection1);
 
-    List sections = new ArrayList();
+    JsonArray sections = new JsonArray();
     sections.add(cardSection1Widgets);
 
-    Map card = new HashMap();
-    card.put("header", cardHeader1);
-    card.put("sections", sections);
+    JsonObject card = new JsonObject();
+    card.add("header", cardHeader1);
+    card.add("sections", sections);
     
-    Map navigation = new HashMap();
+    JsonObject navigation = new JsonObject();
     if (isUpdate) {
-      navigation.put("updateCard", card);
+      navigation.add("updateCard", card);
     } else {
-      navigation.put("pushCard", card);
+      navigation.add("pushCard", card);
     }
 
-    List navigations = new ArrayList();
+    JsonArray navigations = new JsonArray();
     navigations.add(navigation);
 
-    Map action = new HashMap();
-    action.put("navigations", navigations);
+    JsonObject action = new JsonObject();
+    action.add("navigations", navigations);
 
-    Map renderActions = new HashMap();
-    renderActions.put("action", action);
+    JsonObject renderActions = new JsonObject();
+    renderActions.add("action", action);
 
     if (!isUpdate) {
       return renderActions;
     }
 
-    Map update = new HashMap();
-    update.put("renderActions", renderActions);
+    JsonObject update = new JsonObject();
+    update.add("renderActions", renderActions);
 
     return update;
   }
@@ -223,9 +223,9 @@ public class Create3pResources implements HttpFunction {
    * @param event The event object containing form inputs.
    * @return The navigation action.
    */
-  Map submitCaseCreationForm(JsonObject event) throws UnsupportedEncodingException{
+  JsonObject submitCaseCreationForm(JsonObject event) throws UnsupportedEncodingException{
     JsonObject formInputs = event.getAsJsonObject("commonEventObject").getAsJsonObject("formInputs");
-    Map caseDetails = new HashMap();
+    Map<String, String> caseDetails = new HashMap<String, String>();
     if (formInputs != null) {
       if (formInputs.has("name")) {
         caseDetails.put("name", formInputs.getAsJsonObject("name").getAsJsonObject("stringInputs").getAsJsonArray("value").get(0).getAsString());
@@ -241,7 +241,7 @@ public class Create3pResources implements HttpFunction {
       }
     }
 
-    Map errors = validateFormInputs(caseDetails);
+    Map<String, String> errors = validateFormInputs(caseDetails);
     if (errors.size() > 0) {
       return createCaseInputCard(event, errors, /* isUpdate= */ true);
     } else {
@@ -261,8 +261,8 @@ public class Create3pResources implements HttpFunction {
    * @return A map from field name to error message. An empty object
    *     represents a valid form submission.
    */
-  Map validateFormInputs(Map caseDetails) {
-    Map errors = new HashMap();
+  Map<String, String> validateFormInputs(Map<String, String> caseDetails) {
+    Map<String, String> errors = new HashMap<String, String>();
     if (!caseDetails.containsKey("name")) {
       errors.put("name", "You must provide a name");
     }
@@ -285,12 +285,12 @@ public class Create3pResources implements HttpFunction {
    * @param errorMessage A description of the invalid input.
    * @return A text paragraph.
    */
-  Map createErrorTextParagraph(String errorMessage) {
-    Map textParagraph = new HashMap();
-    textParagraph.put("text", "<font color=\"#BA0300\"><b>Error:</b> " + errorMessage + "</font>");
+  JsonObject createErrorTextParagraph(String errorMessage) {
+    JsonObject textParagraph = new JsonObject();
+    textParagraph.add("text", new JsonPrimitive("<font color=\"#BA0300\"><b>Error:</b> " + errorMessage + "</font>"));
 
-    Map textParagraphWidget = new HashMap();
-    textParagraphWidget.put("textParagraph", textParagraph);
+    JsonObject textParagraphWidget = new JsonObject();
+    textParagraphWidget.add("textParagraph", textParagraph);
 
     return textParagraphWidget;
   }
@@ -304,22 +304,22 @@ public class Create3pResources implements HttpFunction {
    * @param url The URL of the link to insert.
    * @return The render action
    */
-  Map createLinkRenderAction(String title, String url) {
-    Map link1 = new HashMap();
-    link1.put("title", title);
-    link1.put("url", url);
+  JsonObject createLinkRenderAction(String title, String url) {
+    JsonObject link1 = new JsonObject();
+    link1.add("title", new JsonPrimitive(title));
+    link1.add("url", new JsonPrimitive(url));
 
-    List links = new ArrayList();
+    JsonArray links = new JsonArray();
     links.add(link1);
 
-    Map action = new HashMap();
-    action.put("links", links);
+    JsonObject action = new JsonObject();
+    action.add("links", links);
 
-    Map renderActions = new HashMap();
-    renderActions.put("action", action);
+    JsonObject renderActions = new JsonObject();
+    renderActions.add("action", action);
 
-    Map linkRenderAction = new HashMap();
-    linkRenderAction.put("renderActions", renderActions);
+    JsonObject linkRenderAction = new JsonObject();
+    linkRenderAction.add("renderActions", renderActions);
 
     return linkRenderAction;
   }
