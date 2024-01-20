@@ -22,21 +22,19 @@
 * @param {!Object} event
 * @return {!Card}
 */
-// Creates a function that passes an event object as a parameter.
 function caseLinkPreview(event) {
 
   // If the event object URL matches a specified pattern for support case links.
   if (event.docs.matchedUrl.url) {
 
     // Uses the event object to parse the URL and identify the case details.
-    const segments = event.docs.matchedUrl.url.split('/');
-    const caseDetails = JSON.parse(decodeURIComponent(segments[segments.length - 1]));
+    const caseDetails = parseQuery(event.docs.matchedUrl.url);
 
     // Builds a preview card with the case name, and description
     const caseHeader = CardService.newCardHeader()
-      .setTitle(`Case ${caseDetails.name}`);
+      .setTitle(`Case ${caseDetails["name"][0]}`);
     const caseDescription = CardService.newTextParagraph()
-      .setText(caseDetails.description);
+      .setText(caseDetails["description"][0]);
 
     // Returns the card.
     // Uses the text from the card's header for the title of the smart chip.
@@ -45,6 +43,32 @@ function caseLinkPreview(event) {
       .addSection(CardService.newCardSection().addWidget(caseDescription))
       .build();
   }
+}
+
+/**
+* Extract the URL parameters from the given URL.
+*
+* @param {!string} url
+* @return {!Map} A map of URL parameters.
+*/
+function parseQuery(url) {
+  var query = url.split("?")[1];
+  if (query) {
+    return query.split("&")
+    .reduce(function(o, e) {
+      var temp = e.split("=");
+      var key = temp[0].trim();
+      var value = temp[1].trim();
+      value = isNaN(value) ? value : Number(value);
+      if (o[key]) {
+        o[key].push(value);
+      } else {
+        o[key] = [value];
+      }
+      return o;
+    }, {});
+  }
+  return null;
 }
 
 // [END add_ons_case_preview_link]
@@ -197,7 +221,7 @@ function submitCaseCreationForm(event) {
     return createCaseInputCard(event, errors, /* isUpdate= */ true);
   } else {
     const title = `Case ${caseDetails.name}`;
-    const url = 'https://example.com/support/cases/' + encodeURIComponent(JSON.stringify(caseDetails));
+    const url = 'https://example.com/support/cases/?' + Object.entries(caseDetails).flatMap(([k, v]) => Array.isArray(v) ? v.map(e => `${k}=${encodeURIComponent(e)}`) : `${k}=${encodeURIComponent(v)}`).join("&");
     return createLinkRenderAction(title, url);
   }
 }
