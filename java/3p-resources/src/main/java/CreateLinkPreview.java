@@ -15,21 +15,18 @@
  */
 // [START add_ons_preview_link]
 
-import com.google.api.services.chat.v1.model.Card;
-import com.google.api.services.chat.v1.model.CardHeader;
-import com.google.api.services.chat.v1.model.Image;
-import com.google.api.services.chat.v1.model.KeyValue;
-import com.google.api.services.chat.v1.model.Section;
-import com.google.api.services.chat.v1.model.TextParagraph;
-import com.google.api.services.chat.v1.model.WidgetMarkup;
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
 import com.google.cloud.functions.HttpResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CreateLinkPreview implements HttpFunction {
   private static final Gson gson = new Gson();
@@ -42,8 +39,8 @@ public class CreateLinkPreview implements HttpFunction {
    */
   @Override
   public void service(HttpRequest request, HttpResponse response) throws Exception {
-    JsonObject body = gson.fromJson(request.getReader(), JsonObject.class);
-    String url = body.getAsJsonObject("docs")
+    JsonObject event = gson.fromJson(request.getReader(), JsonObject.class);
+    String url = event.getAsJsonObject("docs")
         .getAsJsonObject("matchedUrl")
         .get("url")
         .getAsString();
@@ -60,76 +57,97 @@ public class CreateLinkPreview implements HttpFunction {
       }
     }
 
-    // TODO Change for the Action type with link preview
-    response.getWriter().write(gson.toJson(new Card()));
+    response.getWriter().write("{}");
   }
 
   // [START add_ons_case_preview_link]
 
   /**
-   * Creates a case link preview card.
+   * A support case link preview.
    *
    * @param url A URL.
    * @return A case link preview card.
    */
-  Card caseLinkPreview(String url) {
+  Map caseLinkPreview(String url) throws UnsupportedEncodingException {
     String[] segments = url.split("/");
     JsonObject caseDetails = gson.fromJson(URLDecoder.decode(segments[segments.length - 1].replace("+", "%2B"), "UTF-8").replace("%2B", "+"), JsonObject.class);
 
-    CardHeader cardHeader = new CardHeader();
-    cardHeader.setTitle(String.format("Case %s", caseDetails.get("name")));
+    Map cardHeader = new HashMap();
+    cardHeader.put("title", String.format("Case %s", caseDetails.get("name").getAsString()));
 
-    TextParagraph textParagraph = new TextParagraph();
-    textParagraph.setText(caseDetails.get("description").toString());
+    Map textParagraph = new HashMap();
+    textParagraph.put("text", caseDetails.get("description").getAsString());
 
-    WidgetMarkup widget = new WidgetMarkup();
-    widget.setTextParagraph(textParagraph);
-    Section section = new Section();
-    section.setWidgets(List.of(widget));
+    Map widget = new HashMap();
+    widget.put("textParagraph", textParagraph);
 
-    Card card = new Card();
-    card.setHeader(cardHeader);
-    card.setSections(List.of(section));
+    Map section = new HashMap();
+    section.put("widgets", List.of(widget));
 
-    // TODO Change for the Action type with link preview
-    return card;
+    Map previewCard = new HashMap();
+    previewCard.put("header", cardHeader);
+    previewCard.put("sections", List.of(section));
+
+    Map linkPreview = new HashMap();
+    linkPreview.put("title", String.format("Case %s", caseDetails.get("name").getAsString()));
+    linkPreview.put("previewCard", previewCard);
+
+    Map action = new HashMap();
+    action.put("linkPreview", linkPreview);
+
+    Map renderActions = new HashMap();
+    renderActions.put("action", action);
+
+    return renderActions;
   }
 
   // [END add_ons_case_preview_link]
   // [START add_ons_people_preview_link]
 
   /**
-   * Creates a people link preview card.
+   * An employee profile link preview.
    *
    * @return A people link preview card.
    */
-  Card peopleLinkPreview() {
-    CardHeader cardHeader = new CardHeader();
-    cardHeader.setTitle("Rosario Cruz");
+  Map peopleLinkPreview() {
+    Map cardHeader = new HashMap();
+    cardHeader.put("title", "Rosario Cruz");
 
-    Image image = new Image();
-    image.setImageUrl("https://developers.google.com/workspace/add-ons/images/employee-profile.png");
+    Map image = new HashMap();
+    image.put("imageUrl", "https://developers.google.com/workspace/add-ons/images/employee-profile.png");
 
-    WidgetMarkup imageWidget = new WidgetMarkup();
-    imageWidget.setImage(image);
+    Map imageWidget = new HashMap();
+    imageWidget.put("image", image);
 
-    KeyValue keyValue = new KeyValue();
-    keyValue.setIcon("EMAIL");
-    keyValue.setContent("rosario@example.com");
-    keyValue.setBottomLabel("Case Manager");
+    Map startIcon = new HashMap();
+    startIcon.put("knownIcon", "EMAIL");
 
-    WidgetMarkup keyValueWidget = new WidgetMarkup();
-    keyValueWidget.setKeyValue(keyValue);
+    Map decoratedText = new HashMap();
+    decoratedText.put("startIcon", startIcon);
+    decoratedText.put("text", "rosario@example.com");
+    decoratedText.put("bottomLabel", "Case Manager");
 
-    Section section = new Section();
-    section.setWidgets(List.of(imageWidget, keyValueWidget));
+    Map decoratedTextWidget = new HashMap();
+    decoratedTextWidget.put("decoratedText", decoratedText);
 
-    Card card = new Card();
-    card.setHeader(cardHeader);
-    card.setSections(List.of(section));
+    Map section = new HashMap();
+    section.put("widgets", List.of(imageWidget, decoratedTextWidget));
 
-    // TODO Change for the Action type with link preview
-    return card;
+    Map previewCard = new HashMap();
+    previewCard.put("header", cardHeader);
+    previewCard.put("sections", List.of(section));
+
+    Map linkPreview = new HashMap();
+    linkPreview.put("title", "Rosario Cruz");
+    linkPreview.put("previewCard", previewCard);
+
+    Map action = new HashMap();
+    action.put("linkPreview", linkPreview);
+
+    Map renderActions = new HashMap();
+    renderActions.put("action", action);
+
+    return renderActions;
   }
 
   // [END add_ons_people_preview_link]

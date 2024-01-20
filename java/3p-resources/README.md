@@ -29,14 +29,14 @@ gcloud functions deploy create3pResources --runtime java11 --trigger-http -entry
 ### Set the URL of the create3pResources function
 
 ```sh
-gcloud functions describe create_3p_resources
+gcloud functions describe create3pResources
 ```
 
 Run the following command after having replaced `$URL` with the deployed
 function URL retrieved previously to set the environment variable `URL`.
 
 ```sh
-gcloud functions deploy create_3p_resources --update-env-vars URL=$URL
+gcloud functions deploy create3pResources --update-env-vars URL=$URL
 ```
 
 ## Create an add-on deployment
