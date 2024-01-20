@@ -48,7 +48,7 @@
           },
           "logoUrl": "https://developers.google.com/workspace/add-ons/images/person-icon.png"
         }
-],
+      ],
       "createActionTriggers": [
         {
           "id": "createCase",

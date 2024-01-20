@@ -14,10 +14,9 @@
 # [START add_ons_3p_resources]
 
 from typing import Any, Mapping
-from urllib.parse import urlparse
+from urllib.parse import urlencode
 
 import os
-import json
 import flask
 import functions_framework
 
@@ -195,14 +194,14 @@ def submit_case_creation_form(event):
         case_details["name"] = formInputs["name"]["stringInputs"]["value"][0] if "name" in formInputs else None
         case_details["description"] = formInputs["description"]["stringInputs"]["value"][0] if "description" in formInputs else None
         case_details["priority"] = formInputs["priority"]["stringInputs"]["value"][0] if "priority" in formInputs else None
-        case_details["impact"] = formInputs["impact"]["stringInputs"]["value"][0] if "impact" in formInputs else None
+        case_details["impact"] = formInputs["impact"]["stringInputs"]["value"][0] if "impact" in formInputs else False
 
     errors = validate_form_inputs(case_details)
     if len(errors) > 0:
         return create_case_input_card(event, errors, True) # Update mode
     else:
         title = f'Case {case_details["name"]}'
-        url = "https://example.com/support/cases/" + json.dumps(case_details, separators=(',', ':'))
+        url = "https://example.com/support/cases/?" + urlencode(case_details)
         return create_link_render_action(title, url)
 
 # [END add_ons_3p_resources_submit_create_case]

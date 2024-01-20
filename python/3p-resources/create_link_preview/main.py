@@ -14,9 +14,8 @@
 # [START add_ons_preview_link]
 
 from typing import Any, Mapping
-from urllib.parse import urlparse, unquote
+from urllib.parse import urlparse, parse_qs
 
-import json
 import flask
 import functions_framework
 
@@ -35,7 +34,7 @@ def create_link_preview(req: flask.Request):
         parsed_url = urlparse(url)
         if parsed_url.hostname == "example.com":
             if parsed_url.path.startswith("/support/cases/"):
-                return case_link_preview(url)
+                return case_link_preview(parsed_url)
 
             if parsed_url.path.startswith("/people/"):
                 return people_link_preview()
@@ -54,24 +53,22 @@ def case_link_preview(url):
       A case link preview card.
     """
 
-    # Parses the URL to identify the case details.
-    segments = url.split("/")
-    case_details = json.loads(unquote(segments[len(segments) - 1]));
-
     # Returns the card.
     # Uses the text from the card's header for the title of the smart chip.
+    query_string = parse_qs(url.query)
+    name = f'Case {query_string["name"][0]}'
     return {
         "action": {
             "linkPreview": {
-                "title": f'Case {case_details["name"]}',
+                "title": name,
                 "previewCard": {
                     "header": {
-                        "title": f'Case {case_details["name"]}'
+                        "title": name
                     },
                     "sections": [{
                         "widgets": [{
                             "textParagraph": {
-                                "text": case_details["description"]
+                                "text": query_string["description"][0]
                             }
                         }]
                     }],
