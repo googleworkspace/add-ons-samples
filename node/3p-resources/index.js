@@ -29,7 +29,7 @@ exports.createLinkPreview = (req, res) => {
     const parsedUrl = new URL(url);
     if (parsedUrl.hostname === 'example.com') {
       if (parsedUrl.pathname.startsWith('/support/cases/')) {
-        return res.json(caseLinkPreview(url));
+        return res.json(caseLinkPreview(parsedUrl));
       }
 
       if (parsedUrl.pathname.startsWith('/people/')) {
@@ -45,29 +45,25 @@ exports.createLinkPreview = (req, res) => {
  * 
  * A support case link preview.
  *
- * @param {!string} url
+ * @param {!URL} url
  * @return {!Card}
  */
 function caseLinkPreview(url) {
-
-  // Parses the URL to identify the case details.
-  const segments = url.split('/');
-  const caseDetails = JSON.parse(decodeURIComponent(segments[segments.length - 1]));
-
   // Returns the card.
   // Uses the text from the card's header for the title of the smart chip.
+  const name = `Case ${url.searchParams.get("name")}`;
   return {
     action: {
       linkPreview: {
-        title: `Case ${caseDetails.name}`,
+        title: name,
         previewCard: {
           header: {
-            title: `Case ${caseDetails.name}`
+            title: name
           },
           sections: [{
             widgets: [{
               textParagraph: {
-                text: caseDetails.description
+                text: url.searchParams.get("description")
               }
             }]
           }]
@@ -300,8 +296,11 @@ function submitCaseCreationForm(event) {
     return createCaseInputCard(event, errors, /* isUpdate= */ true);
   } else {
     const title = `Case ${caseDetails.name}`;
-    const url = 'https://example.com/support/cases/' + encodeURIComponent(JSON.stringify(caseDetails));
-    return createLinkRenderAction(title, url);
+    const url = new URL('https://example.com/support/cases/');
+    for (const [key, value] of Object.entries(caseDetails)) {
+      url.searchParams.append(key, value);
+    }
+    return createLinkRenderAction(title, url.href);
   }
 }
 

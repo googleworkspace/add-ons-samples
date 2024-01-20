@@ -22,8 +22,8 @@ gcloud services enable cloudfunctions cloudbuild.googleapis.com gsuiteaddons.goo
 ### Deploy the functions
 
 ```sh
-gcloud functions deploy createLinkPreview --runtime nodejs16 --trigger-http
-gcloud functions deploy create3pResources --runtime nodejs16 --trigger-http
+gcloud functions deploy createLinkPreview --runtime nodejs20 --trigger-http
+gcloud functions deploy create3pResources --runtime nodejs20 --trigger-http
 ```
 
 ### Set the URL of the create3pResources function
