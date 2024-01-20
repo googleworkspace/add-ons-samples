@@ -26,6 +26,8 @@ import com.google.gson.JsonPrimitive;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateLinkPreview implements HttpFunction {
   private static final Gson gson = new Gson();
@@ -46,7 +48,7 @@ public class CreateLinkPreview implements HttpFunction {
     URL parsedURL = new URL(url);
     if ("example.com".equals(parsedURL.getHost())) {
       if (parsedURL.getPath().startsWith("/support/cases/")) {
-        response.getWriter().write(gson.toJson(caseLinkPreview(url)));
+        response.getWriter().write(gson.toJson(caseLinkPreview(parsedURL)));
         return;
       }
 
@@ -67,17 +69,18 @@ public class CreateLinkPreview implements HttpFunction {
    * @param url A URL.
    * @return A case link preview card.
    */
-  JsonObject caseLinkPreview(String url) throws UnsupportedEncodingException {
-    String[] segments = url.split("/");
-    JsonObject caseDetails = gson.fromJson(URLDecoder.decode(segments[segments.length - 1].replace("+", "%2B"), "UTF-8").replace("%2B", "+"), JsonObject.class);
-    String caseName = String.format("Case %s", caseDetails.get("name").getAsString());
-    String caseDescription = caseDetails.get("description").getAsString();
+  JsonObject caseLinkPreview(URL url) throws UnsupportedEncodingException {
+    Map<String, String> caseDetails = new HashMap<String, String>();
+    for (String pair : url.getQuery().split("&")) {
+        caseDetails.put(URLDecoder.decode(pair.split("=")[0], "UTF-8"), URLDecoder.decode(pair.split("=")[1], "UTF-8"));
+    }
 
     JsonObject cardHeader = new JsonObject();
+    String caseName = String.format("Case %s", caseDetails.get("name"));
     cardHeader.add("title", new JsonPrimitive(caseName));
 
     JsonObject textParagraph = new JsonObject();
-    textParagraph.add("text", new JsonPrimitive(caseDescription));
+    textParagraph.add("text", new JsonPrimitive(caseDetails.get("description")));
 
     JsonObject widget = new JsonObject();
     widget.add("textParagraph", textParagraph);

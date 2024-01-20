@@ -15,11 +15,11 @@
  */
 // [START add_ons_3p_resources]
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.http.client.utils.URIBuilder;
 
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
@@ -223,7 +223,7 @@ public class Create3pResources implements HttpFunction {
    * @param event The event object containing form inputs.
    * @return The navigation action.
    */
-  JsonObject submitCaseCreationForm(JsonObject event) throws UnsupportedEncodingException{
+  JsonObject submitCaseCreationForm(JsonObject event) throws Exception {
     JsonObject formInputs = event.getAsJsonObject("commonEventObject").getAsJsonObject("formInputs");
     Map<String, String> caseDetails = new HashMap<String, String>();
     if (formInputs != null) {
@@ -246,8 +246,11 @@ public class Create3pResources implements HttpFunction {
       return createCaseInputCard(event, errors, /* isUpdate= */ true);
     } else {
       String title = String.format("Case %s", caseDetails.get("name"));
-      String url = "https://example.com/support/cases/" + URLEncoder.encode(gson.toJson(caseDetails), "UTF-8").replaceAll("\\+", "%20").replaceAll("\\%21", "!").replaceAll("\\%27", "'").replaceAll("\\%28", "(").replaceAll("\\%29", ")").replaceAll("\\%7E", "~");
-      return createLinkRenderAction(title, url);
+      URIBuilder uriBuilder = new URIBuilder("https://example.com/support/cases/");
+      for (String caseDetailKey : caseDetails.keySet()) {
+        uriBuilder.addParameter(caseDetailKey, caseDetails.get(caseDetailKey));
+      }
+      return createLinkRenderAction(title, uriBuilder.build().toURL().toString());
     }
   }
 

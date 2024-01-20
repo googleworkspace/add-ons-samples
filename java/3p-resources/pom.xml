@@ -40,6 +40,11 @@ limitations under the License.
         <artifactId>gson</artifactId>
         <version>2.9.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.1</version>
+  </dependency>
   </dependencies>
 
   <!-- Required for Java 11 functions in the inline editor -->
