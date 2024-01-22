@@ -25,9 +25,9 @@ import functions_framework
 def create_3p_resources(req: flask.Request):
     """Responds to any HTTP request related to 3P resource creations.
     Args:
-      req: HTTP request context.
+      req: An HTTP request context.
     Returns:
-      The response object.
+      An HTTP response context.
     """
     event = req.get_json(silent=True)
     parameters = event["commonEventObject"]["parameters"] if "parameters" in event["commonEventObject"] else None
@@ -41,13 +41,13 @@ def create_3p_resources(req: flask.Request):
 
 
 def create_case_input_card(event, errors = {}, isUpdate = False):
-    """A support case link preview.
+    """Produces a support case creation form card.
     Args:
       event: The event object.
       errors: An optional dict of per-field error messages.
-      isUpdate: Whether to return the form as an updateCard navigation.
+      isUpdate: Whether to return the form as an update card navigation.
     Returns:
-      A card or an action reponse.
+      The resulting card or action response.
     """
     card_header1 = {
         "title": "Create a support case"
@@ -173,15 +173,15 @@ def create_case_input_card(event, errors = {}, isUpdate = False):
 
 
 def submit_case_creation_form(event):
-    """Called when the creation form is submitted.
+    """Submits the creation form.
     
-    If form input is valid, returns a render action that inserts a new link
-    into the document. If invalid, returns an updateCard navigation that
+    If valid, returns a render action that inserts a new link
+    into the document. If invalid, returns an update card navigation that
     re-renders the creation form with error messages.
     Args:
-      event: The event object.
+      event: The event object with form input values.
     Returns:
-      A card or an action reponse.
+      The resulting response.
     """
     formInputs = event["commonEventObject"]["formInputs"] if "formInputs" in event["commonEventObject"] else None
     case_details = {
@@ -201,14 +201,17 @@ def submit_case_creation_form(event):
         return create_case_input_card(event, errors, True) # Update mode
     else:
         title = f'Case {case_details["name"]}'
+        # Adds the case details as parameters to the generated link URL.
         url = "https://example.com/support/cases/?" + urlencode(case_details)
         return create_link_render_action(title, url)
+
 
 # [END add_ons_3p_resources_submit_create_case]
 # [START add_ons_3p_resources_validate_inputs]
 
+
 def validate_form_inputs(case_details):
-    """Validates form inputs for case creation.
+    """Validates case creation form input values.
     Args:
       case_details: The values of each form input submitted by the user.
     Returns:
@@ -225,12 +228,13 @@ def validate_form_inputs(case_details):
         errors["impact"] = "If an issue blocks a critical customer operation, priority must be P0 or P1"
     return errors
 
+
 def create_error_text_paragraph(error_message):
     """Returns a text paragraph with red text indicating a form field validation error.
     Args:
-      error_essage: A description of the invalid input.
+      error_essage: A description of input value error.
     Returns:
-      A text paragraph.
+      The resulting text paragraph.
     """
     return {
         "textParagraph": {
@@ -238,16 +242,18 @@ def create_error_text_paragraph(error_message):
         }
     }
 
+
 # [END add_ons_3p_resources_validate_inputs]
 # [START add_ons_3p_resources_link_render_action]
 
+
 def create_link_render_action(title, url):
-    """Returns a render action that inserts a link into the document.
+    """Returns a submit form response that inserts a link into the document.
     Args:
       title: The title of the link to insert.
       url: The URL of the link to insert.
     Returns:
-      A render action.
+      The resulting submit form response.
     """
     return {
         "renderActions": {

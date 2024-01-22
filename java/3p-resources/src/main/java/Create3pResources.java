@@ -58,8 +58,8 @@ public class Create3pResources implements HttpFunction {
    * 
    * @param event The event object.
    * @param errors A map of per-field error messages.
-   * @param isUpdate Whether to return the form as an updateCard navigation.
-   * @return A support case creation form card.
+   * @param isUpdate Whether to return the form as an update card navigation.
+   * @return The resulting card or action response.
    */
   JsonObject createCaseInputCard(JsonObject event, Map<String, String> errors, boolean isUpdate) {
 
@@ -155,7 +155,7 @@ public class Create3pResources implements HttpFunction {
     JsonObject cardSection1ButtonList1Widget = new JsonObject();
     cardSection1ButtonList1Widget.add("buttonList", cardSection1ButtonList1);
 
-    // Builds the creation form and adds error text for invalid inputs.
+    // Builds the form inputs with error texts for invalid values.
     JsonArray cardSection1 = new JsonArray();
     if (errors.containsKey("name")) {
       cardSection1.add(createErrorTextParagraph(errors.get("name").toString()));
@@ -216,12 +216,12 @@ public class Create3pResources implements HttpFunction {
   // [START add_ons_3p_resources_submit_create_case]
 
   /**
-   * Called when the creation form is submitted. If form input is valid, returns a render action
-   * that inserts a new link into the document. If invalid, returns an updateCard navigation that
-   * re-renders the creation form with error messages.
+   * Submits the creation form. If valid, returns a render action
+   * that inserts a new link into the document. If invalid, returns an
+   * update card navigation that re-renders the creation form with error messages.
    * 
-   * @param event The event object containing form inputs.
-   * @return The navigation action.
+   * @param event The event object with form input values.
+   * @return The resulting response.
    */
   JsonObject submitCaseCreationForm(JsonObject event) throws Exception {
     JsonObject formInputs = event.getAsJsonObject("commonEventObject").getAsJsonObject("formInputs");
@@ -246,6 +246,7 @@ public class Create3pResources implements HttpFunction {
       return createCaseInputCard(event, errors, /* isUpdate= */ true);
     } else {
       String title = String.format("Case %s", caseDetails.get("name"));
+      // Adds the case details as parameters to the generated link URL.
       URIBuilder uriBuilder = new URIBuilder("https://example.com/support/cases/");
       for (String caseDetailKey : caseDetails.keySet()) {
         uriBuilder.addParameter(caseDetailKey, caseDetails.get(caseDetailKey));
@@ -258,7 +259,7 @@ public class Create3pResources implements HttpFunction {
   // [START add_ons_3p_resources_validate_inputs]
 
   /**
-   * Validates form inputs for case creation.
+   * Validates case creation form input values.
    * 
    * @param caseDetails The values of each form input submitted by the user.
    * @return A map from field name to error message. An empty object
@@ -283,10 +284,10 @@ public class Create3pResources implements HttpFunction {
   }
   
   /**
-   * Returns a TextParagraph with red text indicating a form field validation error.
+   * Returns a text paragraph with red text indicating a form field validation error.
    * 
-   * @param errorMessage A description of the invalid input.
-   * @return A text paragraph.
+   * @param errorMessage A description of input value error.
+   * @return The resulting text paragraph.
    */
   JsonObject createErrorTextParagraph(String errorMessage) {
     JsonObject textParagraph = new JsonObject();
@@ -302,10 +303,11 @@ public class Create3pResources implements HttpFunction {
   // [START add_ons_3p_resources_link_render_action]
 
   /**
-   * Returns a render action that inserts a link into the document.
+   * Returns a submit form response that inserts a link into the document.
+   * 
    * @param title The title of the link to insert.
    * @param url The URL of the link to insert.
-   * @return The render action
+   * @return The resulting submit form response.
    */
   JsonObject createLinkRenderAction(String title, String url) {
     JsonObject link1 = new JsonObject();

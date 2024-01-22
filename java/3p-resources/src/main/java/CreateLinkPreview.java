@@ -46,6 +46,7 @@ public class CreateLinkPreview implements HttpFunction {
         .get("url")
         .getAsString();
     URL parsedURL = new URL(url);
+    // If the event object URL matches a specified pattern for preview links.
     if ("example.com".equals(parsedURL.getHost())) {
       if (parsedURL.getPath().startsWith("/support/cases/")) {
         response.getWriter().write(gson.toJson(caseLinkPreview(parsedURL)));
@@ -66,15 +67,18 @@ public class CreateLinkPreview implements HttpFunction {
   /**
    * A support case link preview.
    *
-   * @param url A URL.
-   * @return A case link preview card.
+   * @param url A matching URL.
+   * @return The resulting preview link card.
    */
   JsonObject caseLinkPreview(URL url) throws UnsupportedEncodingException {
+    // Parses the URL and identify the case details.
     Map<String, String> caseDetails = new HashMap<String, String>();
     for (String pair : url.getQuery().split("&")) {
         caseDetails.put(URLDecoder.decode(pair.split("=")[0], "UTF-8"), URLDecoder.decode(pair.split("=")[1], "UTF-8"));
     }
 
+    // Builds a preview card with the case name, and description
+    // Uses the text from the card's header for the title of the smart chip.
     JsonObject cardHeader = new JsonObject();
     String caseName = String.format("Case %s", caseDetails.get("name"));
     cardHeader.add("title", new JsonPrimitive(caseName));
@@ -117,9 +121,11 @@ public class CreateLinkPreview implements HttpFunction {
   /**
    * An employee profile link preview.
    *
-   * @return A people link preview card.
+   * @return The resulting preview link card.
    */
   JsonObject peopleLinkPreview() {
+    // Builds a preview card with an employee's name, title, email, and profile photo.
+    // Uses the text from the card's header for the title of the smart chip.
     JsonObject cardHeader = new JsonObject();
     cardHeader.add("title", new JsonPrimitive("Rosario Cruz"));
 

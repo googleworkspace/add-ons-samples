@@ -77,8 +77,8 @@ function parseQuery(url) {
 /**
 * Entry point for an employee profile link preview
 *
-* @param {!Object} event
-* @return {!Card}
+* @param {!Object} event The event object.
+* @return {!Card} The resulting preview link card.
 */
 function peopleLinkPreview(event) {
 
@@ -270,7 +270,8 @@ function createErrorTextParagraph(errorMessage) {
 // [START add_ons_3p_resources_link_render_action]
 
 /**
- * Returns asubmit form response that inserts a link into the document.
+ * Returns a submit form response that inserts a link into the document.
+ * 
  * @param {string} title The title of the link to insert.
  * @param {string} url The URL of the link to insert.
  * @return {!SubmitFormResponse} The resulting submit form response.
