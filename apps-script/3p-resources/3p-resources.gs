@@ -17,10 +17,10 @@
 // [START add_ons_case_preview_link]
 
 /**
-* Entry point for a support case link preview
+* Entry point for a support case link preview.
 *
-* @param {!Object} event
-* @return {!Card}
+* @param {!Object} event The event object.
+* @return {!Card} The resulting preview link card.
 */
 function caseLinkPreview(event) {
 
@@ -46,10 +46,10 @@ function caseLinkPreview(event) {
 }
 
 /**
-* Extract the URL parameters from the given URL.
+* Extracts the URL parameters from the given URL.
 *
-* @param {!string} url
-* @return {!Map} A map of URL parameters.
+* @param {!string} url The URL to parse.
+* @return {!Map} A map with the extracted URL parameters.
 */
 function parseQuery(url) {
   var query = url.split("?")[1];
@@ -112,12 +112,12 @@ function peopleLinkPreview(event) {
 // [START add_ons_3p_resources_create_case_card]
 
 /**
- * Produces a support case creation form.
+ * Produces a support case creation form card.
  * 
  * @param {!Object} event The event object.
  * @param {!Object=} errors An optional map of per-field error messages.
- * @param {boolean} isUpdate Whether to return the form as an updateCard navigation.
- * @return {!Card|!ActionResponse}
+ * @param {boolean} isUpdate Whether to return the form as an update card navigation.
+ * @return {!Card|!ActionResponse} The resulting card or action response.
  */
 function createCaseInputCard(event, errors, isUpdate) {
 
@@ -162,7 +162,7 @@ function createCaseInputCard(event, errors, isUpdate) {
   const cardSection1ButtonList1 = CardService.newButtonSet()
     .addButton(cardSection1ButtonList1Button1);
 
-  // Builds the creation form and adds error text for invalid inputs.
+  // Builds the form inputs with error texts for invalid values.
   const cardSection1 = CardService.newCardSection();
   if (errors?.name) {
     cardSection1.addWidget(createErrorTextParagraph(errors.name));
@@ -201,12 +201,12 @@ function createCaseInputCard(event, errors, isUpdate) {
 // [START add_ons_3p_resources_submit_create_case]
 
 /**
- * Called when the creation form is submitted. If form input is valid, returns a render action
- * that inserts a new link into the document. If invalid, returns an updateCard navigation that
- * re-renders the creation form with error messages.
+ * Submits the creation form. If valid, returns a render action
+ * that inserts a new link into the document. If invalid, returns an
+ * update card navigation that re-renders the creation form with error messages.
  * 
- * @param {!Object} event The event object containing form inputs.
- * @return {!Card|!RenderAction}
+ * @param {!Object} event The event object with form input values.
+ * @return {!ActionResponse|!SubmitFormResponse} The resulting response.
  */
 function submitCaseCreationForm(event) {
   const caseDetails = {
@@ -221,6 +221,7 @@ function submitCaseCreationForm(event) {
     return createCaseInputCard(event, errors, /* isUpdate= */ true);
   } else {
     const title = `Case ${caseDetails.name}`;
+    // Adds the case details as parameters to the generated link URL.
     const url = 'https://example.com/support/cases/?' + Object.entries(caseDetails).flatMap(([k, v]) => Array.isArray(v) ? v.map(e => `${k}=${encodeURIComponent(e)}`) : `${k}=${encodeURIComponent(v)}`).join("&");
     return createLinkRenderAction(title, url);
   }
@@ -230,7 +231,7 @@ function submitCaseCreationForm(event) {
 // [START add_ons_3p_resources_validate_inputs]
 
 /**
- * Validates form inputs for case creation.
+ * Validates case creation form input values.
  * 
  * @param {!Object} caseDetails The values of each form input submitted by the user.
  * @return {!Object} A map from field name to error message. An empty object
@@ -255,10 +256,10 @@ function validateFormInputs(caseDetails) {
 }
 
 /**
- * Returns a TextParagraph with red text indicating a form field validation error.
+ * Returns a text paragraph with red text indicating a form field validation error.
  * 
- * @param {string} errorMessage A description of the invalid input.
- * @return {!TextParagraph}
+ * @param {string} errorMessage A description of input value error.
+ * @return {!TextParagraph} The resulting text paragraph.
  */
 function createErrorTextParagraph(errorMessage) {
   return CardService.newTextParagraph()
@@ -269,10 +270,10 @@ function createErrorTextParagraph(errorMessage) {
 // [START add_ons_3p_resources_link_render_action]
 
 /**
- * Returns a RenderAction that inserts a link into the document.
+ * Returns asubmit form response that inserts a link into the document.
  * @param {string} title The title of the link to insert.
  * @param {string} url The URL of the link to insert.
- * @return {!RenderAction}
+ * @return {!SubmitFormResponse} The resulting submit form response.
  */
 function createLinkRenderAction(title, url) {
   return {
