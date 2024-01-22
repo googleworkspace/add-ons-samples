@@ -33,7 +33,7 @@ public class Create3pResources implements HttpFunction {
   private static final Gson gson = new Gson();
 
   /**
-   * Responds to any HTTP request related to link previews.
+   * Responds to any HTTP request related to 3p resource creations.
    *
    * @param request  An HTTP request context.
    * @param response An HTTP response context.

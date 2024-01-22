@@ -23,7 +23,7 @@ gcloud services enable cloudfunctions cloudbuild.googleapis.com gsuiteaddons.goo
 
 ```sh
 gcloud functions deploy createLinkPreview --runtime java11 --trigger-http --entry-point CreateLinkPreview
-gcloud functions deploy create3pResources --runtime java11 --trigger-http -entry-point Create3pResources
+gcloud functions deploy create3pResources --runtime java11 --trigger-http --entry-point Create3pResources
 ```
 
 ### Set the URL of the create3pResources function

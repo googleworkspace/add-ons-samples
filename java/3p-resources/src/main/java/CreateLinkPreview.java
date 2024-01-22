@@ -35,7 +35,7 @@ public class CreateLinkPreview implements HttpFunction {
   /**
    * Responds to any HTTP request related to link previews.
    *
-   * @param request  An HTTP request context.
+   * @param request An HTTP request context.
    * @param response An HTTP response context.
    */
   @Override
