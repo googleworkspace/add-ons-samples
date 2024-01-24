@@ -31,10 +31,6 @@ exports.createLinkPreview = (req, res) => {
       if (parsedUrl.pathname.startsWith('/support/cases/')) {
         return res.json(caseLinkPreview(parsedUrl));
       }
-
-      if (parsedUrl.pathname.startsWith('/people/')) {
-        return res.json(peopleLinkPreview());
-      }
     }
   }
 };
@@ -75,49 +71,6 @@ function caseLinkPreview(url) {
 }
 
 // [END add_ons_case_preview_link]
-// [START add_ons_people_preview_link]
-
-/**
- * An employee profile link preview.
- *
- * @param {!URL} url The event object.
- * @return {!Card} The resulting preview link card.
- */
-function peopleLinkPreview() {
-  // Builds a preview card with an employee's name, title, email, and profile photo.
-  // Uses the text from the card's header for the title of the smart chip.
-  return {
-    action: {
-      linkPreview: {
-        title: "Rosario Cruz",
-        previewCard: {
-          header: {
-            title: "Rosario Cruz"
-          },
-          sections: [{
-            widgets: [
-              {
-                image: {
-                  imageUrl: 'https://developers.google.com/workspace/add-ons/images/employee-profile.png'
-                }
-              }, {
-                decoratedText: {
-                  startIcon: {
-                    knownIcon: "EMAIL"
-                  },
-                  text: "rosario@example.com",
-                  bottomLabel: "Case Manager"
-                }
-              }
-            ]
-          }]
-        }
-      }
-    }
-  };
-}
-
-// [END add_ons_people_preview_link]
 // [END add_ons_preview_link]
 
 // [START add_ons_3p_resources]

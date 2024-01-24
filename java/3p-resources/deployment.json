@@ -33,20 +33,6 @@
             "es": "Caso de soporte"
           },
           "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png"
-        },
-        {
-          "runFunction": "$URL1",
-          "patterns": [
-            {
-              "hostPattern": "example.com",
-              "pathPrefix": "people"
-            }
-          ],
-          "labelText": "People",
-          "localizedLabelText": {
-            "es": "Personas"
-          },
-          "logoUrl": "https://developers.google.com/workspace/add-ons/images/person-icon.png"
         }
       ],
       "createActionTriggers": [

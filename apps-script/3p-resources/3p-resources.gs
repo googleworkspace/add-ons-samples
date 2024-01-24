@@ -72,40 +72,6 @@ function parseQuery(url) {
 }
 
 // [END add_ons_case_preview_link]
-// [START add_ons_people_preview_link]
-
-/**
-* Entry point for an employee profile link preview
-*
-* @param {!Object} event The event object.
-* @return {!Card} The resulting preview link card.
-*/
-function peopleLinkPreview(event) {
-
-  // If the event object URL matches a specified pattern for employee profile links.
-  if (event.docs.matchedUrl.url) {
-
-    // Builds a preview card with an employee's name, title, email, and profile photo.
-    const userHeader = CardService.newCardHeader().setTitle("Rosario Cruz");
-    const userImage = CardService.newImage()
-      .setImageUrl("https://developers.google.com/workspace/add-ons/images/employee-profile.png");
-    const userInfo = CardService.newDecoratedText()
-      .setText("rosario@example.com")
-      .setBottomLabel("Case Manager")
-      .setIcon(CardService.Icon.EMAIL);
-    const userSection = CardService.newCardSection()
-      .addWidget(userImage)
-      .addWidget(userInfo);
-
-    // Returns the card. Uses the text from the card's header for the title of the smart chip.
-    return CardService.newCardBuilder()
-      .setHeader(userHeader)
-      .addSection(userSection)
-      .build();
-  }
-}
-
-// [END add_ons_people_preview_link]
 // [END add_ons_preview_link]
 
 // [START add_ons_3p_resources]

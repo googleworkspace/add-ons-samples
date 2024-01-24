@@ -52,11 +52,6 @@ public class CreateLinkPreview implements HttpFunction {
         response.getWriter().write(gson.toJson(caseLinkPreview(parsedURL)));
         return;
       }
-
-      if (parsedURL.getPath().startsWith("/people/")) {
-        response.getWriter().write(gson.toJson(peopleLinkPreview()));
-        return;
-      }
     }
 
     response.getWriter().write("{}");
@@ -116,64 +111,6 @@ public class CreateLinkPreview implements HttpFunction {
   }
 
   // [END add_ons_case_preview_link]
-  // [START add_ons_people_preview_link]
-
-  /**
-   * An employee profile link preview.
-   *
-   * @return The resulting preview link card.
-   */
-  JsonObject peopleLinkPreview() {
-    // Builds a preview card with an employee's name, title, email, and profile photo.
-    // Uses the text from the card's header for the title of the smart chip.
-    JsonObject cardHeader = new JsonObject();
-    cardHeader.add("title", new JsonPrimitive("Rosario Cruz"));
-
-    JsonObject image = new JsonObject();
-    image.add("imageUrl", new JsonPrimitive("https://developers.google.com/workspace/add-ons/images/employee-profile.png"));
-
-    JsonObject imageWidget = new JsonObject();
-    imageWidget.add("image", image);
-
-    JsonObject startIcon = new JsonObject();
-    startIcon.add("knownIcon", new JsonPrimitive("EMAIL"));
-
-    JsonObject decoratedText = new JsonObject();
-    decoratedText.add("startIcon", startIcon);
-    decoratedText.add("text", new JsonPrimitive("rosario@example.com"));
-    decoratedText.add("bottomLabel", new JsonPrimitive("Case Manager"));
-
-    JsonObject decoratedTextWidget = new JsonObject();
-    decoratedTextWidget.add("decoratedText", decoratedText);
-
-    JsonArray widgets = new JsonArray();
-    widgets.add(imageWidget);
-    widgets.add(decoratedTextWidget);
-
-    JsonObject section = new JsonObject();
-    section.add("widgets", widgets);
-
-    JsonArray sections = new JsonArray();
-    sections.add(section);
-
-    JsonObject previewCard = new JsonObject();
-    previewCard.add("header", cardHeader);
-    previewCard.add("sections", sections);
-
-    JsonObject linkPreview = new JsonObject();
-    linkPreview.add("title", new JsonPrimitive("Rosario Cruz"));
-    linkPreview.add("previewCard", previewCard);
-
-    JsonObject action = new JsonObject();
-    action.add("linkPreview", linkPreview);
-
-    JsonObject renderActions = new JsonObject();
-    renderActions.add("action", action);
-
-    return renderActions;
-  }
-
-  // [END add_ons_people_preview_link]
 }
 
 // [END add_ons_preview_link]

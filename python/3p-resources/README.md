@@ -1,6 +1,6 @@
 # Third-Party Resources
 
-The solution is made of two Cloud Functions, one for the two link preview triggers and
+The solution is made of two Cloud Functions, one for the link preview trigger and
 one for the third-party resource create action trigger.
 To learn about writing Cloud Functions,
 see the documentation: https://cloud.google.com/functions/docs/writing.
