@@ -44,10 +44,8 @@ public class Create3pResources implements HttpFunction {
     JsonObject parameters = event.getAsJsonObject("commonEventObject").getAsJsonObject("parameters");
     if (parameters != null && parameters.has("submitCaseCreationForm") && parameters.get("submitCaseCreationForm").getAsBoolean()) {
       response.getWriter().write(gson.toJson(submitCaseCreationForm(event)));
-      return;
     } else {
       response.getWriter().write(gson.toJson(createCaseInputCard(event, new HashMap<String, String>(), false)));
-      return;
     }
   }
 
@@ -62,128 +60,127 @@ public class Create3pResources implements HttpFunction {
    * @return The resulting card or action response.
    */
   JsonObject createCaseInputCard(JsonObject event, Map<String, String> errors, boolean isUpdate) {
+    JsonObject cardHeader = new JsonObject();
+    cardHeader.add("title", new JsonPrimitive("Create a support case"));
 
-    JsonObject cardHeader1 = new JsonObject();
-    cardHeader1.add("title", new JsonPrimitive("Create a support case"));
+    JsonObject cardSectionTextInput1 = new JsonObject();
+    cardSectionTextInput1.add("name", new JsonPrimitive("name"));
+    cardSectionTextInput1.add("label", new JsonPrimitive("Name"));
 
-    JsonObject cardSection1TextInput1 = new JsonObject();
-    cardSection1TextInput1.add("name", new JsonPrimitive("name"));
-    cardSection1TextInput1.add("label", new JsonPrimitive("Name"));
+    JsonObject cardSectionTextInput1Widget = new JsonObject();
+    cardSectionTextInput1Widget.add("textInput", cardSectionTextInput1);
 
-    JsonObject cardSection1TextInput1Widget = new JsonObject();
-    cardSection1TextInput1Widget.add("textInput", cardSection1TextInput1);
+    JsonObject cardSectionTextInput2 = new JsonObject();
+    cardSectionTextInput2.add("name", new JsonPrimitive("description"));
+    cardSectionTextInput2.add("label", new JsonPrimitive("Description"));
+    cardSectionTextInput2.add("type", new JsonPrimitive("MULTIPLE_LINE"));
 
-    JsonObject cardSection1TextInput2 = new JsonObject();
-    cardSection1TextInput2.add("name", new JsonPrimitive("description"));
-    cardSection1TextInput2.add("label", new JsonPrimitive("Description"));
-    cardSection1TextInput2.add("type", new JsonPrimitive("MULTIPLE_LINE"));
+    JsonObject cardSectionTextInput2Widget = new JsonObject();
+    cardSectionTextInput2Widget.add("textInput", cardSectionTextInput2);
 
-    JsonObject cardSection1TextInput2Widget = new JsonObject();
-    cardSection1TextInput2Widget.add("textInput", cardSection1TextInput2);
+    JsonObject cardSectionSelectionInput1ItemsItem1 = new JsonObject();
+    cardSectionSelectionInput1ItemsItem1.add("text", new JsonPrimitive("P0"));
+    cardSectionSelectionInput1ItemsItem1.add("value", new JsonPrimitive("P0"));
 
-    JsonObject cardSection1SelectionInput1ItemsItem1 = new JsonObject();
-    cardSection1SelectionInput1ItemsItem1.add("text", new JsonPrimitive("P0"));
-    cardSection1SelectionInput1ItemsItem1.add("value", new JsonPrimitive("P0"));
+    JsonObject cardSectionSelectionInput1ItemsItem2 = new JsonObject();
+    cardSectionSelectionInput1ItemsItem2.add("text", new JsonPrimitive("P1"));
+    cardSectionSelectionInput1ItemsItem2.add("value", new JsonPrimitive("P1"));
 
-    JsonObject cardSection1SelectionInput1ItemsItem2 = new JsonObject();
-    cardSection1SelectionInput1ItemsItem2.add("text", new JsonPrimitive("P1"));
-    cardSection1SelectionInput1ItemsItem2.add("value", new JsonPrimitive("P1"));
+    JsonObject cardSectionSelectionInput1ItemsItem3 = new JsonObject();
+    cardSectionSelectionInput1ItemsItem3.add("text", new JsonPrimitive("P2"));
+    cardSectionSelectionInput1ItemsItem3.add("value", new JsonPrimitive("P2"));
 
-    JsonObject cardSection1SelectionInput1ItemsItem3 = new JsonObject();
-    cardSection1SelectionInput1ItemsItem3.add("text", new JsonPrimitive("P2"));
-    cardSection1SelectionInput1ItemsItem3.add("value", new JsonPrimitive("P2"));
+    JsonObject cardSectionSelectionInput1ItemsItem4 = new JsonObject();
+    cardSectionSelectionInput1ItemsItem4.add("text", new JsonPrimitive("P3"));
+    cardSectionSelectionInput1ItemsItem4.add("value", new JsonPrimitive("P3"));
 
-    JsonObject cardSection1SelectionInput1ItemsItem4 = new JsonObject();
-    cardSection1SelectionInput1ItemsItem4.add("text", new JsonPrimitive("P3"));
-    cardSection1SelectionInput1ItemsItem4.add("value", new JsonPrimitive("P3"));
+    JsonArray cardSectionSelectionInput1Items = new JsonArray();
+    cardSectionSelectionInput1Items.add(cardSectionSelectionInput1ItemsItem1);
+    cardSectionSelectionInput1Items.add(cardSectionSelectionInput1ItemsItem2);
+    cardSectionSelectionInput1Items.add(cardSectionSelectionInput1ItemsItem3);
+    cardSectionSelectionInput1Items.add(cardSectionSelectionInput1ItemsItem4);
 
-    JsonArray cardSection1SelectionInput1Items = new JsonArray();
-    cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem1);
-    cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem2);
-    cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem3);
-    cardSection1SelectionInput1Items.add(cardSection1SelectionInput1ItemsItem4);
+    JsonObject cardSectionSelectionInput1 = new JsonObject();
+    cardSectionSelectionInput1.add("name", new JsonPrimitive("priority"));
+    cardSectionSelectionInput1.add("label", new JsonPrimitive("Priority"));
+    cardSectionSelectionInput1.add("type", new JsonPrimitive("DROPDOWN"));
+    cardSectionSelectionInput1.add("items", cardSectionSelectionInput1Items);
 
-    JsonObject cardSection1SelectionInput1 = new JsonObject();
-    cardSection1SelectionInput1.add("name", new JsonPrimitive("priority"));
-    cardSection1SelectionInput1.add("label", new JsonPrimitive("Priority"));
-    cardSection1SelectionInput1.add("type", new JsonPrimitive("DROPDOWN"));
-    cardSection1SelectionInput1.add("items", cardSection1SelectionInput1Items);
+    JsonObject cardSectionSelectionInput1Widget = new JsonObject();
+    cardSectionSelectionInput1Widget.add("selectionInput", cardSectionSelectionInput1);
 
-    JsonObject cardSection1SelectionInput1Widget = new JsonObject();
-    cardSection1SelectionInput1Widget.add("selectionInput", cardSection1SelectionInput1);
-
-    JsonObject cardSection1SelectionInput2ItemsItem1 = new JsonObject();
-    cardSection1SelectionInput2ItemsItem1.add("text", new JsonPrimitive("Blocks a critical customer operation"));
-    cardSection1SelectionInput2ItemsItem1.add("value", new JsonPrimitive("Blocks a critical customer operation"));
+    JsonObject cardSectionSelectionInput2ItemsItem = new JsonObject();
+    cardSectionSelectionInput2ItemsItem.add("text", new JsonPrimitive("Blocks a critical customer operation"));
+    cardSectionSelectionInput2ItemsItem.add("value", new JsonPrimitive("Blocks a critical customer operation"));
     
-    JsonArray cardSection1SelectionInput2Items = new JsonArray();
-    cardSection1SelectionInput2Items.add(cardSection1SelectionInput2ItemsItem1);
+    JsonArray cardSectionSelectionInput2Items = new JsonArray();
+    cardSectionSelectionInput2Items.add(cardSectionSelectionInput2ItemsItem);
 
-    JsonObject cardSection1SelectionInput2 = new JsonObject();
-    cardSection1SelectionInput2.add("name", new JsonPrimitive("impact"));
-    cardSection1SelectionInput2.add("label", new JsonPrimitive("Impact"));
-    cardSection1SelectionInput2.add("items", cardSection1SelectionInput2Items);
+    JsonObject cardSectionSelectionInput2 = new JsonObject();
+    cardSectionSelectionInput2.add("name", new JsonPrimitive("impact"));
+    cardSectionSelectionInput2.add("label", new JsonPrimitive("Impact"));
+    cardSectionSelectionInput2.add("items", cardSectionSelectionInput2Items);
 
-    JsonObject cardSection1SelectionInput2Widget = new JsonObject();
-    cardSection1SelectionInput2Widget.add("selectionInput", cardSection1SelectionInput2);
+    JsonObject cardSectionSelectionInput2Widget = new JsonObject();
+    cardSectionSelectionInput2Widget.add("selectionInput", cardSectionSelectionInput2);
 
-    JsonObject cardSection1ButtonList1Button1Action1ParametersParameter1 = new JsonObject();
-    cardSection1ButtonList1Button1Action1ParametersParameter1.add("key", new JsonPrimitive("submitCaseCreationForm"));
-    cardSection1ButtonList1Button1Action1ParametersParameter1.add("value", new JsonPrimitive(true));
+    JsonObject cardSectionButtonListButtonActionParametersParameter = new JsonObject();
+    cardSectionButtonListButtonActionParametersParameter.add("key", new JsonPrimitive("submitCaseCreationForm"));
+    cardSectionButtonListButtonActionParametersParameter.add("value", new JsonPrimitive(true));
 
-    JsonArray cardSection1ButtonList1Button1Action1Parameters = new JsonArray();
-    cardSection1ButtonList1Button1Action1Parameters.add(cardSection1ButtonList1Button1Action1ParametersParameter1);
+    JsonArray cardSectionButtonListButtonActionParameters = new JsonArray();
+    cardSectionButtonListButtonActionParameters.add(cardSectionButtonListButtonActionParametersParameter);
 
-    JsonObject cardSection1ButtonList1Button1Action1 = new JsonObject();
-    cardSection1ButtonList1Button1Action1.add("function", new JsonPrimitive(System.getenv().get("URL")));
-    cardSection1ButtonList1Button1Action1.add("parameters", cardSection1ButtonList1Button1Action1Parameters);
-    cardSection1ButtonList1Button1Action1.add("persistValues", new JsonPrimitive(true));
+    JsonObject cardSectionButtonListButtonAction = new JsonObject();
+    cardSectionButtonListButtonAction.add("function", new JsonPrimitive(System.getenv().get("URL")));
+    cardSectionButtonListButtonAction.add("parameters", cardSectionButtonListButtonActionParameters);
+    cardSectionButtonListButtonAction.add("persistValues", new JsonPrimitive(true));
 
-    JsonObject cardSection1ButtonList1Button1OnCLick = new JsonObject();
-    cardSection1ButtonList1Button1OnCLick.add("action", cardSection1ButtonList1Button1Action1);
+    JsonObject cardSectionButtonListButtonOnCLick = new JsonObject();
+    cardSectionButtonListButtonOnCLick.add("action", cardSectionButtonListButtonAction);
 
-    JsonObject cardSection1ButtonList1Button1 = new JsonObject();
-    cardSection1ButtonList1Button1.add("text", new JsonPrimitive("Create"));
-    cardSection1ButtonList1Button1.add("onClick", cardSection1ButtonList1Button1OnCLick);
+    JsonObject cardSectionButtonListButton = new JsonObject();
+    cardSectionButtonListButton.add("text", new JsonPrimitive("Create"));
+    cardSectionButtonListButton.add("onClick", cardSectionButtonListButtonOnCLick);
     
-    JsonArray cardSection1ButtonList1Buttons = new JsonArray();
-    cardSection1ButtonList1Buttons.add(cardSection1ButtonList1Button1);
+    JsonArray cardSectionButtonListButtons = new JsonArray();
+    cardSectionButtonListButtons.add(cardSectionButtonListButton);
 
-    JsonObject cardSection1ButtonList1 = new JsonObject();
-    cardSection1ButtonList1.add("buttons", cardSection1ButtonList1Buttons);
+    JsonObject cardSectionButtonList = new JsonObject();
+    cardSectionButtonList.add("buttons", cardSectionButtonListButtons);
 
-    JsonObject cardSection1ButtonList1Widget = new JsonObject();
-    cardSection1ButtonList1Widget.add("buttonList", cardSection1ButtonList1);
+    JsonObject cardSectionButtonListWidget = new JsonObject();
+    cardSectionButtonListWidget.add("buttonList", cardSectionButtonList);
 
     // Builds the form inputs with error texts for invalid values.
-    JsonArray cardSection1 = new JsonArray();
+    JsonArray cardSection = new JsonArray();
     if (errors.containsKey("name")) {
-      cardSection1.add(createErrorTextParagraph(errors.get("name").toString()));
+      cardSection.add(createErrorTextParagraph(errors.get("name").toString()));
     }
-    cardSection1.add(cardSection1TextInput1Widget);
+    cardSection.add(cardSectionTextInput1Widget);
     if (errors.containsKey("description")) {
-      cardSection1.add(createErrorTextParagraph(errors.get("description").toString()));
+      cardSection.add(createErrorTextParagraph(errors.get("description").toString()));
     }
-    cardSection1.add(cardSection1TextInput2Widget);
+    cardSection.add(cardSectionTextInput2Widget);
     if (errors.containsKey("priority")) {
-      cardSection1.add(createErrorTextParagraph(errors.get("priority").toString()));
+      cardSection.add(createErrorTextParagraph(errors.get("priority").toString()));
     }
-    cardSection1.add(cardSection1SelectionInput1Widget);
+    cardSection.add(cardSectionSelectionInput1Widget);
     if (errors.containsKey("impact")) {
-      cardSection1.add(createErrorTextParagraph(errors.get("impact").toString()));
+      cardSection.add(createErrorTextParagraph(errors.get("impact").toString()));
     }
 
-    cardSection1.add(cardSection1SelectionInput2Widget);
-    cardSection1.add(cardSection1ButtonList1Widget);
+    cardSection.add(cardSectionSelectionInput2Widget);
+    cardSection.add(cardSectionButtonListWidget);
 
-    JsonObject cardSection1Widgets = new JsonObject();
-    cardSection1Widgets.add("widgets", cardSection1);
+    JsonObject cardSectionWidgets = new JsonObject();
+    cardSectionWidgets.add("widgets", cardSection);
 
     JsonArray sections = new JsonArray();
-    sections.add(cardSection1Widgets);
+    sections.add(cardSectionWidgets);
 
     JsonObject card = new JsonObject();
-    card.add("header", cardHeader1);
+    card.add("header", cardHeader);
     card.add("sections", sections);
     
     JsonObject navigation = new JsonObject();
@@ -310,12 +307,12 @@ public class Create3pResources implements HttpFunction {
    * @return The resulting submit form response.
    */
   JsonObject createLinkRenderAction(String title, String url) {
-    JsonObject link1 = new JsonObject();
-    link1.add("title", new JsonPrimitive(title));
-    link1.add("url", new JsonPrimitive(url));
+    JsonObject link = new JsonObject();
+    link.add("title", new JsonPrimitive(title));
+    link.add("url", new JsonPrimitive(url));
 
     JsonArray links = new JsonArray();
-    links.add(link1);
+    links.add(link);
 
     JsonObject action = new JsonObject();
     action.add("links", links);

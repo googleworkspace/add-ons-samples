@@ -52,7 +52,7 @@ function caseLinkPreview(event) {
 * @return {!Map} A map with the extracted URL parameters.
 */
 function parseQuery(url) {
-  var query = url.split("?")[1];
+  const query = url.split("?")[1];
   if (query) {
     return query.split("&")
     .reduce(function(o, e) {
@@ -87,20 +87,20 @@ function parseQuery(url) {
  */
 function createCaseInputCard(event, errors, isUpdate) {
 
-  const cardHeader1 = CardService.newCardHeader()
+  const cardHeader = CardService.newCardHeader()
     .setTitle('Create a support case')
 
-  const cardSection1TextInput1 = CardService.newTextInput()
+  const cardSectionTextInput1 = CardService.newTextInput()
     .setFieldName('name')
     .setTitle('Name')
     .setMultiline(false);
 
-  const cardSection1TextInput2 = CardService.newTextInput()
+  const cardSectionTextInput2 = CardService.newTextInput()
     .setFieldName('description')
     .setTitle('Description')
     .setMultiline(true);
 
-  const cardSection1SelectionInput1 = CardService.newSelectionInput()
+  const cardSectionSelectionInput1 = CardService.newSelectionInput()
     .setFieldName('priority')
     .setTitle('Priority')
     .setType(CardService.SelectionInputType.DROPDOWN)
@@ -109,49 +109,49 @@ function createCaseInputCard(event, errors, isUpdate) {
     .addItem('P2', 'P2', false)
     .addItem('P3', 'P3', false);
 
-  const cardSection1SelectionInput2 = CardService.newSelectionInput()
+  const cardSectionSelectionInput2 = CardService.newSelectionInput()
     .setFieldName('impact')
     .setTitle('Impact')
     .setType(CardService.SelectionInputType.CHECK_BOX)
     .addItem('Blocks a critical customer operation', 'Blocks a critical customer operation', false);
 
-  const cardSection1ButtonList1Button1Action1 = CardService.newAction()
+  const cardSectionButtonListButtonAction = CardService.newAction()
     .setPersistValues(true)
     .setFunctionName('submitCaseCreationForm')
     .setParameters({});
 
-  const cardSection1ButtonList1Button1 = CardService.newTextButton()
+  const cardSectionButtonListButton = CardService.newTextButton()
     .setText('Create')
     .setTextButtonStyle(CardService.TextButtonStyle.TEXT)
-    .setOnClickAction(cardSection1ButtonList1Button1Action1);
+    .setOnClickAction(cardSectionButtonListButtonAction);
 
-  const cardSection1ButtonList1 = CardService.newButtonSet()
-    .addButton(cardSection1ButtonList1Button1);
+  const cardSectionButtonList = CardService.newButtonSet()
+    .addButton(cardSectionButtonListButton);
 
   // Builds the form inputs with error texts for invalid values.
-  const cardSection1 = CardService.newCardSection();
+  const cardSection = CardService.newCardSection();
   if (errors?.name) {
-    cardSection1.addWidget(createErrorTextParagraph(errors.name));
+    cardSection.addWidget(createErrorTextParagraph(errors.name));
   }
-  cardSection1.addWidget(cardSection1TextInput1);
+  cardSection.addWidget(cardSectionTextInput1);
   if (errors?.description) {
-    cardSection1.addWidget(createErrorTextParagraph(errors.description));
+    cardSection.addWidget(createErrorTextParagraph(errors.description));
   }
-  cardSection1.addWidget(cardSection1TextInput2);
+  cardSection.addWidget(cardSectionTextInput2);
   if (errors?.priority) {
-    cardSection1.addWidget(createErrorTextParagraph(errors.priority));
+    cardSection.addWidget(createErrorTextParagraph(errors.priority));
   }
-  cardSection1.addWidget(cardSection1SelectionInput1);
+  cardSection.addWidget(cardSectionSelectionInput1);
   if (errors?.impact) {
-    cardSection1.addWidget(createErrorTextParagraph(errors.impact));
+    cardSection.addWidget(createErrorTextParagraph(errors.impact));
   }
 
-  cardSection1.addWidget(cardSection1SelectionInput2);
-  cardSection1.addWidget(cardSection1ButtonList1);
+  cardSection.addWidget(cardSectionSelectionInput2);
+  cardSection.addWidget(cardSectionButtonList);
 
   const card = CardService.newCardBuilder()
-    .setHeader(cardHeader1)
-    .addSection(cardSection1)
+    .setHeader(cardHeader)
+    .addSection(cardSection)
     .build();
 
   if (isUpdate) {
@@ -188,9 +188,21 @@ function submitCaseCreationForm(event) {
   } else {
     const title = `Case ${caseDetails.name}`;
     // Adds the case details as parameters to the generated link URL.
-    const url = 'https://example.com/support/cases/?' + Object.entries(caseDetails).flatMap(([k, v]) => Array.isArray(v) ? v.map(e => `${k}=${encodeURIComponent(e)}`) : `${k}=${encodeURIComponent(v)}`).join("&");
+    const url = 'https://example.com/support/cases/?' + generateQuery(caseDetails);
     return createLinkRenderAction(title, url);
   }
+}
+
+/**
+* Build a query path with URL parameters.
+*
+* @param {!Map} parameters A map with the URL parameters.
+* @return {!string} The resulting query path.
+*/
+function generateQuery(parameters) {
+  return Object.entries(parameters).flatMap(([k, v]) =>
+    Array.isArray(v) ? v.map(e => `${k}=${encodeURIComponent(e)}`) : `${k}=${encodeURIComponent(v)}`
+  ).join("&");
 }
 
 // [END add_ons_3p_resources_submit_create_case]
@@ -205,16 +217,16 @@ function submitCaseCreationForm(event) {
  */
 function validateFormInputs(caseDetails) {
   const errors = {};
-  if (caseDetails.name === undefined) {
+  if (!caseDetails.name) {
     errors.name = 'You must provide a name';
   }
-  if (caseDetails.description === undefined) {
+  if (!caseDetails.description) {
     errors.description = 'You must provide a description';
   }
-  if (caseDetails.priority === undefined) {
+  if (!caseDetails.priority) {
     errors.priority = 'You must provide a priority';
   }
-  if (caseDetails.impact && !(['P0', 'P1']).includes(caseDetails.priority)) {
+  if (caseDetails.impact && caseDetails.priority !== 'P0' && caseDetails.priority !== 'P1') {
     errors.impact = 'If an issue blocks a critical customer operation, priority must be P0 or P1';
   }
 
