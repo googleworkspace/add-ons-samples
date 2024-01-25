@@ -3,12 +3,13 @@
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
   "oauthScopes": [
-    "https://www.googleapis.com/auth/workspace.linkpreview"
+    "https://www.googleapis.com/auth/workspace.linkpreview",
+    "https://www.googleapis.com/auth/workspace.linkcreate"
   ],
   "addOns": {
     "common": {
-      "name": "Preview support cases",
-      "logoUrl": "https://developers.google.com/workspace/add-ons/images/link-icon.png",
+      "name": "Manage support cases",
+      "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png",
       "layoutProperties": {
         "primaryColor": "#dd4b39"
       }
@@ -35,20 +36,17 @@
             "es": "Caso de soporte"
           },
           "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png"
-        },
+        }
+      ],
+      "createActionTriggers": [
         {
-          "runFunction": "peopleLinkPreview",
-          "patterns": [
-            {
-              "hostPattern": "example.com",
-              "pathPrefix": "people"
-            }
-          ],
-          "labelText": "People",
+          "id": "createCase",
+          "labelText": "Create support case",
           "localizedLabelText": {
-            "es": "Personas"
+            "es": "Crear caso de soporte"
           },
-          "logoUrl": "https://developers.google.com/workspace/add-ons/images/person-icon.png"
+          "runFunction": "createCaseInputCard",
+          "logoUrl": "https://developers.google.com/workspace/add-ons/images/support-icon.png"
         }
       ]
     }

@@ -35,19 +35,16 @@ limitations under the License.
       <artifactId>functions-framework-api</artifactId>
       <version>1.0.4</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.9.1</version>
     </dependency>
-
     <dependency>
-      <groupId>com.google.apis</groupId>
-      <artifactId>google-api-services-chat</artifactId>
-      <version>v1-rev20211125-1.32.1</version>
-    </dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.1</version>
+  </dependency>
   </dependencies>
 
   <!-- Required for Java 11 functions in the inline editor -->
