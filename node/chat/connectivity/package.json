@@ -1,0 +1,24 @@
+{
+  "name": "connectivity-app",
+  "version": "1.0.0",
+  "description": "This is a Google Chat app that uses OAuth to call Meet API, storing user tokens in a Firestore database.",
+  "main": "index.js",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint *.js",
+    "lint:fix": "eslint --fix *.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "google-auth-library": "^10.0.0-rc.3",
+    "@google-cloud/firestore": "^7.11.0",
+    "@google-apps/meet": "^0.7.0",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.35.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
