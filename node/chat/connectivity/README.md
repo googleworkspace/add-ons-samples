@@ -103,7 +103,7 @@ calling the Google Meet API with their consent.
 * Under **Connection settings**, select **HTTP endpoint URL**.
 * Under **Triggers**, select **Use a common HTTP endpoint URL for all triggers**.
 * In **HTTP endpoint URL** enter your App Engine app's URL (obtained in the previous
-  deployment steps) in **** as
+  deployment steps).
 * Under **Commands**, click **Add a command**, and click **Done** after setting:
     * **Command Id** to `1`.
     * **Description** and **Quick command name** to `Logout`.
