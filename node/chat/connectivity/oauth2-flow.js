@@ -135,7 +135,7 @@ export async function oauth2callback(req, res) {
 
     // Get credentials including access and refresh tokens.
     const oauth2Client = createClient();
-    const {credentials} = await oauth2Client.getToken(q.code);
+    const credentials = (await oauth2Client.getToken(q.code)).tokens;
 
     const ticket = await oauth2Client.verifyIdToken({
       idToken: credentials.id_token,
