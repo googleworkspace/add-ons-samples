@@ -90,7 +90,7 @@ export function generateAuthUrl(userName, configCompleteRedirectUrl) {
   const authorizeUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: scopes.join(' '),
-    include_granted_scopes: true,
+    prompt: 'consent',
     state: base64encode({ userName, configCompleteRedirectUrl }),
   });
   return authorizeUrl;
