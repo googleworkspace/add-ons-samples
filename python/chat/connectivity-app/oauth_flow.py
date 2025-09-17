@@ -22,8 +22,7 @@ import flask
 from google_auth_oauthlib.flow import Flow
 from google.auth.transport import requests
 from google.oauth2 import id_token
-from google.oauth2.credentials import Credentials
-from database import store_token
+from database import store_credentials
 
 # This variable specifies the name of a file that contains the OAuth 2.0
 # information for this application, including its client_id and client_secret.
@@ -61,21 +60,10 @@ def generate_auth_url(user_name: str, config_complete_redirect_url: str) -> str:
     )
     return auth_url
 
-def create_credentials(access_token: str, refresh_token: str) -> Credentials:
-    """Returns the Credentials to authenticate using the user tokens."""
-    return Credentials(
-        token = access_token,
-        refresh_token = refresh_token,
-        token_uri = KEYS["token_uri"],
-        client_id = KEYS["client_id"],
-        client_secret = KEYS["client_secret"],
-        scopes = SCOPES
-    )
-
 def oauth2callback(url: str):
     """Handles an OAuth2 callback request.
-    If the authorization was succesful, it exchanges the received code with the
-    access and refresh tokens and saves them into Firestore to be used when
+    If the authorization was succesful, it exchanges the received code with
+    credentials and saves them into Firestore to be used when
     calling the Chat API. Then, it redirects the response to the
     configCompleteRedirectUrl specified in the authorization URL.
     If the authorization fails, it just prints an error message to the response.
@@ -111,8 +99,8 @@ def oauth2callback(url: str):
             the user who initiated the request. Please start the configuration
             again and use the same account you're using in Google Chat."""
 
-    # Save tokens to the database so the app can use them to make API calls.
-    store_token(user_name, credentials.token, credentials.refresh_token)
+    # Save credentials to the database so the app can use them to make API calls.
+    store_credentials(user_name, credentials)
 
     # Redirect to the URL that tells Google Chat that the configuration is
     # completed.
