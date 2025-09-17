@@ -80,6 +80,9 @@ app.post('/', async (req, res) => {
       });
       const [meetSpace] = await meetClient.createSpace({});
       
+      // Save updated credentials to the database so the app can use them to make API calls.
+      await DatabaseService.saveUserCredentials(userName, oauth2Client.credentials);
+
       // Reply a Chat message with the link
       return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: {
         message: { text: `New Meet was created: ${meetSpace.meetingUri}` }
