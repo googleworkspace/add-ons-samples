@@ -20,9 +20,9 @@ import logging
 import os
 import flask
 from werkzeug.middleware.proxy_fix import ProxyFix
-from oauth_flow import oauth2callback, create_credentials, generate_auth_url
+from oauth_flow import oauth2callback, generate_auth_url
 from google.api_core.exceptions import Unauthenticated
-from database import get_token, delete_token
+from database import get_credentials, store_credentials, delete_credentials
 from google.apps import meet_v2 as google_meet
 
 # Configure the application
@@ -62,23 +62,22 @@ def on_event() -> dict:
                 # Handle message events
                 config_complete_redirect_url = chat_event["messagePayload"]["configCompleteRedirectUri"]
 
-                # Try to obtain an existing OAuth2 token from storage.
-                tokens = get_token(user_name)
+                # Try to obtain an existing OAuth2 credentials from storage.
+                credentials = get_credentials(user_name)
 
-                if tokens is None:
-                    # App doesn't have tokens for the user yet.
-                    # Request configuration to obtain OAuth2 tokens.
+                if credentials is None:
+                    # App doesn't have credentials for the user yet.
+                    # Request configuration to obtain OAuth2 credentials.
                     return get_config_request(user_name, config_complete_redirect_url)
 
-                # Authenticate with the user's OAuth2 tokens.
-                credentials = create_credentials(
-                    tokens["accessToken"], tokens["refreshToken"])
-    
                 # Call Meet API to create the new space with the user's OAuth2 credentials.
                 meet_client = google_meet.SpacesServiceClient(
                     credentials = credentials
                 )
                 meet_space = meet_client.create_space(google_meet.CreateSpaceRequest())
+
+                # Save updated credentials to the database so the app can use them to make API calls.
+                store_credentials(user_name, credentials)
 
                 # Reply a Chat message with the link
                 return { "hostAppDataAction": { "chatDataAction": { "createMessageAction": { "message": {
@@ -89,8 +88,8 @@ def on_event() -> dict:
                 config_complete_redirect_url = chat_event["appCommandPayload"]["configCompleteRedirectUri"]
 
                 if chat_event["appCommandPayload"]["appCommandMetadata"]["appCommandId"] == LOGOUT_COMMAND_ID:
-                    # Delete OAuth2 token from storage if any.
-                    delete_token(user_name)
+                    # Delete OAuth2 credentials from storage if any.
+                    delete_credentials(user_name)
                     # Reply a Chat message with confirmation
                     return { "hostAppDataAction": { "chatDataAction": { "createMessageAction": { "message": {
                         "text": "You are now logged out!"

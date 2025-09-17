@@ -14,7 +14,9 @@
 
 """Service that handles database operations."""
 
+import json
 from google.cloud import firestore
+from google.oauth2.credentials import Credentials
 
 # The prefix used by the Google Chat API in the User resource name.
 USERS_PREFIX = "users/"
@@ -25,19 +27,19 @@ USERS_COLLECTION = "users"
 # Initialize the Firestore database using Application Default Credentials.
 db = firestore.Client(database="auth-data")
 
-def store_token(user_name: str, access_token: str, refresh_token: str):
+def store_credentials(user_name: str, creds: Credentials):
     """Saves the user's OAuth2 credentials to storage."""
     doc_ref = db.collection(USERS_COLLECTION).document(user_name.replace(USERS_PREFIX, ""))
-    doc_ref.set({ "accessToken": access_token, "refreshToken": refresh_token })
+    doc_ref.set(json.loads(creds.to_json()))
 
-def get_token(user_name: str) -> dict | None:
+def get_credentials(user_name: str) -> Credentials | None:
     """Fetches the user's OAuth2 credentials from storage."""
     doc = db.collection(USERS_COLLECTION).document(user_name.replace(USERS_PREFIX, "")).get()
     if doc.exists:
-        return doc.to_dict()
+        return Credentials.from_authorized_user_info(doc.to_dict())
     return None
 
-def delete_token(user_name: str):
+def delete_credentials(user_name: str):
     """Deletes the user's OAuth2 credentials from storage."""
     doc_ref = db.collection(USERS_COLLECTION).document(user_name.replace(USERS_PREFIX, ""))
     doc_ref.delete()
