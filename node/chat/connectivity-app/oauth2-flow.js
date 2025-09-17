@@ -26,7 +26,7 @@ import {DatabaseService} from './database.js';
 import keys from './client_secrets.json' with { type: 'json' };
 
 // Define the app's authorization scopes.
-const scopes = ['https://www.googleapis.com/auth/meetings.space.created'];
+const scopes = ['openid', 'https://www.googleapis.com/auth/meetings.space.created'];
 
 /**
  * Converts the provided data to a JSON string then encodes it with Base64.
