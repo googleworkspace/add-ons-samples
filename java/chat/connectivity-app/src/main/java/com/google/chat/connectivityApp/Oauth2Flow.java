@@ -119,23 +119,6 @@ public class Oauth2Flow {
   }
 
   /**
-   * Creates a Google Auth Credentials object from OAuth user's tokens.
-   * 
-   * @param tokens the user's OAuth tokens
-   * @return a Credentials object to use with Google APIs.
-   */
-  public UserCredentials createUserCredentials(Tokens tokens) {
-    return UserCredentials
-        .newBuilder()
-        .setClientId(clientSecrets.getDetails().getClientId())
-        .setClientSecret(clientSecrets.getDetails().getClientSecret())
-        .setAccessToken(new AccessToken(
-            tokens.getAccessToken(), tokens.getExpiryDate()))
-        .setRefreshToken(tokens.getRefreshToken())
-        .build();
-  }
-
-  /**
    * Handles an OAuth2 callback request.
    * 
    * If the authorization was succesful, it exchanges the received code with
@@ -201,13 +184,18 @@ public class Oauth2Flow {
           " again and use the same account you're using in Google Chat.");
     }
 
-    // Save user's tokens to the database so the app can use them to make API calls.
-    database.saveUserTokens(
+    // Save user's credentials to the database so the app can use them to make API calls.
+    database.saveUserCredentials(
       userId,
-      new Tokens(
-        tokenResponse.getAccessToken(),
-        tokenResponse.getRefreshToken(),
-        new Date(System.currentTimeMillis() + tokenResponse.getExpiresInSeconds() * 1000L)));
+      UserCredentials
+          .newBuilder()
+          .setClientId(clientSecrets.getDetails().getClientId())
+          .setClientSecret(clientSecrets.getDetails().getClientSecret())
+          .setAccessToken(new AccessToken(
+              tokenResponse.getAccessToken(),
+              new Date(System.currentTimeMillis() + tokenResponse.getExpiresInSeconds() * 1000L)))
+          .setRefreshToken(tokenResponse.getRefreshToken())
+          .build());
 
     // Redirect to the URL that tells Google Chat that the configuration is
     // completed.

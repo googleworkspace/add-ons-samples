@@ -16,6 +16,7 @@
 package com.google.chat.connectivityApp;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.auth.oauth2.UserCredentials;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.gax.rpc.ApiException;
 import com.google.api.gax.rpc.StatusCode.Code;
@@ -25,6 +26,7 @@ import com.google.apps.meet.v2.SpacesServiceClient;
 import com.google.apps.meet.v2.SpacesServiceSettings;
 import com.google.gson.JsonObject;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.boot.SpringApplication;
@@ -66,8 +68,8 @@ public class App {
   /**
    * App route that handles callback requests from the OAuth authorization flow.
    * The handler exhanges the code received from the OAuth2 server with a set of
-   * credentials, stores the authentication and refresh tokens in the database,
-   * and redirects the request to the config complete URL from the request.
+   * credentials, stores them in the database, and redirects the request to the
+   * config complete URL from the request.
    */
   @GetMapping("/oauth2")
   public RedirectView onOauthCallback(
@@ -94,21 +96,19 @@ public class App {
         // Handle message events
         configCompleteRedirectUrl = chatEvent.get("messagePayload").get("configCompleteRedirectUri").asText();
 
-        // Try to obtain existing OAuth2 tokens from storage.
-        Optional<Tokens> tokens = database.getUserTokens(userName);
+        // Try to obtain existing OAuth2 credentials from storage.
+        Optional<UserCredentials> credentials = database.getUserCredentials(userName);
         
-        if (tokens.isEmpty()) {
-          // App doesn't have tokens for the user yet.
-          // Request configuration to obtain OAuth2 tokens.
+        if (credentials.isEmpty()) {
+          // App doesn't have credentials for the user yet.
+          // Request configuration to obtain OAuth2 credentials.
           return getConfigRequest(userName, configCompleteRedirectUrl);
         }
 
         // Authenticate with the user's OAuth2 credentials.
         SpacesServiceSettings spacesServiceSettings = SpacesServiceSettings
             .newBuilder()
-            .setCredentialsProvider(
-                FixedCredentialsProvider.create(
-                  oauth2Flow.createUserCredentials(tokens.get())))
+            .setCredentialsProvider(FixedCredentialsProvider.create(credentials.get()))
             .build();
 
         try (SpacesServiceClient spacesServiceClient =
@@ -118,6 +118,9 @@ public class App {
               .setSpace(Space.newBuilder().build())
               .build();
           Space createdSpace = spacesServiceClient.createSpace(request);
+
+          // Save updated user's credentials to the database so the app can use them to make API calls.
+          database.saveUserCredentials(userName, credentials.get());
 
           // Reply a Chat message with the link
           return createChatTextMessageReponse("New Meet was created: " + createdSpace.getMeetingUri());
@@ -129,8 +132,8 @@ public class App {
 
         if(logout == chatEvent.get("appCommandPayload")
             .get("appCommandMetadata").get("appCommandId").asInt()) {
-          // Delete OAuth2 tokens from storage if any.
-          database.deleteUserTokens(userName);
+          // Delete OAuth2 credentials from storage if any.
+          database.deleteUserCredentials(userName);
           // Reply a Chat message with confirmation
           return createChatTextMessageReponse("You are now logged out!");
         }
