@@ -154,11 +154,11 @@ export async function oauth2callback(req, res) {
       ' again and use the same account you\'re using in Google Chat.');
     return;
   }
-    // Save credentials to the database so the app can use them to make API calls.
+  // Save credentials to the database so the app can use them to make API calls.
   await DatabaseService.saveUserCredentials(state.userName, credentials);
 
-    // Redirect to the URL that tells Google Chat that the configuration is
-    // completed.
+  // Redirect to the URL that tells Google Chat that the configuration is
+  // completed.
   res.redirect(state.configCompleteRedirectUrl);
 }
 
