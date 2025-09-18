@@ -93,7 +93,7 @@ app.post('/', async (req, res) => {
 
       switch (chatEvent.appCommandPayload.appCommandMetadata.appCommandId) {
         case LOGOUT_COMMAND_ID:
-          // Delete OAuth2 token from storage if any.
+          // Delete OAuth2 credentials from storage if any.
           await DatabaseService.deleteUserCredentials(userName);
           // Reply a Chat message with confirmation
           return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
@@ -115,6 +115,10 @@ app.post('/', async (req, res) => {
  * Returns an action response that tells Chat to request configuration for the
  * app. The configuration will be tied to the user who sent the event.
  * 
+ * @param {!string} userName The resource name of the Chat user requesting
+ *     authorization.
+ * @param {!string} configCompleteRedirectUrl The URL to redirect to after
+ *     completing the flow.
  * @return {Object} An ActionResponse message request additional configuration.
  */
 function getConfigRequestResponse(userName, configCompleteRedirectUrl) {
