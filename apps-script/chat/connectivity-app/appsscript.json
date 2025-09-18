@@ -1,0 +1,22 @@
+{
+  "timeZone": "America/New_York",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "libraries": [{
+      "userSymbol": "OAuth2",
+      "version": "43",
+      "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF"
+    }]
+  },
+  "addOns": {
+    "common": {
+      "name": "Connectivity app",
+      "logoUrl": "https://goo.gle/3SfMkjb"
+    },
+    "chat": {}
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.external_request"
+  ]
+}

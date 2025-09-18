@@ -3,7 +3,7 @@
 This sample demonstrates how to create a Google Chat app that requests
 authorization from the user to make API calls on their behalf. The first
 time the user interacts with the app, it requests offline OAuth credentials for the
-user and saves them to a Firestore database. If the user interacts with the app
+user and saves them to storage. If the user interacts with the app
 again, the saved credentials are used so the app can make API calls on behalf of the
 user without asking for authorization again. Once saved, the OAuth credentials could
 even be used without any further user interactions.

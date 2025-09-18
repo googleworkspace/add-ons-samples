@@ -8,88 +8,61 @@ again, the saved credentials are used so the app can make API calls on behalf of
 user without asking for authorization again. Once saved, the OAuth credentials could
 even be used without any further user interactions.
 
-This app is built using Python on Google App Engine (Standard Environment) and
-leverages Google's OAuth2 for authorization and Firestore for data storage. It
-replies with a Chat message that contains the link to a Meet space that was created
-calling the Google Meet API with their consent.
+This app is built using Apps Script and leverages Google's OAuth2 for authorization
+and Apps Script's User Properties for data storage. It replies with a Chat message
+that contains the link to a Meet space that was created calling the Google Meet API
+with their consent.
 
 **Key Features:**
 
 * **User Authorization:** Securely requests user consent to call Meet API with
   their credentials.
-* **Meet API Integration:** Calls Meet API to create a new Meet space on behalf
+* **Meet API Integration:** Calls Meet REST API to create a new Meet space on behalf
   of the user.
 * **Google Chat Integration:** Responds to DMs and @mentions in Google Chat. If
   necessary, request configuration to start an OAuth authorization flow.
-* **App Engine Deployment:** Provides step-by-step instructions for deploying
-  to App Engine.
-* **Cloud Firestore:** Stores user credentials in a Firestore database.
+* **Apps Script Deployment:** Provides step-by-step instructions for deploying
+  to Apps Script.
 
 ## Prerequisites
 
-* **Python 3:**  [Download](https://www.python.org/downloads/)
-* **Google Cloud SDK:**  [Install](https://cloud.google.com/sdk/docs/install)
+* **Apps Script Project:**  [Create](https://script.google.com/home/projects/create)
 * **Google Cloud Project:**  [Create](https://console.cloud.google.com/projectcreate)
 
 ##  Deployment Steps
 
 1. **Enable APIs:**
 
-   * Enable the Cloud Firestore, Meet, and Google Chat APIs using the
-     [console](https://console.cloud.google.com/apis/enableflow?apiid=firestore.googleapis.com,meet.googleapis.com,chat.googleapis.com)
-     or gcloud:
+   * Enable the Meet, and Google Chat APIs using the
+     [console](https://console.cloud.google.com/apis/enableflow?apiid=meet.googleapis.com,chat.googleapis.com).
 
-     ```bash
-     gcloud services enable firestore.googleapis.com meet.googleapis.com chat.googleapis.com
-     ```
+1. **Deploy Apps Script Project:**
 
-1. **Initiate Deployment to App Engine:**
-
-   * Go to [App Engine](https://console.cloud.google.com/appengine) and
-     initialize an application.
-
-   * Deploy the app to App Engine:
-
-     ```bash
-     gcloud app deploy
-     ```
+   * Open the project from [Apps Script console](ttps://script.google.com).
+   * In `Project Settings`, enable the option
+     `Show "appsscript.json" manifest file in editor` and copy the `Script ID`.
+   * In `Editor`, replace the source files `appsscript.json` and `Code.gs` with
+     the ones found in this directory.
+   * Click `Deploy` then `Test deployments` from the top right corner.
+   * In the opened dialog, click `Install` and copy the `Head Deployment ID`.
 
 1. **Create and Use OAuth Client ID:**
-
-   * Get the app hostname:
-
-     ```bash
-     gcloud app describe | grep defaultHostname
-     ```
 
    * In your Google Cloud project, go to
      [APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials).
    * Click `Create Credentials > OAuth client ID`.
    * Select `Web application` as the application type.
-   * Add `<hostname from the previous step>/oauth2` to `Authorized redirect URIs`.
-   * Download the JSON file and rename it to `client_secrets.json` in your
-     project directory.
-   * Redeploy the app with the file `client_secrets.json`:
+   * Add `https://script.google.com/macros/d/<Script ID from the previous step>/usercallback`
+     to `Authorized redirect URIs`.
+   * Download the JSON file and rename it to `client_secrets.json`.
 
-     ```bash
-     gcloud app deploy
-     ```
+1. **Configure Apps Script Project Auth:**
 
-1. **Create a Firestore Database:**
-
-   *  Create a Firestore database in native mode named `auth-data` using the
-      [console](https://console.cloud.google.com/firestore) or gcloud:
-
-      ```bash
-      gcloud firestore databases create \
-      --database=auth-data \
-      --location=REGION \
-      --type=firestore-native
-      ```
-
-      Replace `REGION` with a
-      [Firestore location](https://cloud.google.com/firestore/docs/locations#types)
-      such as `nam5` or `eur3`.
+   * Go to back to the project from [Apps Script console](ttps://script.google.com).
+   * In `Editor`, open the source file `Code.gs`.
+   * Set the varibale value `CLIENT_SECRETS` to the entire content of the file
+     `client_secrets.json` from the previous step.
+   * Save to automatically deploy the change.
 
 ## Create the Google Chat app
 
@@ -100,10 +73,9 @@ calling the Google Meet API with their consent.
 * In **Avatar URL**, enter `https://developers.google.com/chat/images/quickstart-app-avatar.png`.
 * In **Description**, enter `Connectivity app`.
 * Under **Functionality**, select **Join spaces and group conversations**.
-* Under **Connection settings**, select **HTTP endpoint URL**.
-* Under **Triggers**, select **Use a common HTTP endpoint URL for all triggers**.
-* In **HTTP endpoint URL** enter your App Engine app's URL (obtained in the previous
-  deployment steps).
+* Under **Connection settings**, select **Apps Script** and enter the
+  `Head Deployment ID` (obtained in the previous deployment steps) in
+  **Deployment ID**.
 * Under **Commands**, click **Add a command**, and click **Done** after setting:
     * **Command Id** to `1`.
     * **Description** and **Quick command name** to `Logout`.
