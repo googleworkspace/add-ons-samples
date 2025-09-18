@@ -1,0 +1,19 @@
+{
+  "name": "gen-ai-app-prompt",
+  "version": "0.0.1",
+  "description": "A Google Chat app built as Google Workspace add-on that uses a Gen AI model to reply to textual messages from users in natural language",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "@google/genai": "1.15.0"
+  },
+  "author": "Google LLC",
+  "license": "Apache-2.0"
+}

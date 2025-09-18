@@ -1,0 +1,51 @@
+/**
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import express from 'express';
+import { GoogleGenAI } from '@google/genai';
+
+const port = parseInt(process.env.PORT) || 8080;
+const projectID = process.env.PROJECT_ID || 'your-google-cloud-project-id';
+const location = process.env.LOCATION || 'your-google-cloud-project-location';
+const model =  process.env.MODEL || 'gemini-2.5-flash-lite';
+
+const app = express();
+app.use(express.json());
+
+const genAI = new GoogleGenAI({vertexai: true, project: projectID, location: location});
+
+/**
+ * Handles HTTP requests from the Google Workspace add-on.
+ *
+ * @param {Object} req - The HTTP request object sent from Google Workspace.
+ * @param {Object} res - The HTTP response object.
+ */
+app.post('/', async (req, res) => {
+  // Send a Chat message with the generated answer
+  return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
+    text: await generateAnswer(req.body.chat.messagePayload.message.text)
+  }}}}});
+});
+
+async function generateAnswer(message) {
+  const prompt = 'In a consice and with plain text only (no formatting), answer the following message in the same language: ' + message;
+  const aiResponse = await genAI.models.generateContent({model: model, contents: prompt});
+  return aiResponse.candidates[0].content.parts[0].text;
+};
+
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});
