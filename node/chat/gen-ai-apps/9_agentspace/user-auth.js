@@ -19,7 +19,7 @@ import { parse } from 'url';
 import { DatabaseService } from './database.js';
 
 // The application's OAuth2 client credentials.
-import credentials from './credentials.json' with { type: 'json' };
+import credentials from './credentials_chat_user.json' with { type: 'json' };
 const keys = credentials.web;
 
 // Define the app's authorization scopes to access the user's data and

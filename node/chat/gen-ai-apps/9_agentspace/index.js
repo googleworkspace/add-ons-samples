@@ -82,22 +82,12 @@ app.post('/', async (req, res) => {
         configCompleteRedirectUrl = chatEvent.messagePayload.configCompleteRedirectUri;
 
         // Send a Chat message based on the generated answer
-        return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: {
-          message: await createAgentAnswerChatMessage(messageText, userName, spaceName)
-        }}}});
-      } else if(chatEvent.buttonClickedPayload) {
-        // Handles button click events
-        const spaceName = chatEvent.buttonClickedPayload.space.name;
-        switch(req.body.commonEventObject.parameters.actionName) {
-          case "processSuggestedMessage":
-            // Retrieve the text of the message from the event parameters
-            const text = req.body.commonEventObject.parameters["relatedQuestion"];
+        const chatMessageName = await AgentspaceService.generateAndSendAssistAnswer(chatAgentPrembule, messageText, userName, spaceName);
 
-            // Send the resulting Chat message on behalf of the user
-            return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: {
-              message: await processSuggestedMessage(text, userName, spaceName)
-            }}}});
-        }
+        // TODO: This is required to avoid visible failures in Chat UI, return a no op action would be ideal
+        return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
+          text: 'Any other question?'
+        }}}}});
       }
     } catch (e) {
       if (e instanceof InvalidCredentialsException) {
@@ -185,7 +175,7 @@ app.post('/', async (req, res) => {
 
     // Add the response section
     if (question) {
-      card.sections.push(...await createAgentAnswerSections(question, userId, type, contextId, contextMetadata, addonAuth));
+      card.sections.push(...await createSearchAgentAnswerSections(question, userId, type, contextId, contextMetadata, addonAuth));
       // Update card based on the question asked
       return res.send({ action: { navigations: [{ updateCard: card }]}});
     }
@@ -204,9 +194,9 @@ app.post('/', async (req, res) => {
  * @param {!OAuthClient} addonAuth The OAuth2 client with user credentials
  * @returns {Promise<Array>} Answer sections of the UI.
  */
-async function createAgentAnswerSections(messageText, userName, type, messageId, messageMetadata, addonAuth) {
+async function createSearchAgentAnswerSections(messageText, userName, type, messageId, messageMetadata, addonAuth) {
   console.log('Generating the answer...');
-  const answer = await AgentspaceService.generateAnswer(addonAgentPrembule + `\n\nThe user is looking at the following ${type} element:\n\n${JSON.stringify(messageMetadata)}\n\nAnswer all questions keeping this context in mind but do not hesitate to gather more information and resources if useful.`, messageText, userName, messageId, addonAuth);
+  const answer = await AgentspaceService.generateSearchAnswer(addonAgentPrembule + `\n\nThe user is looking at the following ${type} element:\n\n${JSON.stringify(messageMetadata)}\n\nAnswer all questions keeping this context in mind but do not hesitate to gather more information and resources if useful.`, messageText, userName, messageId, addonAuth);
 
   // Generate answer sections
   let sections = [];
@@ -263,7 +253,7 @@ async function createAgentAnswerSections(messageText, userName, type, messageId,
     }
 
     // Add a section with buttons for sources (if any)
-    const sources = await AgentspaceService.extractSourcesFromGeneratedAnswer(answer);
+    const sources = await AgentspaceService.extractSourcesFromGeneratedSearchAnswer(answer);
     if (sources && sources.length > 0) {
       let sourcesWidgets = [];
       sources.forEach(source => {
@@ -292,116 +282,38 @@ async function createAgentAnswerSections(messageText, userName, type, messageId,
 }
 
 /**
- * Creates a Chat message with generated answer.
- * 
- * @param {!string} messageText The question to answer.
- * @param {!string} userName The resource name of the user.
- * @param {!string} spaceName The resource name of the chat space.
- * @returns {Promise<Object>} The Chat message.
- */
-async function createAgentAnswerChatMessage(messageText, userName, spaceName) {
-  const answer = await AgentspaceService.generateAnswer(chatAgentPrembule, messageText, userName, spaceName);
-
-  // Generate Chat response cards
-  let cardsV2 = [];
-
-  // Add a card with buttons for suggested questions (if any)
-  const relatedQuestions = answer.relatedQuestions;
-  if (relatedQuestions && relatedQuestions.length > 0) {
-    let suggestionsCardWidgets = [];
-    suggestionsCardWidgets.push({ divider: {}});
-    relatedQuestions.forEach(relatedQuestion => {
-      suggestionsCardWidgets.push({ buttonList: { buttons: [{
-        type: 'BORDERLESS',
-        icon: { materialIcon: { name: 'search' }},
-        text: relatedQuestion,
-        onClick: { action: {
-          function: BASE_URL,
-          parameters: [
-            { key: "actionName", value: "processSuggestedMessage" },
-            { key: "relatedQuestion", value: relatedQuestion }
-          ]
-        }}
-      }]}});
-    });
-    cardsV2.push({
-      cardId: "suggestionsCard",
-      card: { sections: [{
-        header: "Suggestions",
-        collapsible: true,
-        uncollapsibleWidgetsCount: 4, // 1 divider + 3 buttons
-        widgets: suggestionsCardWidgets
-      }]}
-    });
-  }
-
-  // Add a card with buttons for sources (if any)
-  const sources = await AgentspaceService.extractSourcesFromGeneratedAnswer(answer);
-  if (sources && sources.length > 0) {
-    let sourcesCardWidgets = [];
-    sourcesCardWidgets.push({ divider: {}});
-    sources.forEach(source => {
-      sourcesCardWidgets.push({ buttonList: { buttons: [{
-        type: 'BORDERLESS',
-        icon: {
-          iconUrl: source.iconUrl ? source.iconUrl : undefined,
-          materialIcon: source.iconUrl ? undefined : { name: 'link' }
-        },
-        text: source.title,
-        onClick: { openLink: { url: source.link }}
-      }]}});
-    });
-    cardsV2.push({
-      cardId: "sourcesCard",
-      card: { sections: [{
-        header: "Sources",
-        collapsible: true,
-        uncollapsibleWidgetsCount: 4, // 1 divider + 3 buttons
-        widgets: sourcesCardWidgets
-      }]}
-    });
-  }
-  console.log('Generated Chat message cards: ' + JSON.stringify(cardsV2));
-
-  // Return the Chat message based on the generated answer
-  return {
-    text: answer.answerText,
-    cardsV2: cardsV2
-  };
-}
-
-/**
  * Initializes the Chat Service client with user credentials.
  * 
  * @param {!string} userName The resource name of the user providing the credentials.
  * @returns {Promise<SessionServiceClient>} An initialized
  *     Chat Service client.
  */
-async function initializeChatServiceClient(userName) {
-  return new ChatServiceClient({
-    authClient: await createOAuth2Client(userName)
-  });
-};
+// async function initializeChatServiceClient(userName) {
+//   return new ChatServiceClient({
+//     authClient: await createOAuth2Client(userName)
+//   });
+// };
 
 /**
+ * TODO: recycle this logic for the transition from add on to chat space
  * Send a suggested message in the Chat space on behalf of the user.
  *
  * @param {Object} relatedQuestion The related question to reply to.
  * @param {!string} userName The resource name of the user.
  * @param {!string} spaceName The resource name of the chat space.
  */
-async function processSuggestedMessage(relatedQuestion, userName, spaceName) {
-  // Send the Chat message on behalf of the user
-  const chatService = await initializeChatServiceClient(userName);
-  const [createdMessage] = await chatService.createMessage({
-    parent: spaceName,
-    message: { text: relatedQuestion }
-  });
-  console.log('Created Chat message: ' + JSON.stringify(createdMessage));
+// async function processSuggestedMessage(relatedQuestion, userName, spaceName) {
+//   // Send the Chat message on behalf of the user
+//   const chatService = await initializeChatServiceClient(userName);
+//   const [createdMessage] = await chatService.createMessage({
+//     parent: spaceName,
+//     message: { text: relatedQuestion }
+//   });
+//   console.log('Created Chat message: ' + JSON.stringify(createdMessage));
 
-  // Return the Chat message based on the generated answer
-  return await createAgentAnswerChatMessage(relatedQuestion, userName, spaceName);
-}
+//   // Return the Chat message based on the generated answer
+//   return await AgentspaceService.generateAndSendAssistAnswer(chatAgentPrembule, relatedQuestion, userName, spaceName);
+// }
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

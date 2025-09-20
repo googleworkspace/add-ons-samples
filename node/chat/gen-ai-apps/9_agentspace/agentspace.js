@@ -17,12 +17,18 @@
 import { createOAuth2Client } from './user-auth.js';
 import { SPACES_PREFIX, EMAILS_PREFIX, DatabaseService } from './database.js';
 import { v1, v1alpha, v1beta } from '@google-cloud/discoveryengine';
+import { google } from 'googleapis';
 
 const projectNumber = process.env.PROJECT_NUMBER || 'your-google-cloud-project-number';
 const agentLocation = process.env.AGENT_LOCATION || 'your-agent-location';
 const agentModel =  process.env.AGENT_MODEL || 'gemini-2.5-flash/answer_gen/v1';
 const engineID = process.env.ENGINE_ID || 'your-engine-id';
-const discoveryengine = v1alpha;
+const discoveryengineV1Alpha = v1alpha;
+const discoveryengineV1 = v1;
+
+// Chat app authentication
+const credentialsChat = './credentials_chat_app.json'; 
+const chatScopes = ['https://www.googleapis.com/auth/chat.bot'];
 
 /**
  * Initializes the Discovery Engine Session Service client with user credentials.
@@ -32,7 +38,7 @@ const discoveryengine = v1alpha;
  *     Discovery Engine Session Service client.
  */
 async function initializeSessionServiceClient(userName) {
-  return new discoveryengine.SessionServiceClient({
+  return new discoveryengineV1Alpha.SessionServiceClient({
     authClient: await createOAuth2Client(userName)
   });
 };
@@ -45,8 +51,39 @@ async function initializeSessionServiceClient(userName) {
  *     Discovery Engine Conversational Search Service client.
  */
 async function initializeConversationalSearchServiceClient(userName) {
-  return new discoveryengine.ConversationalSearchServiceClient({
+  return new discoveryengineV1Alpha.ConversationalSearchServiceClient({
     authClient: await createOAuth2Client(userName)
+  });
+};
+
+/**
+ * Initializes the Assistant Service client with user credentials.
+ * 
+ * @param {!string} userName The resource name of the user providing the credentials.
+ * @returns {Promise<AssistantServiceClient>} An initialized Asssitant Search
+ *     Service client.
+ */
+async function initializeAssistantSearchServiceClient(userName) {
+  return new discoveryengineV1.AssistantServiceClient({
+    authClient: await createOAuth2Client(userName)
+  });
+};
+
+/**
+ * Initializes the Chat Service client with app credentials.
+ * 
+ * @returns {Promise<google.chat} An initialized Chat Service client.
+ */
+async function initializeChatServiceClient() {
+  // Create Chat service client with application credentials
+  const chatAuth = new google.auth.JWT({
+    keyFile: credentialsChat,
+    scopes: chatScopes
+  });
+  await chatAuth.authorize();
+  return google.chat({
+    version: 'v1',
+    auth: chatAuth,
   });
 };
 
@@ -111,11 +148,92 @@ async function getOrCreateSession(sessionService, userName, spaceId) {
   return session.name;
 };
 
+async function createOrUpdateChatMessage(chatClient, spaceName, messageName, answer, thoughts, lastThought, state) {
+  const text = answer ? answer : '...';
+  let cardsV2 = [];
+  let accessoryWidgets = [];
+  let lastThoughtTitle = lastThought ? extractThoughtTitle(lastThought) : undefined;
+  
+  switch (state) {
+    case 'IN_PROGRESS':
+      accessoryWidgets.push(getProgressAccessoryWidget((lastThoughtTitle ? lastThoughtTitle : 'In progress') + '...', 'progress_activity'));
+      break;
+    case 'FAILED':
+      accessoryWidgets.push(getProgressAccessoryWidget('Failed', 'cancel'));
+      break;
+    case 'SUCCEEDED':
+      accessoryWidgets.push(getProgressAccessoryWidget('Done', 'check'));
+      break;
+    case 'SKIPPED':
+      accessoryWidgets.push(getProgressAccessoryWidget('Skipped', 'error'));
+      break;
+    default:
+  }
+
+  if(state !== 'IN_PROGRESS' && thoughts) {
+    cardsV2.push({
+      cardId: "thoughtsCard",
+      card: { sections: [{
+        header: "Thoughts",
+        collapsible: true,
+        widgets: [{ textParagraph: { text: transformThoguthsToChatTextParagraphFormat(thoughts)}}]
+      }]}
+    });
+  }
+
+  if (!messageName) {
+    // Create a Chat message dedicated to the generated content
+    const response = await chatClient.spaces.messages.create({
+      parent: spaceName,
+      requestBody: {
+        text: text,
+        accessoryWidgets: accessoryWidgets,
+        cardsV2: cardsV2
+      }
+    });
+    messageName = response.data.name;
+  } else {
+    // Update the Chat message by concatenating the response chunks
+    await chatClient.spaces.messages.patch({
+      name: messageName,
+      updateMask: 'text,accessory_widgets,cards_v2,attachment',
+      requestBody: {
+        text: text,
+        accessoryWidgets: accessoryWidgets,
+        cardsV2: cardsV2
+      }
+    });
+  }
+  return messageName;
+};
+
+function getProgressAccessoryWidget(text, materialIconName) {
+  return { buttonList: { buttons: [{
+    text: text,
+    icon: { materialIcon: { name: materialIconName}},
+    onClick: { openLink: { url: "https://google.com"}},
+    disabled: true
+  }]}};
+};
+
+function extractThoughtTitle(thought) {
+  const match = thought.match(/\*\*(.*?)\*\*/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return null;
+};
+
+function transformThoguthsToChatTextParagraphFormat(thoughts) {
+  const boldTransformed = thoughts.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+  const newlineTransformed = boldTransformed.replace(/\n\n/g, '\n');
+  return newlineTransformed;
+};
+
 /**
  * Service to generate answers using user credentials.
  */
 export const AgentspaceService = {
-
   /**
    * Delete an Agentspace session. Do nothing if it does not exist.
    *
@@ -135,6 +253,10 @@ export const AgentspaceService = {
     }
   },
 
+  ///////////////////////////
+  // Conversional Search
+  ///////////////////////////
+
   /**
    * Generate answers using user credentials.
    *
@@ -146,10 +268,10 @@ export const AgentspaceService = {
    * @param {OAuth2Client} authClient The auth client to use for access.
    * @returns {Promise<Answer>} The answer.
    */
-  generateAnswer: async function (preamble, message, userName, spaceId, authClient) {
+  generateSearchAnswer: async function (preamble, message, userName, spaceId, authClient) {
     // Create service clients with user credentials
-    const sessionService = authClient ? new discoveryengine.SessionServiceClient({ authClient: authClient }) : await initializeSessionServiceClient(userName);
-    const conversationalSearchService = authClient ? new discoveryengine.ConversationalSearchServiceClient({ authClient: authClient }) : await initializeConversationalSearchServiceClient(userName);
+    const sessionService = authClient ? new discoveryengineV1Alpha.SessionServiceClient({ authClient: authClient }) : await initializeSessionServiceClient(userName);
+    const conversationalSearchService = authClient ? new discoveryengineV1Alpha.ConversationalSearchServiceClient({ authClient: authClient }) : await initializeConversationalSearchServiceClient(userName);
 
     // Retrieve session
     const session = await getOrCreateSession(sessionService, userName, spaceId);
@@ -200,7 +322,7 @@ export const AgentspaceService = {
    * @param {!Answer} answer The generated answer.
    * @returns {Promise<Array>} The extracted sources.
    */
-  extractSourcesFromGeneratedAnswer: async function (answer) {
+  extractSourcesFromGeneratedSearchAnswer: async function (answer) {
     let sources = [];
 
     // Get reference indexes from citations
@@ -275,5 +397,91 @@ export const AgentspaceService = {
     }
 
     return sources;
-  }
+  },
+
+  ///////////////////////////
+  // Assistant
+  ///////////////////////////
+
+  /**
+   * Generate answers using user credentials.
+   *
+   * @param {!string} preamble The premabule to use.
+   * @param {!string} message The text message to answer.
+   * @param {!string} userName The resource name of the user whose credentials
+   *     will be used to call the API.
+   * @param {!string} spaceId The ID of the space the discussion is taking place.
+   * @param {OAuth2Client} authClient The auth client to use for access.
+   * @returns {Promise<Answer>} The answer.
+   */
+  generateAndSendAssistAnswer: async function (preamble, message, userName, spaceId) {
+    // Create service clients with user credentials
+    const sessionService = await initializeSessionServiceClient(userName);
+    const assistantSearchService = await initializeAssistantSearchServiceClient(userName);
+    const chatService = await initializeChatServiceClient();
+
+    // Retrieve session
+    const session = await getOrCreateSession(sessionService, userName, spaceId);
+
+    // Create request object with all options
+    const request = {
+      name: `projects/${projectNumber}/locations/${agentLocation}/collections/default_collection/engines/${engineID}/assistants/default_assistant`,
+      session : session,
+      query: { text: `${preamble}\n\n\n${message}`},
+      toolsSpec: {
+        // Do not seem to work for some reason
+        // vertexAiSearchSpec: {
+        //   dataStoreSpecs: [
+        //     { dataStore: `projects/${projectNumber}/locations/${agentLocation}/collections/default_collection/dataStores/calendar_1756838626252_google_calendar`},
+        //     { dataStore: `projects/${projectNumber}/locations/${agentLocation}/collections/default_collection/dataStores/drive_1756906912463`},
+        //     { dataStore: `projects/${projectNumber}/locations/${agentLocation}/collections/default_collection/dataStores/groups_1756907469299`},
+        //     { dataStore: `projects/${projectNumber}/locations/${agentLocation}/collections/default_collection/dataStores/gmail_1756839093462_google_mail`},
+        //     { dataStore: `projects/${projectNumber}/locations/${agentLocation}/collections/default_collection/dataStores/sites_1757608207475`}
+        //   ]
+        // },
+        webGroundingSpec: {}
+      }
+    };
+    console.log('Request: ' + JSON.stringify(request));
+
+    // Get the generated response
+    const responseStream = await assistantSearchService.streamAssist(request);
+    responseStream.on('error', (err) => { throw(err) });
+    responseStream.on('end', () => { /* API call completed */ });
+
+    // Go through the response chunks received from the stream
+    let i = 0;
+    let messageName = undefined;
+    let answer = "";
+    let thoughts = "";
+    let lastThought = undefined;
+    for await (const chunk of responseStream) {
+      console.log('Chunk #' + i + ': ' + JSON.stringify(chunk));
+      for (const reply of chunk.answer.replies) {
+        console.log('Reply grounded content: ' + JSON.stringify(reply.groundedContent));
+        const replyContent = reply.groundedContent.content;
+        if (replyContent) {
+          switch(replyContent.data) {
+            case 'text':
+              if (replyContent.thought) {
+                lastThought = replyContent.text.includes('\n') ? replyContent.text : '\n**' + replyContent.text + '**\n\n\n';
+                thoughts += lastThought;
+              } else {
+                answer += replyContent.text;
+              }
+              break;
+            case 'inlineData':
+            case 'file':
+            case 'executableCode':
+            case 'codeExecutionResult':
+            default:
+          }
+          messageName = await createOrUpdateChatMessage(chatService, spaceId, messageName, answer, thoughts, lastThought, chunk.answer.state);
+        }
+      }
+      messageName = await createOrUpdateChatMessage(chatService, spaceId, messageName, answer, thoughts, lastThought, chunk.answer.state);
+      i++;
+    }
+    return messageName;
+  },
 }
