@@ -15,7 +15,7 @@
  */
 
 import { createOAuth2Client } from './user-auth.js';
-import { SPACES_PREFIX, DatabaseService } from './database.js';
+import { SPACES_PREFIX, EMAILS_PREFIX, DatabaseService } from './database.js';
 import { v1, v1alpha, v1beta } from '@google-cloud/discoveryengine';
 
 const projectNumber = process.env.PROJECT_NUMBER || 'your-google-cloud-project-number';
@@ -54,11 +54,12 @@ async function initializeConversationalSearchServiceClient(userName) {
  * Generate a user pseudo composite ID.
  * 
  * @param {!string} userName The resource name of the user.
- * @param {!string} spaceName The resource name of the chat space.
+ * @param {!string} spaceId The ID of the space the discussion is taking place.
  * @return {Promise<string>} The generated user ID.
  */
-async function getUserPseudoId(userName, spaceName) {
-  return await DatabaseService.getUserId(userName) + "_" + spaceName.replace(SPACES_PREFIX, '');
+async function getUserPseudoId(userName, spaceId) {
+  // TODO: Base64 it so that we do not have to do ID processing like string replacements.
+  return await DatabaseService.getUserId(userName) + "_" + spaceId.replace(SPACES_PREFIX, '').replace(EMAILS_PREFIX, '');
 };
 
 /**
@@ -66,11 +67,11 @@ async function getUserPseudoId(userName, spaceName) {
  * 
  * @param {!SessionServiceClient} sessionService The Discovery Engine Session Service client
  * @param {!string} userName The resource name of the user.
- * @param {!string} spaceName The resource name of the chat space.
+ * @param {!string} spaceId The ID of the space the discussion is taking place.
  * @return {Promise<Session | null>} The session or null if not found.
  */
-async function getSession(sessionService, userName, spaceName) {
-  const userPseudoId = await getUserPseudoId(userName, spaceName);
+async function getSession(sessionService, userName, spaceId) {
+  const userPseudoId = await getUserPseudoId(userName, spaceId);
 
   // Find sessions for the given user and space that are in progress
   const [sessions] = await sessionService.listSessions({
@@ -90,18 +91,18 @@ async function getSession(sessionService, userName, spaceName) {
  * 
  * @param {!SessionServiceClient} sessionService The Discovery Engine Session Service client
  * @param {!string} userName The resource name of the user.
- * @param {!string} spaceName The resource name of the chat space.
+ * @param {!string} spaceId The ID of the space the discussion is taking place.
  * @return {Promise<string>} The generated session's resource name.
  */
-async function getOrCreateSession(sessionService, userName, spaceName) {
-  const existingSession = await getSession(sessionService, userName, spaceName);
+async function getOrCreateSession(sessionService, userName, spaceId) {
+  const existingSession = await getSession(sessionService, userName, spaceId);
   if (existingSession != null) {
     // Return the resource name of session found
     return existingSession.name;
   }
 
   // Create a new session
-  const userPseudoId = await getUserPseudoId(userName, spaceName);
+  const userPseudoId = await getUserPseudoId(userName, spaceId);
   const [session] = await sessionService.createSession({
     parent: `projects/${projectNumber}/locations/${agentLocation}/collections/default_collection/engines/${engineID}`,
     session: { userPseudoId: userPseudoId }
@@ -137,20 +138,21 @@ export const AgentspaceService = {
   /**
    * Generate answers using user credentials.
    *
+   * @param {!string} preamble The premabule to use.
    * @param {!string} message The text message to answer.
    * @param {!string} userName The resource name of the user whose credentials
    *     will be used to call the API.
-   * @param {!string} spaceName The resource name of the Chat space the discussion
-   *     is taking place.
+   * @param {!string} spaceId The ID of the space the discussion is taking place.
+   * @param {OAuth2Client} authClient The auth client to use for access.
    * @returns {Promise<Answer>} The answer.
    */
-  generateAnswer: async function (message, userName, spaceName) {
+  generateAnswer: async function (preamble, message, userName, spaceId, authClient) {
     // Create service clients with user credentials
-    const sessionService = await initializeSessionServiceClient(userName);
-    const conversationalSearchService = await initializeConversationalSearchServiceClient(userName);
+    const sessionService = authClient ? new discoveryengine.SessionServiceClient({ authClient: authClient }) : await initializeSessionServiceClient(userName);
+    const conversationalSearchService = authClient ? new discoveryengine.ConversationalSearchServiceClient({ authClient: authClient }) : await initializeConversationalSearchServiceClient(userName);
 
     // Retrieve session
-    const session = await getOrCreateSession(sessionService, userName, spaceName);
+    const session = await getOrCreateSession(sessionService, userName, spaceId);
 
     // Create request object with all options
     const relatedQuestionsSpec = { enable: true };
@@ -164,8 +166,12 @@ export const AgentspaceService = {
     };
     const answerGenerationSpec = {
       modelSpec: { modelVersion: agentModel },
-      promptSpec: { preamble: 'You are an agent Corporate users rely on to retrieve and summarize their business data from their Google Workspace accounts. Answer concisely but include details when they are useful for context or make it more actionable. The only formatting options you can use is to (1) surround some text with a single star for bold such as `*text*` for strong emphasis (2) surround some text with a single underscore for italic such as `_text_` for gentle emphasis (3) surround some text with a single tild for strikethrough such as `~text~` for removal (4) use a less than before and a pipe followed by link text after followed by a more than after a given URL to make it a hyperlink such as `<https://example.com|link text>` for resource referencing (5) use a backslash followed by the letter n for a new line such as `\\n` for readibility (6) surround some text with a single backquote such as `\`text\`` for quoting code (7) surround an entire paragraph with three backquotes in dedicated lines such as `\`\`\`\nparagraph\n\`\`\`` for quoting code (8) prepend lines with list items with a single star or hyphen followed by a single space such as `* list item` or `- list item` for bulleting ; DO NOT USE ANY OTHER FORMATTING OTHER THAN THOSE.' },
-      includeCitations: true
+      promptSpec: { preamble: preamble },
+      includeCitations: true,
+      ignoreAdversarialQuery: true,
+      ignoreNonAnswerSeekingQuery: true,
+      ignoreJailBreakingQuery: true,
+      ignoreLowRelevantContent: true
     };
     const request = {
       servingConfig: conversationalSearchService.projectLocationCollectionEngineServingConfigPath(projectNumber, agentLocation, 'default_collection', engineID, 'default_search:answer'),

@@ -19,6 +19,7 @@ import { Firestore } from '@google-cloud/firestore';
 // The prefixes used by the Google Chat API in resource names.
 export const USERS_PREFIX = 'users/';
 export const SPACES_PREFIX = 'spaces/';
+export const EMAILS_PREFIX = 'msg-f:';
 
 // The name of the users collection in the database.
 const USERS_COLLECTION = 'users';
