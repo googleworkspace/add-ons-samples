@@ -11,6 +11,8 @@
 
     "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
 
+    "https://www.googleapis.com/auth/chat.spaces.create",
+    "https://www.googleapis.com/auth/chat.memberships.app",
     "https://www.googleapis.com/auth/chat.messages.create"
   ],
   "addOns": {

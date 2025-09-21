@@ -74,13 +74,27 @@ async function initializeAssistantSearchServiceClient(userName) {
  * 
  * @returns {Promise<google.chat} An initialized Chat Service client.
  */
-async function initializeChatServiceClient() {
+async function initializeChatAppServiceClient() {
   // Create Chat service client with application credentials
   const chatAuth = new google.auth.JWT({
     keyFile: credentialsChat,
     scopes: chatScopes
   });
   await chatAuth.authorize();
+  return google.chat({
+    version: 'v1',
+    auth: chatAuth,
+  });
+};
+
+/**
+ * Initializes the Chat Service client with app credentials.
+ * 
+ * @returns {Promise<chat_v1.Chat>} An initialized
+ *     Chat Service client.
+ */
+async function initializeChatServiceClient(chatAuth) {
+  // Create Chat service client with user credentials
   return google.chat({
     version: 'v1',
     auth: chatAuth,
@@ -414,11 +428,11 @@ export const AgentspaceService = {
    * @param {OAuth2Client} authClient The auth client to use for access.
    * @returns {Promise<Answer>} The answer.
    */
-  generateAndSendAssistAnswer: async function (preamble, message, userName, spaceId) {
+  generateAndSendAssistAnswer: async function (preamble, message, userName, spaceId, authClient) {
     // Create service clients with user credentials
-    const sessionService = await initializeSessionServiceClient(userName);
-    const assistantSearchService = await initializeAssistantSearchServiceClient(userName);
-    const chatService = await initializeChatServiceClient();
+    const sessionService = authClient ? new discoveryengineV1Alpha.SessionServiceClient({ authClient: authClient }) : await initializeSessionServiceClient(userName);
+    const assistantSearchService = authClient ? new discoveryengineV1.AssistantServiceClient({ authClient: authClient }) : await initializeAssistantSearchServiceClient(userName);
+    const chatService = authClient ? await initializeChatServiceClient(authClient) : await initializeChatAppServiceClient();
 
     // Retrieve session
     const session = await getOrCreateSession(sessionService, userName, spaceId);

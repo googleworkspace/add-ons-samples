@@ -16,7 +16,8 @@
     "@google-cloud/discoveryengine": "2.4.0",
     "googleapis": "^157.0.0",
     "@google-apps/chat": "^0.19.0",
-    "jsonwebtoken" : "^9.0.2"
+    "jsonwebtoken" : "^9.0.2",
+    "google-auth-library": "^10.3.0"
   },
   "author": "Google LLC",
   "license": "Apache-2.0"

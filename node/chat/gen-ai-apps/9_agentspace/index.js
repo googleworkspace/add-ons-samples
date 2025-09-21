@@ -16,18 +16,21 @@
 
 import { BASE_URL } from './runtime.js';
 import { OAuth2Client } from 'google-auth-library';
-import { InvalidCredentialsException, oauth2callback, generateAuthUrl, createOAuth2Client } from './user-auth.js';
+import { InvalidCredentialsException, oauth2callback, generateAuthUrl } from './user-auth.js';
 import { AgentspaceService } from './agentspace.js';
-import { ChatServiceClient } from '@google-apps/chat';
-import { google } from "googleapis";
+import { google } from 'googleapis';
 import jwt from 'jsonwebtoken';
 import express from 'express';
 
 // Add on configuration
 const addonAgentPrembule = 'You are an agent Corporate users rely on to retrieve and summarize their business data from their Google Workspace accounts. Answer concisely, include details when they are useful for context or make it more actionable, use paragraphs for better readability. The only formatting options you can use is to (1) surround some text with <b> and </b> for bold such as `<b>text</b>` for strong emphasis (2) surround some text with <i> and </i> such as `<i>text</i>` for gentle emphasis (3) surround some text with <s> and </s> for strikethrough such as `<s>text</s>` for removal (4) use a HTML `a` tag to make some text a hyperlink such as `<a href="https://example.com">link text</a>` for resource referencing (5) use a backslash followed by the letter n for a new line such as `\\n` for readibility (6) surround some text with <code> and </code> such as `<code>text</code>` for quoting code (7) use HTML `ul` and `li` tags to list items such as `<ul><li>Item1</li><li>Item2</li></ul>` for bulleting ; DO NOT USE ANY OTHER FORMATTING OTHER THAN THOSE.';
 
+// Chat app authentication
+const credentialsChat = './credentials_chat_app.json'; 
+const chatScopes = ['https://www.googleapis.com/auth/chat.bot'];
+
 // Chat configuration
-const chatAgentPrembule = 'You are an agent Corporate users rely on to retrieve and summarize their business data from their Google Workspace accounts. Answer concisely but include details when they are useful for context or make it more actionable, use paragraphs for better readability. The only formatting options you can use is to (1) surround some text with a single star for bold such as `*text*` for strong emphasis (2) surround some text with a single underscore for italic such as `_text_` for gentle emphasis (3) surround some text with a single tild for strikethrough such as `~text~` for removal (4) use a less than before and a pipe followed by link text after followed by a more than after a given URL to make it a hyperlink such as `<https://example.com|link text>` for resource referencing (5) use a backslash followed by the letter n for a new line such as `\\n` for readibility (6) surround some text with a single backquote such as `\`text\`` for quoting code (7) surround an entire paragraph with three backquotes in dedicated lines such as `\`\`\`\nparagraph\n\`\`\`` for quoting code (8) prepend lines with list items with a single star or hyphen followed by a single space such as `* list item` or `- list item` for bulleting ; DO NOT USE ANY OTHER FORMATTING OTHER THAN THOSE.';
+const chatAgentPrembule = 'You are an agent Corporate users rely on to retrieve and summarize their business data from their Google Workspace accounts. Answer concisely but include details when they are useful for context or make it more actionable, use paragraphs for better readability. The only formatting options you can use is to (1) surround some text with a single star for bold such as `*text*` for strong emphasis (2) surround some text with a single underscore for italic such as `_text_` for gentle emphasis (3) surround some text with a single tild for strikethrough such as `~text~` for removal (4) use a less than before and a pipe followed by link text after followed by a more than after a given URL to make it a hyperlink such as `<https://example.com|link text>` for resource referencing (5) use a backslash followed by the letter n for a new line such as `\\n` for readibility (6) surround some text with a single backquote such as `\`text\`` for quoting code (7) surround an entire paragraph with three backquotes in dedicated lines such as `\`\`\`\nparagraph\n\`\`\`` for quoting code (8) prepend lines with a single star or hyphen followed by a single space such as `* list item` or `- list item` for bulleting ; DO NOT USE ANY OTHER FORMATTING OTHER THAN THOSE.';
 const RESET_SESSION_COMMAND_ID = process.env.RESET_SESSION_COMMAND_ID || 1;
 
 const port = parseInt(process.env.PORT) || 8080;
@@ -84,7 +87,7 @@ app.post('/', async (req, res) => {
         // Send a Chat message based on the generated answer
         const chatMessageName = await AgentspaceService.generateAndSendAssistAnswer(chatAgentPrembule, messageText, userName, spaceName);
 
-        // TODO: This is required to avoid visible failures in Chat UI, return a no op action would be ideal
+        // This is required to avoid visible failures in Chat UI, return a no op action would be ideal
         return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
           text: 'Any other question?'
         }}}}});
@@ -104,22 +107,33 @@ app.post('/', async (req, res) => {
     // Return the Sidebar UI card
     const common = req.body.commonEventObject;
     const eventAuth = req.body.authorizationEventObject;
-    const userId = eventAuth ? jwt.decode(eventAuth.userIdToken).sub : undefined;
+    const userName = eventAuth ? 'users/' + jwt.decode(eventAuth.userIdToken).sub : undefined;
     const accessToken = eventAuth ? eventAuth.userOAuthToken : undefined;
     const addonAuth = new OAuth2Client();
     addonAuth.setCredentials({ access_token: accessToken });
 
     // A question was set in the form
     let question = common.formInputs ? common.formInputs.question.stringInputs.value[0] : undefined;
-
+    let spaceName = undefined;
+    let updateMode = false;
+    
     if (common.parameters) {
       switch(common.parameters.actionName) {
         case 'processSuggested':
           // A relation question was selected
-          question = common.parameters["relatedQuestion"];
+          question = common.parameters['relatedQuestion'];
+          updateMode = true;
           break;
-        case 'chatRedirect':
-          // TODO: create new space, transfer session (update user pseudo ID?), send user message with the last question, send generated answer as app
+        case 'chatSpace':
+          // Create or retrieve the DM with the user
+          const chatService = await initializeChatServiceClient(addonAuth);
+          const dmSpace = await chatService.spaces.setup({ requestBody: { space: {
+            singleUserBotDm: true,
+            spaceType: 'DIRECT_MESSAGE'
+          }}});
+          console.log('Set up Chat space: ' + JSON.stringify(dmSpace.data));
+          spaceName = dmSpace.data.name;
+          updateMode = true;
           break;
         default:
       }
@@ -136,13 +150,13 @@ app.post('/', async (req, res) => {
       const gmailToken = gmailEvent.accessToken ? gmailEvent.accessToken : undefined;
 
       // Retrieve the email
-      const gmail = google.gmail({version: "v1"});
+      const gmail = google.gmail({version: 'v1'});
       const gmailResponse = await gmail.users.messages.get({
         id: contextId,
-        userId: "me",
-        format: "metadata",
+        userId: 'me',
+        format: 'metadata',
         auth: addonAuth,
-        headers: { "X-Goog-Gmail-Access-Token": gmailToken }
+        headers: { 'X-Goog-Gmail-Access-Token': gmailToken }
       });
       contextMetadata = gmailResponse.data;
     } else if (req.body.calendar) {
@@ -164,23 +178,47 @@ app.post('/', async (req, res) => {
     let card = { sections: [{
       header: `What do you want to know about this ${type}?`,
       widgets: [
-        { textInput: { name: "question", label: "Question", value: question}},
+        { textInput: { name: 'question', label: 'Question', value: question}},
         { buttonList: { buttons: [{
-          text: "Ask",
-          type: "FILLED",
+          text: 'Ask',
+          type: 'FILLED',
+          icon: { materialIcon: { name: 'help' }},
           onClick: { action: { function: BASE_URL}}
         }]}}
       ]
     }]};
 
     // Add the response section
-    if (question) {
-      card.sections.push(...await createSearchAgentAnswerSections(question, userId, type, contextId, contextMetadata, addonAuth));
-      // Update card based on the question asked
-      return res.send({ action: { navigations: [{ updateCard: card }]}});
+    if (spaceName) {
+      card.sections.push({ widgets: [
+        { textParagraph: {
+            text: 'I sent your question to our DM space to discuss this further, you can access it with the button below.'
+        }},
+        { buttonList: { buttons: [{
+          text: 'Open the Chat space',
+          type: 'FILLED',
+          icon: { materialIcon: { name: 'tab' }},
+          onClick: { openLink: { url: 'https://chat.google.com/dm/' + spaceName.replace('spaces/', '') }}
+        }]}}
+      ]});
+      updateMode = true;
+    } else if (question) {
+      card.sections.push(...await createSearchAgentAnswerSections(question, userName, type, contextId, contextMetadata, addonAuth));
+      updateMode = true;
     }
 
-    // Create initial card
+    // Update card if it already exists
+    if (updateMode) {
+      // Update the card
+      res.send({ action: { navigations: [{ updateCard: card }]}});
+      if (common.parameters && common.parameters.actionName === 'chatSpace') {
+        // Process the question in the retrieved DM after updating the card to avoid lagging
+        await processQuestionInChat(addonAuth, question, userName, spaceName);
+      }
+      return;
+    }
+
+    // Create initial card by default
     return res.send(card);
   }
 });
@@ -203,28 +241,25 @@ async function createSearchAgentAnswerSections(messageText, userName, type, mess
 
   // If there are skipped reasons, return a single section with a button to open a chat space instead of an answer
   if (answer.answerSkippedReasons && answer.answerSkippedReasons.length > 0)  {
-    sections.push({
-      widgets: [
-        { textParagraph: {
-            text: 'Humm, I cannot answer that question using your Google Workspace data 😕 What do you think of discussing this further in Chat?'
-        }},
-        { buttonList: { buttons: [{
-          text: "Start discussion in Chat",
-          type: "FILLED",
-          onClick: { action: {
-            function: BASE_URL,
-            parameters: [{ key: "actionName", value: "chatRedirect" }]
-          }}
-        }]}}
-      ]
+    sections.push({ widgets: [
+      { textParagraph: {
+          text: 'Humm, I cannot answer that question using your Google Workspace data 😕 What do you think of discussing this further in Chat?'
+      }},
+      { buttonList: { buttons: [{
+        text: 'Send to Chat space',
+        type: 'FILLED',
+        icon: { materialIcon: { name: 'add' }},
+        onClick: { action: {
+          function: BASE_URL,
+          parameters: [{ key: 'actionName', value: 'chatSpace' }]
+        }}
+      }]}}]
     });
   } else {
     // Add a section with the answer text
-    sections.push({
-      widgets: [{ textParagraph: {
-        text: answer.answerText ? answer.answerText : 'Humm, something went wrong, I cannot answer that.'
-      }}]
-    });
+    sections.push({ widgets: [{ textParagraph: {
+      text: answer.answerText ? answer.answerText : 'Humm, something went wrong, I cannot answer that.'
+    }}]});
 
     // Add a section with buttons for suggested questions (if any)
     const relatedQuestions = answer.relatedQuestions;
@@ -238,14 +273,14 @@ async function createSearchAgentAnswerSections(messageText, userName, type, mess
           onClick: { action: {
             function: BASE_URL,
             parameters: [
-              { key: "actionName", value: "processSuggested" },
-              { key: "relatedQuestion", value: relatedQuestion }
+              { key: 'actionName', value: 'processSuggested' },
+              { key: 'relatedQuestion', value: relatedQuestion }
             ]
           }}
         }]}});
       });
       sections.push({
-        header: "Suggestions",
+        header: 'Suggestions',
         collapsible: true,
         uncollapsibleWidgetsCount: 3, // 3 buttons
         widgets: suggestionsWidgets
@@ -268,7 +303,7 @@ async function createSearchAgentAnswerSections(messageText, userName, type, mess
         }]}});
       });
       sections.push({
-        header: "Sources",
+        header: 'Sources',
         collapsible: true,
         uncollapsibleWidgetsCount: 5, // 5 buttons
         widgets: sourcesWidgets
@@ -282,38 +317,58 @@ async function createSearchAgentAnswerSections(messageText, userName, type, mess
 }
 
 /**
- * Initializes the Chat Service client with user credentials.
+ * Initializes the Chat Service client with app credentials.
  * 
- * @param {!string} userName The resource name of the user providing the credentials.
- * @returns {Promise<SessionServiceClient>} An initialized
+ * @returns {Promise<chat_v1.Chat>} An initialized
  *     Chat Service client.
  */
-// async function initializeChatServiceClient(userName) {
-//   return new ChatServiceClient({
-//     authClient: await createOAuth2Client(userName)
+// async function initializeChatAppServiceClient() {
+//   // Create Chat service client with application credentials
+//   const chatAuth = new google.auth.JWT({
+//     keyFile: credentialsChat,
+//     scopes: chatScopes
+//   });
+//   await chatAuth.authorize();
+//   return google.chat({
+//     version: 'v1',
+//     auth: chatAuth,
 //   });
 // };
 
 /**
- * TODO: recycle this logic for the transition from add on to chat space
+ * Initializes the Chat Service client with app credentials.
+ * 
+ * @returns {Promise<chat_v1.Chat>} An initialized
+ *     Chat Service client.
+ */
+async function initializeChatServiceClient(chatAuth) {
+  // Create Chat service client with user credentials
+  return google.chat({
+    version: 'v1',
+    auth: chatAuth,
+  });
+};
+
+/**
  * Send a suggested message in the Chat space on behalf of the user.
  *
- * @param {Object} relatedQuestion The related question to reply to.
+ * @param {OAuth2Client} authClient The auth client to use for access.
+ * @param {Object} question The question to reply to.
  * @param {!string} userName The resource name of the user.
  * @param {!string} spaceName The resource name of the chat space.
  */
-// async function processSuggestedMessage(relatedQuestion, userName, spaceName) {
-//   // Send the Chat message on behalf of the user
-//   const chatService = await initializeChatServiceClient(userName);
-//   const [createdMessage] = await chatService.createMessage({
-//     parent: spaceName,
-//     message: { text: relatedQuestion }
-//   });
-//   console.log('Created Chat message: ' + JSON.stringify(createdMessage));
+async function processQuestionInChat(authClient, question, userName, spaceName) {
+  // Send the Chat message on behalf of the app
+  const chatService = await initializeChatServiceClient(authClient);
+  const createdMessage = await chatService.spaces.messages.create({
+    parent: spaceName,
+    requestBody: { text: question }
+  });
+  console.log('Created Chat message: ' + JSON.stringify(createdMessage.data));
 
-//   // Return the Chat message based on the generated answer
-//   return await AgentspaceService.generateAndSendAssistAnswer(chatAgentPrembule, relatedQuestion, userName, spaceName);
-// }
+  // Return the Chat message based on the generated answer
+  const chatMessageName = await AgentspaceService.generateAndSendAssistAnswer(chatAgentPrembule, question, userName, spaceName);
+}
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
