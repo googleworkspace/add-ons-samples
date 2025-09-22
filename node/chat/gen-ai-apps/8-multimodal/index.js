@@ -19,16 +19,12 @@ import { GoogleGenAI } from '@google/genai';
 import { google } from 'googleapis';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';
-
-const port = parseInt(process.env.PORT) || 8080;
-const projectID = process.env.PROJECT_ID || 'your-google-cloud-project-id';
-const location = process.env.LOCATION || 'your-google-cloud-project-location';
-const model =  process.env.MODEL || 'gemini-2.0-flash-preview-image-generation';
+import { env } from './env.js';
 
 const app = express();
 app.use(express.json());
 
-const genAI = new GoogleGenAI({vertexai: true, project: projectID, location: location});
+const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
 // Application authentication
 const serviceAccountKeyFile = './credentials.json';
@@ -62,7 +58,7 @@ app.post('/', async (req, res) => {
 
   // Send a request to generate the answer with both text and image contents
   const aiResponse = await genAI.models.generateContent({
-    model: model,
+    model: env.model,
     contents: [{
       role: 'USER',
       parts: [
@@ -139,6 +135,6 @@ async function uploadFile(chatClient, spaceName, data) {
   });
 }
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(env.port, () => {
+  console.log(`Listening on port ${env.port}`);
 });

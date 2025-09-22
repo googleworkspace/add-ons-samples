@@ -17,16 +17,12 @@
 import express from 'express';
 import { GoogleGenAI } from '@google/genai';
 import { google } from 'googleapis';
-
-const port = parseInt(process.env.PORT) || 8080;
-const projectID = process.env.PROJECT_ID || 'your-google-cloud-project-id';
-const location = process.env.LOCATION || 'your-google-cloud-project-location';
-const model =  process.env.MODEL || 'gemini-2.5-flash-lite';
+import { env } from './env.js';
 
 const app = express();
 app.use(express.json());
 
-const genAI = new GoogleGenAI({vertexai: true, project: projectID, location: location});
+const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
 // Application authentication
 const serviceAccountKeyFile = './credentials.json'; 
@@ -55,7 +51,7 @@ app.post('/', async (req, res) => {
 
   // Send a server streaming request to generate the answer
   const aiResponse = await genAI.models.generateContentStream({
-    model: model,
+    model: env.model,
     contents: `Generate a story about a ${userMessage}. It should take 2 minutes to read it out loud.`
   });
 
@@ -131,6 +127,6 @@ app.post('/', async (req, res) => {
   }}}}});
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(env.port, () => {
+  console.log(`Listening on port ${env.port}`);
 });

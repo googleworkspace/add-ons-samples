@@ -18,16 +18,12 @@ import express from 'express';
 import { GoogleGenAI, mcpToTool } from '@google/genai';
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-
-const port = parseInt(process.env.PORT) || 8080;
-const projectID = process.env.PROJECT_ID || 'your-google-cloud-project-id';
-const location = process.env.LOCATION || 'your-google-cloud-project-location';
-const model =  process.env.MODEL || 'gemini-2.5-flash-lite';
+import { env } from './env.js';
 
 const app = express();
 app.use(express.json());
 
-const genAI = new GoogleGenAI({vertexai: true, project: projectID, location: location});
+const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
 const client = new Client({ name: "gen-ai-app-mcp", version: "1.0.0" });
 await client.connect(new StreamableHTTPClientTransport(
@@ -45,7 +41,7 @@ app.post('/', async (req, res) => {
 
   // Send the user's message to the model to generate the answer
   const aiResponse = await genAI.models.generateContent({
-    model: model,
+    model: env.model,
     contents: prompt,
     // MCP tools are enabled
     config: { tools: [mcpToTool(client)]}
@@ -57,6 +53,6 @@ app.post('/', async (req, res) => {
   }}}}});
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(env.port, () => {
+  console.log(`Listening on port ${env.port}`);
 });
