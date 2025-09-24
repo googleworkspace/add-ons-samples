@@ -2,10 +2,18 @@
 
 These code samples create
 [Google Chat apps as Google Workspace add-ons](https://developers.google.com/workspace/add-ons/chat)
-run on highly scalable platforms such as [Google Cloud Run](https://cloud.google.com/run).
+runnable as [Google Cloud Run functions](https://cloud.google.com/run).
+
 They showcase how to support typical generative AI features and concepts using
-[Google Gen AI SDK](https://cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview),
+[Google Gen AI SDK](https://cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview), and
 [Vertex AI](https://cloud.google.com/vertex-ai):
+
+## Tutorial
+
+For detailed instructions to deploy and run these samples, follow the
+[dedicated codelab](https://codelabs.developers.google.com/chat-apps-ai-concepts).
+
+## App samples
 
 1. **Prompt:** Use a [Gen AI model](https://ai.google.dev/gemini-api/docs/models) to reply to textual messages
    from users in natural language. Specific instructions are provided to the model on how to generate the
