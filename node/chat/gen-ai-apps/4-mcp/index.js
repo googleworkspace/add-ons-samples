@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import express from 'express';
+import { http } from '@google-cloud/functions-framework';
 import { GoogleGenAI, mcpToTool } from '@google/genai';
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { env } from './env.js';
-
-const app = express();
-app.use(express.json());
 
 const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
@@ -35,7 +32,7 @@ await client.connect(new StreamableHTTPClientTransport(
  * @param {Object} req - The HTTP request object sent from Google Workspace.
  * @param {Object} res - The HTTP response object.
  */
-app.post('/', async (req, res) => {
+http('gen-ai-app', async (req, res) => {
   const userMessage = req.body.chat.messagePayload.message.text
   const prompt = 'The only formatting options you can use is to (1) surround some text with a single star for bold such as `*text*` for strong emphasis (2) surround some text with a single underscore for italic such as `_text_` for gentle emphasis (3) surround some text with a single tild for strikethrough such as `~text~` for removal (4) use a less than before and a pipe followed by link text after followed by a more than after a given URL to make it a hyperlink such as `<https://example.com|link text>` for resource referencing (5) use a backslash followed by the letter n for a new line such as `\\n` for readibility (6) surround some text with a single backquote such as `\`text\`` for quoting code (7) surround an entire paragraph with three backquotes in dedicated lines such as `\`\`\`\nparagraph\n\`\`\`` for quoting code (8) prepend lines with list items with a single star or hyphen followed by a single space such as `* list item` or `- list item` for bulleting ; DO NOT USE ANY OTHER FORMATTING OTHER THAN THOSE. Answer the following message in the same language: ' + userMessage;
 
@@ -51,8 +48,4 @@ app.post('/', async (req, res) => {
   return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
     text: aiResponse.candidates[0].content.parts[0].text
   }}}}});
-});
-
-app.listen(env.port, () => {
-  console.log(`Listening on port ${env.port}`);
 });

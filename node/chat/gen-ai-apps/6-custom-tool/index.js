@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import express from 'express';
+import { http } from '@google-cloud/functions-framework';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Firestore } from '@google-cloud/firestore';
 import { google } from 'googleapis';
 import { env } from './env.js';
-
-const app = express();
-app.use(express.json());
 
 const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
@@ -70,7 +67,7 @@ async function getNextPublicCalendarEventTitle(calendarId) {
  * @param {Object} req - The HTTP request object sent from Google Workspace.
  * @param {Object} res - The HTTP response object.
  */
-app.post('/', async (req, res) => {
+http('gen-ai-app', async (req, res) => {
   const userId = req.body.chat.user.name;
   const userMessage = req.body.chat.messagePayload.message.text
 
@@ -127,7 +124,3 @@ async function createOrUpdateChatHistory(userId, data) {
 async function getChatHistory(userId) {
   return await db.collection(CHATS_COLLECTION).doc(userId.replace(USERS_PREFIX, '')).get();
 };
-
-app.listen(env.port, () => {
-  console.log(`Listening on port ${env.port}`);
-});

@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import express from 'express';
+import { http } from '@google-cloud/functions-framework';
 import { GoogleGenAI } from '@google/genai';
 import { env } from './env.js';
-
-const app = express();
-app.use(express.json());
 
 const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
@@ -29,7 +26,7 @@ const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location:
  * @param {Object} req - The HTTP request object sent from Google Workspace.
  * @param {Object} res - The HTTP response object.
  */
-app.post('/', async (req, res) => {
+http('gen-ai-app', async (req, res) => {
   // Send a Chat message with the generated answer
   return res.send({ hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
     text: await generateAnswer(req.body.chat.messagePayload.message.text)
@@ -41,7 +38,3 @@ async function generateAnswer(message) {
   const aiResponse = await genAI.models.generateContent({model: env.model, contents: prompt});
   return aiResponse.candidates[0].content.parts[0].text;
 };
-
-app.listen(env.port, () => {
-  console.log(`Listening on port ${env.port}`);
-});

@@ -7,12 +7,9 @@
   "scripts": {
     "start": "node index.js"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "dependencies": {
-    "express": "^5.1.0",
-    "@google/genai": "1.15.0"
+    "@google-cloud/functions-framework": "^4.0.0",
+    "@google/genai": "^1.20.0"
   },
   "author": "Google LLC",
   "license": "Apache-2.0"

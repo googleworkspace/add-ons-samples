@@ -18,9 +18,6 @@
  * Project environment settings.
  */
 export const env = {
-  // Replace with your app port.
-  port: parseInt(process.env.PORT) || 8080,
-
   // Replace with your GCP project ID.
   projectID: process.env.PROJECT_ID || 'your-google-cloud-project-id',
 

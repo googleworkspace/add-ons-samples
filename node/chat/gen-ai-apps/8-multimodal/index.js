@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import express from 'express';
+import { http } from '@google-cloud/functions-framework';
 import { GoogleGenAI } from '@google/genai';
 import { google } from 'googleapis';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';
 import { env } from './env.js';
-
-const app = express();
-app.use(express.json());
 
 const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
@@ -36,7 +33,7 @@ const scopes = ['https://www.googleapis.com/auth/chat.messages'];
  * @param {Object} req - The HTTP request object sent from Google Workspace.
  * @param {Object} res - The HTTP response object.
  */
-app.post('/', async (req, res) => {
+http('gen-ai-app', async (req, res) => {
   const userEmail = req.body.chat.user.email;
   const spaceName = req.body.chat.messagePayload.space.name;
   const userMessage = req.body.chat.messagePayload.message.text;
@@ -134,7 +131,3 @@ async function uploadFile(chatClient, spaceName, data) {
     }
   });
 }
-
-app.listen(env.port, () => {
-  console.log(`Listening on port ${env.port}`);
-});
