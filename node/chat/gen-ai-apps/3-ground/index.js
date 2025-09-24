@@ -30,7 +30,20 @@ http('gen-ai-app', async (req, res) => {
   const userMessage = req.body.chat.messagePayload.message.text
 
   // Send the user's message to the model to generate the answer
-  const prompt = 'Use simple text for concise answers. The only formatting options you can use is to (1) surround some text with a single star for bold such as `*text*` for strong emphasis (2) surround some text with a single underscore for italic such as `_text_` for gentle emphasis (3) surround some text with a single tild for strikethrough such as `~text~` for removal (4) use a less than before and a pipe followed by link text after followed by a more than after a given URL to make it a hyperlink such as `<https://example.com|link text>` for resource referencing (5) use a backslash followed by the letter n for a new line such as `\\n` for readibility (6) surround some text with a single backquote such as `\`text\`` for quoting code (7) surround an entire paragraph with three backquotes in dedicated lines such as `\`\`\`\nparagraph\n\`\`\`` for quoting code (8) prepend lines with list items with a single star or hyphen followed by a single space such as `* list item` or `- list item` for bulleting ; DO NOT USE ANY OTHER FORMATTING OTHER THAN THOSE. Answer the following message in the same language: ' + userMessage;
+  const prompt = 'Use simple text for concise answers. The only formatting options you can use is to '
+                  + '(1) surround some text with a single star for bold such as `*text*` for strong emphasis '
+                  + '(2) surround some text with a single underscore for italic such as `_text_` for gentle emphasis '
+                  + '(3) surround some text with a single tild for strikethrough such as `~text~` for removal '
+                  + '(4) use a less than before followed by a URL followed by a pipe followed by a link text followed '
+                    + 'by a more than for a hyperlink such as `<https://example.com|link text>` for resource referencing '
+                  + '(5) use a backslash followed by the letter n for a new line such as `\\n` for readibility '
+                  + '(6) surround some text with a single backquote such as `\`text\`` for quoting code '
+                  + '(7) surround an entire paragraph with three backquotes in dedicated lines such as '
+                    + '`\`\`\`\nparagraph\n\`\`\`` for quoting code '
+                  + '(8) prepend lines with list items with a single star or hyphen followed by a single space '
+                    + 'such as `* list item` or `- list item` for bulleting ; '
+                  + 'DO NOT USE ANY OTHER FORMATTING OTHER THAN THOSE. '
+                  + 'Answer the following message in the same language: ' + userMessage;
   const aiResponse = await genAI.models.generateContent({
     model: env.model,
     contents: prompt,

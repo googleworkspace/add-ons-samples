@@ -34,7 +34,8 @@ http('gen-ai-app', async (req, res) => {
 });
 
 async function generateAnswer(message) {
-  const prompt = 'In a consice and with plain text only (no formatting), answer the following message in the same language: ' + message;
+  const prompt = 'In a consice and with plain text only (no formatting), '
+                  + 'answer the following message in the same language: ' + message;
   const aiResponse = await genAI.models.generateContent({model: env.model, contents: prompt});
   return aiResponse.candidates[0].content.parts[0].text;
 };

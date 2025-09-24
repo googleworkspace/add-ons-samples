@@ -49,13 +49,15 @@ http('gen-ai-app', async (req, res) => {
   // Send a server streaming request to generate the answer
   const aiResponse = await genAI.models.generateContentStream({
     model: env.model,
-    contents: `Generate a story about a ${userMessage}. It should take 2 minutes to read it out loud.`
+    contents: `Generate a story about a ${userMessage}. `
+                + `It should take 2 minutes to read it out loud.`
   });
 
   // Send a first Chat message to summarize what will be done
   await chatClient.spaces.messages.create({
     parent: spaceName,
-    requestBody: { text: `Sure, let me work on generating a short story about a ${userMessage} like you requested.`}
+    requestBody: { text: `Sure, let me work on generating a short story `
+                            + `about a ${userMessage} like you requested.`}
   });
 
   // Go through the response chunks received from the stream
