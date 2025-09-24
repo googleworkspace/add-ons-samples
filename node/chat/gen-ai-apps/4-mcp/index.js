@@ -24,7 +24,7 @@ const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location:
 
 const client = new Client({ name: "gen-ai-app-mcp", version: "1.0.0" });
 await client.connect(new StreamableHTTPClientTransport(
-  new URL("https://workspace-developer-792871459823.us-central1.run.app/mcp")));
+  new URL("https://workspace-developer.goog/mcp")));
 
 /**
  * Handles HTTP requests from the Google Workspace add-on.
