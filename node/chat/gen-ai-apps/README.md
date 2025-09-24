@@ -5,8 +5,7 @@ These code samples create
 run on highly scalable platforms such as [Google Cloud Run](https://cloud.google.com/run).
 They showcase how to support typical generative AI features and concepts using
 [Google Gen AI SDK](https://cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview),
-[Vertex AI](https://cloud.google.com/vertex-ai), and 
-[Google Agentspace](https://cloud.google.com/agentspace/docs):
+[Vertex AI](https://cloud.google.com/vertex-ai):
 
 1. **Prompt:** Use a [Gen AI model](https://ai.google.dev/gemini-api/docs/models) to reply to textual messages
    from users in natural language. Specific instructions are provided to the model on how to generate the
@@ -57,9 +56,3 @@ They showcase how to support typical generative AI features and concepts using
    upload).
 
    ![gen-ai-app-multimodal](./showcase/gen-ai-app-multimodal.gif)
-
-1. **Google Agentspace:** Wrap a custom [agent](https://cloud.google.com/agentspace/docs) to query
-   user's business data retrieved from Calendar, Gmail, Drive, and Sites in natural language with support of
-   message formatting, multi-turn, grounding, and suggested follow-ups.
-
-   ![gen-ai-app-agentspace](./showcase/gen-ai-app-agentspace.gif)
