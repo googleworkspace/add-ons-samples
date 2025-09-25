@@ -61,49 +61,34 @@ http('gen-ai-app', async (req, res) => {
   });
 
   // Go through the response chunks received from the stream
-  let i = 0;
   let messageName = undefined;
-  let lastMessageResponse = undefined;
-  let lastMessage = undefined;
+  let answer = "";
   for await (const chunk of aiResponse) {
     const text = chunk.text;
     if (text) {
+      // Update the answer by concatenating the response chunks
+      answer += text;
+      // The Chat message request body is the same for message creation and update
+      const responseBody = {
+        text: answer,
+        accessoryWidgets: [getStatusAccessoryWidget('Generating story...', 'progress_activity')]
+      }
       if (!messageName) {
         // Create a Chat message dedicated to the generated content
-        lastMessageResponse = await chatClient.spaces.messages.create({
+        const messageResponse = await chatClient.spaces.messages.create({
           parent: spaceName,
-          requestBody: {
-            text: text,
-            // Use an accessory widget with progress status
-            accessoryWidgets: [{ buttonList: { buttons: [{
-              text: 'Generating story...',
-              icon: { materialIcon: { name: "progress_activity"}},
-              onClick: { openLink: { url: "https://google.com"}},
-              disabled: true
-            }]}}]
-          }
+          requestBody: responseBody
         });
-        lastMessage = lastMessageResponse.data;
-        messageName = lastMessage.name;
+        messageName = messageResponse.data.name;
       } else {
-        // Update the Chat message by concatenating the response chunks
-        lastMessageResponse = await chatClient.spaces.messages.patch({
+        // Update the Chat message dedicated to the generated content
+        await chatClient.spaces.messages.patch({
           name: messageName,
           updateMask: 'text,accessory_widgets',
-          requestBody: {
-            text: lastMessage.text + text,
-            accessoryWidgets: [{ buttonList: { buttons: [{
-              text: 'Generating story...',
-              icon: { materialIcon: { name: "progress_activity"}},
-              onClick: { openLink: { url: "https://google.com"}},
-              disabled: true
-            }]}}]
-          }
+          requestBody: responseBody
         });
-        lastMessage = lastMessageResponse.data;
       }
     }
-    i++;
   }
 
   // Update the accessory widget with final progress status
@@ -111,12 +96,7 @@ http('gen-ai-app', async (req, res) => {
     name: messageName,
     updateMask: 'accessory_widgets',
     requestBody: {
-      accessoryWidgets: [{ buttonList: { buttons: [{
-        text: 'Story is fully generated',
-        icon: { materialIcon: { name: "check"}},
-        onClick: { openLink: { url: "https://google.com"}},
-        disabled: true
-      }]}}]
+      accessoryWidgets: [getStatusAccessoryWidget('Story is fully generated', 'check')]
     }
   });
 
@@ -125,3 +105,14 @@ http('gen-ai-app', async (req, res) => {
     text: 'All done, I hope you like it!'
   }}}}});
 });
+
+// Create an accessory widget with progress status
+function getStatusAccessoryWidget(text, icon) {
+  return { buttonList: { buttons: [{
+    text: text,
+    icon: { materialIcon: { name: icon}},
+    // This is a workaround to have the icon shown, it's not clickable
+    onClick: { openLink: { url: "https://google.com"}},
+    disabled: true
+  }]}};
+}
