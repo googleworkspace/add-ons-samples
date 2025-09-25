@@ -18,13 +18,19 @@ import { http } from '@google-cloud/functions-framework';
 import { GoogleGenAI, mcpToTool } from '@google/genai';
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { env } from './env.js';
 
 const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
 
+const mcpServerUrl = new URL("https://workspace-developer.goog/mcp");
 const client = new Client({ name: "gen-ai-app-mcp", version: "1.0.0" });
-await client.connect(new StreamableHTTPClientTransport(
-  new URL("https://workspace-developer.goog/mcp")));
+// Try Streamable HTTP first (new) and SSE (old) as fallback for transport
+try {
+  await client.connect(new StreamableHTTPClientTransport(mcpServerUrl));
+} catch (error) {
+  await client.connect(new SSEClientTransport(mcpServerUrl));
+}
 
 /**
  * Handles HTTP requests from the Google Workspace add-on.
