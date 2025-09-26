@@ -18,12 +18,9 @@ import { http } from '@google-cloud/functions-framework';
 import { GoogleGenAI } from '@google/genai';
 import { google } from 'googleapis';
 import { env } from './env.js';
+import { GoogleAuth } from 'google-auth-library';
 
 const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
-
-// Application authentication
-const serviceAccountKeyFile = './credentials.json'; 
-const scopes = ['https://www.googleapis.com/auth/chat.bot'];
 
 /**
  * Handles HTTP requests from the Google Workspace add-on.
@@ -35,15 +32,18 @@ http('gen-ai-app', async (req, res) => {
   const spaceName = req.body.chat.messagePayload.space.name;
   const userMessage = req.body.chat.messagePayload.message.text;
 
-  // Create Chat service client with application credentials
-  const auth = new google.auth.JWT({
-    keyFile: serviceAccountKeyFile,
-    scopes: scopes
+  // Use app authentication.
+  // Application Default Credentials (ADC) will use the Cloud Run function's
+  // default service account, we just need to specify the Chat API app auth scopes.
+  const auth = new GoogleAuth({
+    // Chat API app authentication scopes
+    scopes: ['https://www.googleapis.com/auth/chat.bot']
   });
-  await auth.authorize();
+
+  // Create Chat service client with application credentials
   const chatClient = google.chat({
     version: 'v1',
-    auth: auth,
+    auth: await auth.getClient()
   });
 
   // Send a server streaming request to generate the answer
