@@ -1,0 +1,18 @@
+{
+  "name": "gen-ai-app-multimodal",
+  "version": "0.0.1",
+  "description": "A Google Chat app built as Google Workspace add-on that uses a Gen AI model to edit images based on textual instructions provided by users",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^4.0.0",
+    "@google/genai": "^1.20.0",
+    "google-auth-library": "^10.3.0",
+    "googleapis": "^160.0.0"
+  },
+  "author": "Google LLC",
+  "license": "Apache-2.0"
+}
