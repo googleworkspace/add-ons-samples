@@ -20,12 +20,9 @@ import { google } from 'googleapis';
 import { Buffer } from 'buffer';
 import { Readable } from 'stream';
 import { env } from './env.js';
+import { GoogleAuth } from 'google-auth-library';
 
 const genAI = new GoogleGenAI({vertexai: true, project: env.projectID, location: env.location});
-
-// Application authentication
-const serviceAccountKeyFile = './credentials.json';
-const scopes = ['https://www.googleapis.com/auth/chat.messages'];
 
 /**
  * Handles HTTP requests from the Google Workspace add-on.
@@ -40,17 +37,35 @@ http('gen-ai-app', async (req, res) => {
   const attachmentName = req.body.chat.messagePayload.message.attachment[0].attachmentDataRef.resourceName;
   const attachmentContentType = req.body.chat.messagePayload.message.attachment[0].contentType;
 
-  // Create Chat service client with application credentials
-  const auth = new google.auth.JWT({
-    keyFile: serviceAccountKeyFile,
-    scopes: scopes,
-    // Impersonate the user
-    subject: userEmail
+  // Set up app authentication used to download the attachment input
+  // Application Default Credentials (ADC) will use the Cloud Run function's
+  // default service account.
+  const appAuth = new GoogleAuth({
+    // Specify the Chat API app authentication scopes
+    scopes: ['https://www.googleapis.com/auth/chat.bot']
   });
-  await auth.authorize();
-  const chatClient = google.chat({
+  // Create Chat service client with application credentials
+  const appChatClient = google.chat({
     version: 'v1',
-    auth: auth,
+    auth: await appAuth.getClient()
+  });
+
+  // Set up user impersonation authentication used to upload the attachment output and send the response
+  // Application Default Credentials (ADC) will use the Cloud Run function's
+  // default service account.
+  const impersonatedUserAuth = new GoogleAuth({
+    // Specify the Chat API user authentication scopes
+    scopes: ['https://www.googleapis.com/auth/chat.messages'],
+    keyFile: './credentials.json',
+    clientOptions: {
+      // Impersonate the user who sent the original message
+      subject: userEmail
+    }
+  });
+  // Create Chat service client with impersonated user credentials
+  const userChatClient = google.chat({
+    version: 'v1',
+    auth: impersonatedUserAuth
   });
 
   // Send a request to generate the answer with both text and image contents
@@ -63,7 +78,7 @@ http('gen-ai-app', async (req, res) => {
         { text: userMessage },
         // The attachment of the message is downloaded and added inline
         { inlineData: {
-          data: await downloadFile(chatClient, attachmentName),
+          data: await downloadFile(appChatClient, attachmentName),
           mimeType: attachmentContentType
         }}
       ]
@@ -77,7 +92,7 @@ http('gen-ai-app', async (req, res) => {
   for (const part of aiResponse.candidates[0].content.parts) {
     if (part.inlineData) {
       // The resulting image is retrieved inline and uploaded
-      const mediaResponse = await uploadFile(chatClient, spaceName, part.inlineData.data);
+      const mediaResponse = await uploadFile(userChatClient, spaceName, part.inlineData.data);
       responseAttachment = mediaResponse.data;
     } else {
       responseText = part.text;
@@ -85,7 +100,7 @@ http('gen-ai-app', async (req, res) => {
   }
 
   // Create a Chat message dedicated to the generated content
-  await chatClient.spaces.messages.create({
+  await userChatClient.spaces.messages.create({
     parent: spaceName,
     requestBody: {
       text: responseText ? responseText : 'Here it is!',
@@ -100,8 +115,8 @@ http('gen-ai-app', async (req, res) => {
   }}}}});
 });
 
-async function downloadFile(chatClient, attachmentName) {
-  const response = await chatClient.media.download({
+async function downloadFile(appChatClient, attachmentName) {
+  const response = await appChatClient.media.download({
       resourceName: attachmentName,
       alt: 'media'
     }, {
@@ -120,9 +135,9 @@ async function downloadFile(chatClient, attachmentName) {
   });
 }
 
-async function uploadFile(chatClient, spaceName, data) {
+async function uploadFile(userChatClient, spaceName, data) {
   const filename = 'generated_image.png';
-  return await chatClient.media.upload({
+  return await userChatClient.media.upload({
     parent: spaceName,
     requestBody: { filename: filename },
     media: {
