@@ -16,7 +16,7 @@
 
 // Note: The Google Chat API does not support uploading attachments with
 // app authentication. As a workaround, the app requires enabling Domain-Wide
-// Delegation (DWD) to the Cloud Run default service account and uses user
+// Delegation (DWD) for the Cloud Run default service account and uses user
 // impersonation to upload the attachment output and send the response containing
 // the attachment. See https://issuetracker.google.com/issues/???.
 
@@ -56,23 +56,6 @@ http('gen-ai-app', async (req, res) => {
     auth: await appAuth.getClient()
   });
 
-  // Set up user impersonation authentication used to upload the attachment output
-  // and send the response.
-  const impersonatedUserAuth = new GoogleAuth({
-    // Specify the Chat API user authentication scopes
-    scopes: ['https://www.googleapis.com/auth/chat.messages'],
-    keyFile: './credentials.json',
-    clientOptions: {
-      // Impersonate the user who sent the original message
-      subject: userEmail
-    }
-  });
-  // Create Chat service client with impersonated user credentials
-  const userChatClient = google.chat({
-    version: 'v1',
-    auth: await impersonatedUserAuth.getClient()
-  });
-
   // Send a request to generate the answer with both text and image contents
   const aiResponse = await genAI.models.generateContent({
     model: env.model,
@@ -89,6 +72,23 @@ http('gen-ai-app', async (req, res) => {
       ]
     }],
     config: { responseModalities: ['TEXT', 'IMAGE']}
+  });
+
+  // Set up user impersonation authentication used to upload the attachment output
+  // and send the response.
+  const impersonatedUserAuth = new GoogleAuth({
+    // Specify the Chat API user authentication scopes
+    scopes: ['https://www.googleapis.com/auth/chat.messages'],
+    keyFile: './credentials.json',
+    clientOptions: {
+      // Impersonate the user who sent the original message
+      subject: userEmail
+    }
+  });
+  // Create Chat service client with impersonated user credentials
+  const userChatClient = google.chat({
+    version: 'v1',
+    auth: await impersonatedUserAuth.getClient()
   });
 
   let responseText = undefined;
