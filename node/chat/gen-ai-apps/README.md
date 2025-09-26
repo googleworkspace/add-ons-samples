@@ -1,4 +1,4 @@
-# Gen AI Chat apps built as a Google Workspace add-ons
+# Gen AI Chat apps built as Google Workspace add-ons
 
 These code samples create
 [Google Chat apps as Google Workspace add-ons](https://developers.google.com/workspace/add-ons/chat)
