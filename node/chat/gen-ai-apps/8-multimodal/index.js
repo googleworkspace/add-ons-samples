@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+// Note: The Google Chat API does not support uploading attachments with
+// app authentication. As a workaround, the app requires enabling Domain-Wide
+// Delegation (DWD) to the Cloud Run default service account and uses user
+// impersonation to upload the attachment output and send the response containing
+// the attachment. See https://issuetracker.google.com/issues/???.
+
 import { http } from '@google-cloud/functions-framework';
 import { GoogleGenAI } from '@google/genai';
 import { google } from 'googleapis';
@@ -50,9 +56,8 @@ http('gen-ai-app', async (req, res) => {
     auth: await appAuth.getClient()
   });
 
-  // Set up user impersonation authentication used to upload the attachment output and send the response
-  // Application Default Credentials (ADC) will use the Cloud Run function's
-  // default service account.
+  // Set up user impersonation authentication used to upload the attachment output
+  // and send the response.
   const impersonatedUserAuth = new GoogleAuth({
     // Specify the Chat API user authentication scopes
     scopes: ['https://www.googleapis.com/auth/chat.messages'],
@@ -65,7 +70,7 @@ http('gen-ai-app', async (req, res) => {
   // Create Chat service client with impersonated user credentials
   const userChatClient = google.chat({
     version: 'v1',
-    auth: impersonatedUserAuth
+    auth: await impersonatedUserAuth.getClient()
   });
 
   // Send a request to generate the answer with both text and image contents
