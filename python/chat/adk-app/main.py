@@ -62,7 +62,13 @@ def get_author_emoji(author) -> str:
     if author == snake_to_user_readable("inspiration_agent"):
         return "ℹ️"
     elif author == snake_to_user_readable("place_agent"):
+        return "📍"
+    if author == snake_to_user_readable("poi_agent"):
+        return "🗼"
+    if author == snake_to_user_readable("map_tool"):
         return "🗺️"
+    if author == snake_to_user_readable("planning_agent"):
+        return "📅"
     return "🤖"        
 
 def build_message(author="Agent", text="", cards_v2=[], final=True) -> dict:
@@ -71,7 +77,7 @@ def build_message(author="Agent", text="", cards_v2=[], final=True) -> dict:
         # TODO: "text_syntax": 'MARKDOWN'
         cards_v2.insert(0, { "card": { "sections": [{ "widgets": [{ "text_paragraph": { "text": text }}]}]}})
     return {
-        "text": f"{emoji} *{author}*",
+        "text": f"{emoji} *{author}*{'' if text else ' ✅'}",
         "cards_v2": cards_v2,
         "accessory_widgets": create_status_accessory_widgets() if final is False else []
     }
@@ -224,13 +230,13 @@ def request_adk_agent(message, clean=True):
                         f'{author}\nResponse from: "{name}"\nresponse: {json.dumps(response, indent=2)}\n'
                     )
                     match name:
-                        # Use text by default and card(s) when meaningful and result format is strongly typed.
+                        # Update messages with results.
                         case "place_agent":
                             print("\n[app]: To render a carousel of destinations")
                             update_message(
                                 messageName=message_name,
                                 author=snake_to_user_readable(name),
-                                text="Here are great destinations to discover",
+                                text="",
                                 cards_v2=[]
                                 # cards_v2=create_destination_cards(response["places"])
                             )
@@ -239,16 +245,17 @@ def request_adk_agent(message, clean=True):
                             update_message(
                                 messageName=message_name,
                                 author=snake_to_user_readable(name),
-                                text="Here are great places to discover",
+                                text="",
                                 cards_v2=[]
                                 # cards_v2=create_place_cards(response["places"])
                             )
-                        case "flight_selection_agent":
-                            # TODO
-                            print("\n[app]: Render a list")
-                        case "hotel_selection_agent":
-                            # TODO
-                            print("\n[app]: Render a list")
+                        case _:
+                            update_message(
+                                messageName=message_name,
+                                author=snake_to_user_readable(name),
+                                text="",
+                                cards_v2=[]
+                            )
                 else:
                     print(f"{author}: internal event, complete transfer to another agent")
 
@@ -256,9 +263,9 @@ def request_adk_agent(message, clean=True):
         print("Deleting session...")
         asyncio.run(session_service.delete_session(app_name=reasoningEngine, user_id=get_user_pseudo_id(), session_id=session_id))
     
-    print("Test run complete.")
+    print("Turn run complete.")
 
 if __name__ == "__main__":
     request_adk_agent("Looking for inspirations around the Americas", False)
-    time.sleep(3)
-    request_adk_agent("Machu Pichu", False)
+    # request_adk_agent("Can you tell me more about Machu Pichu, what are the points of interest?", False)
+    # request_adk_agent("Let's plan a trip to Peru!", True)
