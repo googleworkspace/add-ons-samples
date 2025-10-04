@@ -19,15 +19,17 @@ flow callback."""
 import asyncio
 import json
 import urllib.parse
-import time
+import io
+import base64
 
 # Chat API
 from google.oauth2.service_account import Credentials
 from google.apps import chat_v1 as google_chat
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
 
 # Vertex AI API
 from google.adk.sessions import VertexAiSessionService
-import vertexai
 from vertexai import agent_engines
 
 SERVICE_ACCOUNT_FILE = 'credentials_chat.json'
@@ -46,17 +48,17 @@ reasoningEngine = f"projects/{projectNumber}/locations/{agentLocation}/reasoning
 
 session_service = VertexAiSessionService(projectNumber, agentLocation)
 
-def create_google_chat_client():
-    creds = Credentials.from_service_account_file(
-                SERVICE_ACCOUNT_FILE)
+def create_google_chat_cloud_client():
+    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
 
     return google_chat.ChatServiceClient(
-            credentials = creds,
-            client_options={
-                "scopes": APP_AUTH_OAUTH_SCOPE
-            })
+        credentials = creds,
+        client_options={
+            "scopes": APP_AUTH_OAUTH_SCOPE
+        }
+    )
     
-google_chat_client = create_google_chat_client()
+google_chat_cloud_client = create_google_chat_cloud_client()
 
 def get_author_emoji(author) -> str:
     if author == snake_to_user_readable("inspiration_agent"):
@@ -83,7 +85,7 @@ def build_message(author="Agent", text="", cards_v2=[], final=True) -> dict:
     }
 
 def create_message(author="Agent", text="", cards_v2=[], final=True) -> str:
-    return google_chat_client.create_message(google_chat.CreateMessageRequest(
+    return google_chat_cloud_client.create_message(google_chat.CreateMessageRequest(
         parent = spaceName,
         message = build_message(author=author, text=text, cards_v2=cards_v2, final=final)
     )).name
@@ -91,7 +93,7 @@ def create_message(author="Agent", text="", cards_v2=[], final=True) -> str:
 def update_message(messageName, author="Agent", text="", cards_v2=[], final=True):
     message = build_message(author=author, text=text, cards_v2=cards_v2, final=final)
     message['name'] = messageName
-    return google_chat_client.update_message(google_chat.UpdateMessageRequest(
+    return google_chat_cloud_client.update_message(google_chat.UpdateMessageRequest(
         message = message,
         update_mask = "*"
     ))
@@ -265,7 +267,63 @@ def request_adk_agent(message, clean=True):
     
     print("Turn run complete.")
 
+def get_content_from_chat_message_payload(payload) -> dict:
+    # Initialize with the text part which is always present
+    parts = [{ "text": payload.get("message").get("text") }]
+    
+    # Add images based on the message attachments
+    for attachment in payload.get("message").get("attachment"):
+        # TODO: download the attachment from Chat API instead
+        # attachmentBase64Data = downloadChatAttachment(attachment.get("attachmentDataRef").get("resourceName"))
+        attachmentBase64Data = file_to_base64("./image.jpg")
+        inline_data_part = {
+            "inline_data": {
+                "mime_type": attachment.get("contentType"),
+                "data": attachmentBase64Data
+            }
+        }
+        parts.append(inline_data_part)
+    
+    # return types.Content(role="user", parts=parts)
+    return {
+        "role": "user",
+        "parts": parts
+    }
+
+def create_google_chat_api_client():
+    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE).with_scopes(APP_AUTH_OAUTH_SCOPE)
+    return build('chat', 'v1', credentials=creds)
+    
+google_chat_api_client = create_google_chat_api_client()
+
+def downloadChatAttachment(attachment_name) -> str:
+    request = google_chat_api_client.media().download_media(resourceName=attachment_name)
+    buffer = io.BytesIO()
+    downloader = MediaIoBaseDownload(buffer, request)
+
+    done = False
+    while done is False:
+        downloader.next_chunk()
+
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+# TODO: remove, only for testing
+def file_to_base64(file_path: str) -> str:
+    with open(file_path, "rb") as f:
+        return base64.b64encode(f.read()).decode("utf-8")
+
 if __name__ == "__main__":
-    request_adk_agent("Looking for inspirations around the Americas", False)
-    # request_adk_agent("Can you tell me more about Machu Pichu, what are the points of interest?", False)
-    # request_adk_agent("Let's plan a trip to Peru!", True)
+    # Scenario 1 (multi-agent handler)
+    scenario_1_turn_1 = { "message": { "text": "Looking for inspirations around the Americas" }}
+    # request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_1), False)
+    scenario_1_turn_2 = { "message": { "text": "Can you tell me more about Machu Pichu, what are the points of interest?" }}
+    # request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_2), False)
+    scenario_1_turn_3 = { "message": { "text": "Let's plan a trip to Peru!" }}
+    # request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_3), True)
+    
+    # Scenario 2 (multimodal)
+    scenario_2_turn_1 = { "message": {
+        "text": "I want to go there!",
+        "attachment": [{ "attachmentDataRef": { "resourceName": "???" }, "contentType": "image/jpeg" }]
+    }}
+    request_adk_agent(get_content_from_chat_message_payload(scenario_2_turn_1), False)
