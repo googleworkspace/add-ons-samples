@@ -21,6 +21,7 @@ import json
 import urllib.parse
 import io
 import base64
+import re
 
 # Chat API
 from google.oauth2.service_account import Credentials
@@ -43,7 +44,7 @@ userName = 'users/117395548653558734883'
 
 projectNumber = '394838622210'
 agentLocation = 'us-central1'
-engineID = '3703458627558834176'
+engineID = '2327045991443726336'
 reasoningEngine = f"projects/{projectNumber}/locations/{agentLocation}/reasoningEngines/{engineID}"
 
 session_service = VertexAiSessionService(projectNumber, agentLocation)
@@ -114,15 +115,15 @@ def create_destination_cards(destinations=[]) -> list:
         # 1. Add image
         image_url = item.get("image")
         if image_url:
-            carousel_card_widgets.append({ "image": { "imageUrl": image_url }})
+            carousel_card_widgets.append({ "image": { "image_url": image_url }})
 
         # 2. Add text
         destination_name = item.get("name", "Unknown")
         country = item.get("country", "Unknown")
-        carousel_card_widgets.append({ "textParagraph": { "text": f"*{destination_name}, {country}*" }})
+        carousel_card_widgets.append({ "text_paragraph": { "text": f"*{destination_name}, {country}*" }})
         carousel_cards.append({ "widgets": carousel_card_widgets })
         
-    return [{ "card": { "sections": [{ "widgets": [{ "carousel": { "carouselCards": carousel_cards }}]}]}}]
+    return [{ "card": { "sections": [{ "widgets": [{ "carousel": { "carousel_cards": carousel_cards }}]}]}}]
 
 def create_place_cards(places=[]) -> list:
     carousel_cards = []
@@ -133,21 +134,34 @@ def create_place_cards(places=[]) -> list:
         # 1. Add image
         image_url = item.get("image_url")
         if image_url:
-            carousel_card_widgets.append({ "image": { "imageUrl": image_url }})
+            carousel_card_widgets.append({ "image": { "image_url": image_url }})
 
         # 2. Add text
-        carousel_card_widgets.append({ "textParagraph": { "text": f"*{item.get("place_name")}*" }})
+        carousel_card_widgets.append({ "text_paragraph": { "text": f"*{item.get("place_name")}*" }})
         
         # 3. Add Google Maps button link
         place_name = urllib.parse.quote_plus(item.get("place_name"))
         address = urllib.parse.quote_plus(item.get("address"))
-        footer_widgets.append({ "buttonList": { "buttons": [{ "text": "Open Maps", "onClick": { "openLink": {
+        footer_widgets.append({ "button_list": { "buttons": [{ "text": "Open Maps", "on_click": { "open_link": {
             "url": f"https://www.google.com/maps/search/?api=1&query={place_name},{address}"
         }}, "width": { "type": "TYPE_FILL_CONTAINER" }}]}})
 
         carousel_cards.append({ "widgets": carousel_card_widgets, "footerWidgets": footer_widgets })
         
     return [{ "card": { "sections": [{ "widgets": [{ "carousel": { "carouselCards": carousel_cards }}]}]}}]
+
+def create_source_cards(text="") -> list:
+    url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+|www\.[^\s/$.?#].[^\s]*'
+    urls = re.findall(url_pattern, text)
+    cleaned_urls = [url.rstrip('.,;)') for url in urls]
+    cleaned_urls = cleaned_urls[:5]
+    if len(cleaned_urls) > 0:
+        sourceButtons = []
+        for url in cleaned_urls:
+            sourceButtons.append({ "text": urllib.parse.urlparse(url).netloc, "on_click": { "open_link": { "url": url }}})
+        return [{ "card": { "sections": [{ "widgets": [{ "button_list": { "buttons": sourceButtons }}]}]}}]
+        
+    return []
 
 def snake_to_user_readable(snake_case_string="") -> str:
     return snake_case_string.replace('_', ' ').title()
@@ -217,6 +231,7 @@ def request_adk_agent(message, clean=True):
                     function_call_message_map[id] = create_message(
                         author=snake_to_user_readable(function_call["name"]),
                         text=f"Working on *{author}*'s request...",
+                        cards_v2=[],
                         final=False)
                 else:
                     print(f"{author}: internal event, initiate transfer to another agent")
@@ -251,6 +266,14 @@ def request_adk_agent(message, clean=True):
                                 cards_v2=[]
                                 # cards_v2=create_place_cards(response["places"])
                             )
+                        case "google_search_grounding":
+                            print("\n[app]: To render source links")
+                            update_message(
+                                messageName=message_name,
+                                author=snake_to_user_readable(name),
+                                text="",
+                                cards_v2=create_source_cards(response["result"])
+                            )
                         case _:
                             update_message(
                                 messageName=message_name,
@@ -272,18 +295,19 @@ def get_content_from_chat_message_payload(payload) -> dict:
     parts = [{ "text": payload.get("message").get("text") }]
     
     # Add images based on the message attachments
-    for attachment in payload.get("message").get("attachment"):
-        # TODO: download the attachment from Chat API instead
-        # attachmentBase64Data = downloadChatAttachment(attachment.get("attachmentDataRef").get("resourceName"))
-        attachmentBase64Data = file_to_base64("./image.jpg")
-        inline_data_part = {
-            "inline_data": {
-                "mime_type": attachment.get("contentType"),
-                "data": attachmentBase64Data
+    if "attachment" in payload.get("message"):
+        for attachment in payload.get("message").get("attachment"):
+            # TODO
+            # attachmentBase64Data = downloadChatAttachment(attachment.get("attachmentDataRef").get("resourceName"))
+            attachmentBase64Data = file_to_base64("./image.jpg")
+            inline_data_part = {
+                "inline_data": {
+                    "mime_type": attachment.get("contentType"),
+                    "data": attachmentBase64Data
+                }
             }
-        }
-        parts.append(inline_data_part)
-    
+            parts.append(inline_data_part)
+        
     # return types.Content(role="user", parts=parts)
     return {
         "role": "user",
@@ -307,13 +331,12 @@ def downloadChatAttachment(attachment_name) -> str:
 
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-# TODO: remove, only for testing
 def file_to_base64(file_path: str) -> str:
     with open(file_path, "rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
 
 if __name__ == "__main__":
-    # Scenario 1 (multi-agent handler)
+    # Scenario 1 (multi-agent)
     scenario_1_turn_1 = { "message": { "text": "Looking for inspirations around the Americas" }}
     # request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_1), False)
     scenario_1_turn_2 = { "message": { "text": "Can you tell me more about Machu Pichu, what are the points of interest?" }}
@@ -326,4 +349,10 @@ if __name__ == "__main__":
         "text": "I want to go there!",
         "attachment": [{ "attachmentDataRef": { "resourceName": "???" }, "contentType": "image/jpeg" }]
     }}
-    request_adk_agent(get_content_from_chat_message_payload(scenario_2_turn_1), False)
+    # request_adk_agent(get_content_from_chat_message_payload(scenario_2_turn_1), True)
+
+    # Scenario 3 (grounding)
+    # Deploy the ADK agent adding this line "Make sure to also return a list of source URLs you found the information with."
+    # at the end of the prompt for the google_search_grounding tool defined in file /tools/search.py.
+    scenario_3_turn_1 = { "message": { "text": "I have a week long trip booked to Paris starting in 3 days from Newark airport. Flights, seats, hotel, room, and costs do not matter. Could you give me an update on visa requirements?" }}
+    request_adk_agent(get_content_from_chat_message_payload(scenario_3_turn_1), True)
