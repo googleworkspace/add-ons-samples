@@ -170,23 +170,23 @@ def get_user_pseudo_id() -> str:
     # TODO: Base64 it so that we do not have to do ID processing like string replacements.
     return userName.replace(USERS_PREFIX, '') + "_" + spaceName.replace(SPACES_PREFIX, '')
 
-def get_or_create_session() -> str:
+async def get_or_create_session() -> str:
     userPseudoId = get_user_pseudo_id()
-    listSessions = asyncio.run(session_service.list_sessions(app_name=reasoningEngine, user_id=userPseudoId))
+    listSessions = await session_service.list_sessions(app_name=reasoningEngine, user_id=userPseudoId)
     if listSessions and len(listSessions.sessions) > 0:
         # Return the first session found
         print(f"Found existing session: {listSessions.sessions[0].id}")
         return listSessions.sessions[0].id
 
     # Create a new session
-    session = asyncio.run(session_service.create_session(app_name=reasoningEngine, user_id=userPseudoId))
+    session = await session_service.create_session(app_name=reasoningEngine, user_id=userPseudoId)
     print(f"Created new session: {session.id}")
     return session.id
 
-def request_adk_agent(message, clean=True):
+async def request_adk_agent(message, clean=True):
     # Create a new Vertex AI session
     print("Initialize session...")
-    session_id = get_or_create_session()
+    session_id = await get_or_create_session()
 
     print(f"Requesting remote agent: {reasoningEngine}...")
     ai_agent = agent_engines.get(reasoningEngine)
@@ -286,7 +286,7 @@ def request_adk_agent(message, clean=True):
 
     if clean is True:
         print("Deleting session...")
-        asyncio.run(session_service.delete_session(app_name=reasoningEngine, user_id=get_user_pseudo_id(), session_id=session_id))
+        await session_service.delete_session(app_name=reasoningEngine, user_id=get_user_pseudo_id(), session_id=session_id)
     
     print("Turn run complete.")
 
@@ -338,21 +338,21 @@ def file_to_base64(file_path: str) -> str:
 if __name__ == "__main__":
     # Scenario 1 (multi-agent)
     scenario_1_turn_1 = { "message": { "text": "Looking for inspirations around the Americas" }}
-    # request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_1), False)
+    # asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_1), False))
     scenario_1_turn_2 = { "message": { "text": "Can you tell me more about Machu Pichu, what are the points of interest?" }}
-    # request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_2), False)
+    # asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_2), False))
     scenario_1_turn_3 = { "message": { "text": "Let's plan a trip to Peru!" }}
-    # request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_3), True)
+    # asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_3), True))
     
     # Scenario 2 (multimodal)
     scenario_2_turn_1 = { "message": {
         "text": "I want to go there!",
         "attachment": [{ "attachmentDataRef": { "resourceName": "???" }, "contentType": "image/jpeg" }]
     }}
-    # request_adk_agent(get_content_from_chat_message_payload(scenario_2_turn_1), True)
+    asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_2_turn_1), True))
 
     # Scenario 3 (grounding)
     # Deploy the ADK agent adding this line "Make sure to also return a list of source URLs you found the information with."
     # at the end of the prompt for the google_search_grounding tool defined in file /tools/search.py.
     scenario_3_turn_1 = { "message": { "text": "I have a week long trip booked to Paris starting in 3 days from Newark airport. Flights, seats, hotel, room, and costs do not matter. Could you give me an update on visa requirements?" }}
-    request_adk_agent(get_content_from_chat_message_payload(scenario_3_turn_1), True)
+    # asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_3_turn_1), True))
