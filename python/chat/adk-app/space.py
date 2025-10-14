@@ -120,7 +120,7 @@ def create_destination_cards(destinations=[]) -> list:
         # 2. Add text
         destination_name = item.get("name", "Unknown")
         country = item.get("country", "Unknown")
-        carousel_card_widgets.append({ "text_paragraph": { "text": f"*{destination_name}, {country}*" }})
+        carousel_card_widgets.append({ "text_paragraph": { "text": f"**{destination_name}, {country}**" }})
         carousel_cards.append({ "widgets": carousel_card_widgets })
         
     return [{ "card": { "sections": [{ "widgets": [{ "carousel": { "carousel_cards": carousel_cards }}]}]}}]
@@ -137,7 +137,7 @@ def create_place_cards(places=[]) -> list:
             carousel_card_widgets.append({ "image": { "image_url": image_url }})
 
         # 2. Add text
-        carousel_card_widgets.append({ "text_paragraph": { "text": f"*{item.get("place_name")}*" }})
+        carousel_card_widgets.append({ "text_paragraph": { "text": f"**{item.get("place_name")}**" }})
         
         # 3. Add Google Maps button link
         place_name = urllib.parse.quote_plus(item.get("place_name"))
@@ -230,7 +230,7 @@ async def request_adk_agent(message, clean=True):
                 if function_call["name"] != "transfer_to_agent":
                     function_call_message_map[id] = create_message(
                         author=snake_to_user_readable(function_call["name"]),
-                        text=f"Working on *{author}*'s request...",
+                        text=f"Working on **{author}**'s request...",
                         cards_v2=[],
                         final=False)
                 else:
@@ -242,47 +242,46 @@ async def request_adk_agent(message, clean=True):
                 name = function_response["name"]
                 response = function_response["response"]
                 message_name = function_call_message_map.get(id)
-                if message_name:
-                    print(
-                        f'{author}\nResponse from: "{name}"\nresponse: {json.dumps(response, indent=2)}\n'
-                    )
-                    match name:
-                        # Update messages with results.
-                        case "place_agent":
-                            print("\n[app]: To render a carousel of destinations")
-                            update_message(
-                                messageName=message_name,
-                                author=snake_to_user_readable(name),
-                                text="",
-                                cards_v2=[]
-                                # cards_v2=create_destination_cards(response["places"])
-                            )
-                        case "map_tool":
-                            print("\n[app]: To render a map of pois")
-                            update_message(
-                                messageName=message_name,
-                                author=snake_to_user_readable(name),
-                                text="",
-                                cards_v2=[]
-                                # cards_v2=create_place_cards(response["places"])
-                            )
-                        case "google_search_grounding":
-                            print("\n[app]: To render source links")
-                            update_message(
-                                messageName=message_name,
-                                author=snake_to_user_readable(name),
-                                text="",
-                                cards_v2=create_source_cards(response["result"])
-                            )
-                        case _:
-                            update_message(
-                                messageName=message_name,
-                                author=snake_to_user_readable(name),
-                                text="",
-                                cards_v2=[]
-                            )
-                else:
-                    print(f"{author}: internal event, complete transfer to another agent")
+                print(
+                    f'{author}\nResponse from: "{name}"\nresponse: {json.dumps(response, indent=2)}\n'
+                )
+                match name:
+                    # Update messages with results.
+                    case "place_agent":
+                        print("\n[app]: To render a carousel of destinations")
+                        update_message(
+                            messageName=message_name,
+                            author=snake_to_user_readable(name),
+                            text="",
+                            cards_v2=[]
+                            # TODO: cards_v2=create_destination_cards(response["places"])
+                        )
+                    case "map_tool":
+                        print("\n[app]: To render a map of pois")
+                        update_message(
+                            messageName=message_name,
+                            author=snake_to_user_readable(name),
+                            text="",
+                            cards_v2=[]
+                            # TODO: cards_v2=create_place_cards(response["places"])
+                        )
+                    case "google_search_grounding":
+                        print("\n[app]: To render source links")
+                        update_message(
+                            messageName=message_name,
+                            author=snake_to_user_readable(name),
+                            text="",
+                            cards_v2=create_source_cards(response["result"])
+                        )
+                    case "transfer_to_agent": 
+                        print(f"{author}: internal event, complete transfer to another agent")
+                    case _:
+                        update_message(
+                            messageName=message_name,
+                            author=snake_to_user_readable(name),
+                            text="",
+                            cards_v2=[]
+                        )
 
     if clean is True:
         print("Deleting session...")
@@ -338,7 +337,7 @@ def file_to_base64(file_path: str) -> str:
 if __name__ == "__main__":
     # Scenario 1 (multi-agent)
     scenario_1_turn_1 = { "message": { "text": "Looking for inspirations around the Americas" }}
-    # asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_1), False))
+    asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_1), False))
     scenario_1_turn_2 = { "message": { "text": "Can you tell me more about Machu Pichu, what are the points of interest?" }}
     # asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_1_turn_2), False))
     scenario_1_turn_3 = { "message": { "text": "Let's plan a trip to Peru!" }}
@@ -349,7 +348,7 @@ if __name__ == "__main__":
         "text": "I want to go there!",
         "attachment": [{ "attachmentDataRef": { "resourceName": "???" }, "contentType": "image/jpeg" }]
     }}
-    asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_2_turn_1), True))
+    # asyncio.run(request_adk_agent(get_content_from_chat_message_payload(scenario_2_turn_1), True))
 
     # Scenario 3 (grounding)
     # Deploy the ADK agent adding this line "Make sure to also return a list of source URLs you found the information with."
