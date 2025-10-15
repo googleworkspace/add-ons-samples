@@ -28,7 +28,7 @@ const CLIENT_SECRETS = {};
 function onMessage(event) {
   try {
     // Try to obtain an existing OAuth2 token from storage.
-    var meetService = getMeetService_();
+    const meetService = getMeetService_();
     if (!meetService.hasAccess()) {
       // App doesn't have credentials for the user yet.
       // Request configuration to obtain OAuth2 credentials.
@@ -36,19 +36,19 @@ function onMessage(event) {
     }
 
     // Call Meet API to create the new space with the user's OAuth2 credentials.
-    var response = UrlFetchApp.fetch('https://meet.googleapis.com/v2/spaces', {
+    const response = UrlFetchApp.fetch('https://meet.googleapis.com/v2/spaces', {
       method: 'post',
       contentType: 'application/json',
       headers: { Authorization: 'Bearer ' + meetService.getAccessToken() },
       // An empty body is sufficient to create a default space.
       payload: JSON.stringify({})
     });
-    var meetSpace = JSON.parse(response.getContentText());
+    const meetSpace = JSON.parse(response.getContentText());
     return sendCreateTextMessageAction(`New Meet was created: ${meetSpace.meetingUri}`);
   } catch (e) {
     // This error probably happened because the user revoked the
     // authorization. So, let's request configuration again.
-    Logger.log('Error creating Meet space: ' + JSON.stringify(e));
+    console.log('Error creating Meet space: ' + JSON.stringify(e));
     throw e;
   }
 }
@@ -131,8 +131,8 @@ function getMeetService_() {
  *  @return {HtmlOutput} a success or denied HTML message to display to the user.
  */
 function meetAuthCallback(request) {
-  var meetService = getMeetService_();
-  var authorized = meetService.handleCallback(request);
+  const meetService = getMeetService_();
+  const authorized = meetService.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success! You can close this tab.');
   } else {
