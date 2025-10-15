@@ -18,11 +18,11 @@
  * @return {CardService.Card} The card to show to the user.
  */
 function onDriveItemsSelected(e) {
-  var items = e.drive.selectedItems;
+  let items = e.drive.selectedItems;
   // Include at most 5 items in the text.
   items = items.slice(0, 5);
   // If neccessary, truncate the titles to fit in the image.
-  var text = items.map(function(item) {
+  const text = items.map(function(item) {
     return truncate(item.title);
   }).join('\n');
   return createCatCard(text);
