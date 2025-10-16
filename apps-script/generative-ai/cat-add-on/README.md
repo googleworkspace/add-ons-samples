@@ -36,7 +36,7 @@ Before you begin, ensure you have the following:
 
     Authenticate `clasp` with your Google account:
     ```bash
-    clasp login --no-localhost
+    clasp login
     ```
 
 ## Deployment
@@ -50,6 +50,9 @@ Before you begin, ensure you have the following:
 
 2.  **Create a Google Workspace Add-on Deployment:**
 
+    You can create a deployment using `gcloud` (recommended) or `clasp`.
+
+    **Using `gcloud`:**
     Create a deployment for your add-on using the `gcloud` command:
     ```bash
     gcloud workspace-add-ons deployments create my-deployment \
@@ -61,6 +64,12 @@ Before you begin, ensure you have the following:
     ```
     - Replace `YOUR_PROJECT_ID` with your Google Cloud project ID.
     - Replace `YOUR_SCRIPT_ID` with your Apps Script project's script ID. You can find this in the `.clasp.json` file or in the Apps Script editor URL.
+
+    **Using `clasp`:**
+    Alternatively, you can create a deployment using `clasp`:
+    ```bash
+    clasp deploy
+    ```
 
 ## Installation
 
