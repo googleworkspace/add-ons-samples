@@ -36,7 +36,7 @@ Before you begin, ensure you have the following:
 
     Authenticate `clasp` with your Google account:
     ```bash
-    clasp login
+    clasp login --no-localhost
     ```
 
 ## Deployment
