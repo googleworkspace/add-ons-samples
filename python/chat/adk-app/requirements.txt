@@ -6,8 +6,6 @@ google-api-core==2.25.1
 PyJWT==2.10.1
 nest-asyncio==1.6.0
 
-google-cloud-firestore==2.19.0
-
 google-apps-chat==0.2.9
 
 google-cloud-aiplatform[adk,agent-engines]==1.118.0
