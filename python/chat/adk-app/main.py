@@ -103,7 +103,7 @@ async def async_adk_app(request: Request):
                 resourceName=user_name.replace(USERS_PREFIX, PEOPLE_PREFIX),
                 personFields="birthdays"
             ).execute()
-            hostAppContext.append({ "id": "profile", "name": "Google profile", "type": "text", "selected": True, "value": person })
+            hostAppContext.append({ "id": "profile", "name": "Google profile", "selected": True, "value": person })
             print(person)
             if "gmail" in event:
                 # Fetch and add selected email in primary text context if any
@@ -117,7 +117,7 @@ async def async_adk_app(request: Request):
                     )
                     request.headers["X-Goog-Gmail-Access-Token"] = gmailEvent["accessToken"]
                     message = request.execute()
-                    hostAppContext.append({ "id": "email", "name": "Current email", "type": "text", "selected": True, "value": message })
+                    hostAppContext.append({ "id": "email", "name": "Current email", "selected": True, "value": message })
                     print(message)
                 else:
                     print("No email is currently selected")
@@ -128,10 +128,12 @@ async def async_adk_app(request: Request):
             common_event_object = event['commonEventObject']
             print(f"Common event object: {common_event_object}")
             if common_event_object.get('formInputs') != None:
+                # Unselect host app context based on current form inputs
+                enabledHostAppContext = []
                 if common_event_object.get('formInputs').get('context') != None:
-                    # Unselect host app context based on current form inputs
                     enabledHostAppContext = common_event_object.get('formInputs').get('context').get('stringInputs').get('value')
-                    hostAppContext = [{ **item, 'selected': item['id'] in enabledHostAppContext } for item in hostAppContext]
+                hostAppContext = [{ **item, 'selected': (item['id'] in enabledHostAppContext) } for item in hostAppContext]
+                # Process send action
                 if reset is False and common_event_object.get('formInputs').get('message') != None:
                     print(f"Building AI agent request message...")
                     message = "USER MESSAGE TO ANSWER:" + common_event_object.get('formInputs').get('message').get('stringInputs').get('value')[0]
@@ -189,15 +191,7 @@ async def async_adk_app(request: Request):
 
 @functions_framework.http
 def adk_app(request: Request):
-    """Function triggered by Google Workspace add on events.
-    Args:
-        request (flask.Request): The request object.
-        <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
-    Returns:
-        The response text, or any set of values that can be turned into a
-        Response object using `make_response`
-        <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
-    """
+    """Function triggered by Google Workspace add on events."""
     result = asyncio.run(async_adk_app(request))
     if isinstance(result, dict):
         return jsonify(result)
