@@ -90,10 +90,10 @@ async def async_adk_app(request: Request):
             reset = False
             resetConfirmation = []
             if request_args.get('reset') != None:
+                reset = True
                 print(f"Executing reset...")
                 await delete_agent_session(user_name)
                 resetConfirmation = [{ "textParagraph": { "text": "Alright, let's start from the beginning." }}]
-                reset = True
                 
             # Extract contextual, host-specific input
             # Could be expanded to calendar, drive, docs, sheets, slides
@@ -103,7 +103,7 @@ async def async_adk_app(request: Request):
                 resourceName=user_name.replace(USERS_PREFIX, PEOPLE_PREFIX),
                 personFields="birthdays"
             ).execute()
-            hostAppContext.append({ "id": "profile", "name": "Google profile", "selected": True, "value": person })
+            hostAppContext.append({ "id": "profile", "name": "Google profile", "selected": False, "value": person })
             print(person)
             if "gmail" in event:
                 # Fetch and add selected email in primary text context if any
@@ -117,38 +117,35 @@ async def async_adk_app(request: Request):
                     )
                     request.headers["X-Goog-Gmail-Access-Token"] = gmailEvent["accessToken"]
                     message = request.execute()
-                    hostAppContext.append({ "id": "email", "name": "Current email", "selected": True, "value": message })
+                    hostAppContext.append({ "id": "email", "name": "Current email", "selected": False, "value": message })
                     print(message)
                 else:
                     print("No email is currently selected")
             
             # Handles the send action
-            has_answer = False
+            send = False
             answer_sections = []
-            common_event_object = event['commonEventObject']
-            print(f"Common event object: {common_event_object}")
-            if common_event_object.get('formInputs') != None:
-                # Unselect host app context based on current form inputs
-                enabledHostAppContext = []
-                if common_event_object.get('formInputs').get('context') != None:
-                    enabledHostAppContext = common_event_object.get('formInputs').get('context').get('stringInputs').get('value')
-                hostAppContext = [{ **item, 'selected': (item['id'] in enabledHostAppContext) } for item in hostAppContext]
-                # Process send action
-                if reset is False and common_event_object.get('formInputs').get('message') != None:
-                    print(f"Building AI agent request message...")
-                    message = "USER MESSAGE TO ANSWER:" + common_event_object.get('formInputs').get('message').get('stringInputs').get('value')[0]
-                    if any((item['id'] == 'email' and item['selected']) for item in hostAppContext):
-                        # Include email context if needed
-                        email_subject, email_body = extract_message_contents(next(item for item in hostAppContext if item['id'] == 'email')["value"])
-                        message += f"\n\nEMAIL THE USER HAS OPENED ON SCREEN:\nSubject: {email_subject}\nBody:\n---\n{email_body}\n---"
-                    if any((item['id'] == 'profile' and item['selected']) for item in hostAppContext):
-                        # Include profile context if needed
-                        message += f"\n\nPUBLIC PROFILE OF THE USER IN JSON FORMAT: {json.dumps(next(item for item in hostAppContext if item['id'] == 'profile')["value"])}"
-                    print(f"Answering message: {message}...")
-                    travel_common_agent = TravelCommonAgent()
-                    await request_agent(user_name, message, travel_common_agent)
-                    answer_sections = travel_common_agent.get_answer_sections()
-                has_answer = True
+            if request_args.get('send') != None:
+                send = True
+                print(f"Executing send...")
+                answer_sections = [{ "widgets": [{ "text_paragraph": { "text": "No answer because the message you sent was empty 😥" }}]}]
+                common_event_object = event['commonEventObject']
+                print(f"Common event object: {common_event_object}")
+                if common_event_object.get('formInputs') != None:
+                    if common_event_object.get('formInputs').get('message') != None:
+                        print(f"Building AI agent request message...")
+                        userMessage = "USER MESSAGE TO ANSWER: " + common_event_object.get('formInputs').get('message').get('stringInputs').get('value')[0]
+                        if any((item['id'] == 'email' and item['selected']) for item in hostAppContext):
+                            # Include email context if needed
+                            email_subject, email_body = extract_message_contents(next(item for item in hostAppContext if item['id'] == 'email')["value"])
+                            userMessage += f"\n\nEMAIL THE USER HAS OPENED ON SCREEN:\nSubject: {email_subject}\nBody:\n---\n{email_body}\n---"
+                        if any((item['id'] == 'profile' and item['selected']) for item in hostAppContext):
+                            # Include profile context if needed
+                            userMessage += f"\n\nPUBLIC PROFILE OF THE USER IN JSON FORMAT: {json.dumps(next(item for item in hostAppContext if item['id'] == 'profile')["value"])}"
+                        print(f"Answering message: {userMessage}...")
+                        travel_common_agent = TravelCommonAgent()
+                        await request_agent(user_name, userMessage, travel_common_agent)
+                        answer_sections = travel_common_agent.get_answer_sections()
 
             # Handles UI card
             hostAppContextSources = { "selectionInput": {
@@ -157,7 +154,8 @@ async def async_adk_app(request: Request):
                 "type": "SWITCH",
                 "items": [{ "text": c["name"], "value": c["id"], "selected": c["selected"] } for c in hostAppContext]
             }}
-            
+            print(f"{hostAppContextSources}")
+
             card = { "sections": [{ "widgets": resetConfirmation +
                 [{ "textInput": { "name": "message", "label": "Message" }}] +
                 ([hostAppContextSources] if len(hostAppContext) > 0 else []) +
@@ -165,7 +163,7 @@ async def async_adk_app(request: Request):
                     "text": "Send",
                     "type": "FILLED",
                     "icon": { "materialIcon": { "name": "help" }},
-                    "onClick": { "action": { "function": BASE_URL }},
+                    "onClick": { "action": { "function": BASE_URL + "?send=true" }},
                     "width": { "type": "TYPE_FILL_CONTAINER" }
                 }}},
                 { "decoratedText": { "button": {
@@ -181,8 +179,9 @@ async def async_adk_app(request: Request):
                     "onClick": { "openLink": { "url": f"https://chat.google.com/dm/{space_name.replace(SPACES_PREFIX, "")}" }}
                 }}}]
             }] + answer_sections }
-            
-            if reset is True or has_answer is True:
+            print(f"{card}")
+
+            if reset is True or send is True:
                 return { "action": { "navigations": [{ "updateCard": card }]}}
             else:
                 return card
