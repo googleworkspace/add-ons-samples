@@ -1,0 +1,21 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/cloud-platform",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/script.external_request"
+  ],
+  "gmail": {
+    "name": "AI Generated Cat",
+    "logoUrl": "https://fonts.gstatic.com/s/i/googlematerialicons/pets/v12/gm_blue-48dp/1x/gm_pets_gm_blue_48dp.png",
+    "homepageTrigger": {
+      "runFunction": "onHomepage"
+    }
+  },
+  "urlFetchWhitelist": [
+    "https://*.googleapis.com/"
+  ]
+}
