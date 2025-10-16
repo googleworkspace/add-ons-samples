@@ -1,0 +1,40 @@
+{
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/cloud-platform",
+
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
+
+    "https://www.googleapis.com/auth/calendar.addons.execute",
+    "https://www.googleapis.com/auth/calendar.addons.current.event.read",
+
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+
+    "https://www.googleapis.com/auth/chat.spaces.create",
+    "https://www.googleapis.com/auth/chat.memberships.app",
+    "https://www.googleapis.com/auth/chat.messages.create"
+  ],
+  "addOns": {
+    "common": {
+      "name": "ADK App",
+      "logoUrl": "https://goo.gle/3SfMkjb",
+      "homepageTrigger": {
+        "runFunction": $BASE_URL
+      }
+    },
+    "gmail": { "contextualTriggers": [{
+      "unconditional": {},
+      "onTriggerFunction": $BASE_URL
+    }]},
+    "calendar":  { "eventOpenTrigger": {
+      "runFunction": $BASE_URL
+    }},
+    "drive": { "onItemsSelectedTrigger": {
+      "runFunction": $BASE_URL
+    }},
+    "httpOptions": {
+      "granularOauthPermissionSupport": "OPT_IN"
+    }
+  }
+}

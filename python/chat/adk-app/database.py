@@ -23,30 +23,9 @@ USERS_PREFIX = "users/"
 
 # The name of the users collection in the database.
 CREDS_COLLECTION = "creds"
-SESSIONS_COLLECTION = "sessions"
-
-# The name of the session ID field in values.
-SESSION_ID_FIELD = "id"
 
 # Initialize the Firestore default database using Application Default Credentials.
 db = firestore.Client()
-
-def store_session(user_name: str, session_id: str):
-    """Saves the user's ADK session ID to storage."""
-    doc_ref = db.collection(SESSIONS_COLLECTION).document(user_name.replace(USERS_PREFIX, ""))
-    doc_ref.set(json.loads({SESSION_ID_FIELD: session_id}))
-
-def get_session(user_name: str) -> str | None:
-    """Fetches the user's ADK session ID from storage."""
-    doc = db.collection(SESSIONS_COLLECTION).document(user_name.replace(USERS_PREFIX, "")).get()
-    if doc.exists:
-        return doc.to_dict().get(SESSION_ID_FIELD)
-    return None
-
-def delete_session(user_name: str):
-    """Deletes the user's ADK session ID from storage."""
-    doc_ref = db.collection(SESSIONS_COLLECTION).document(user_name.replace(USERS_PREFIX, ""))
-    doc_ref.delete()
 
 def store_credentials(user_name: str, creds: Credentials):
     """Saves the user's OAuth2 credentials to storage."""

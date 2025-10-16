@@ -15,16 +15,18 @@
 """The main script for the project, which starts a Flask app
 to listen to HTTP requests from Google Workspace add on events."""
 
-import logging
-import os
-import flask
-import jwt 
-from database import get_session, store_session, delete_session
-# from space import find_dm
-from werkzeug.middleware.proxy_fix import ProxyFix
+import asyncio
+import nest_asyncio
+import functions_framework
+import jwt
+from flask import Request, jsonify
+from chat import setup_config, find_dm
+from travel_chat_agent import TravelChatAgent
+from travel_common_agent import TravelCommonAgent
+from vertex_ai import delete_agent_session, request_agent
+from env import RESET_SESSION_COMMAND_ID, BASE_URL
 
-# Configure the application
-RESET_SESSION_COMMAND_ID = 1
+nest_asyncio.apply()
 
 # The prefix used by the Google Chat API in the User resource name.
 USERS_PREFIX = "users/"
@@ -32,40 +34,31 @@ USERS_PREFIX = "users/"
 # The prefix used by the Google Chat API in the Space resource name.
 SPACES_PREFIX = "spaces/"
 
-logging.basicConfig(
-    level=logging.INFO,
-    style="{",
-    format="[{levelname:.1}{asctime} {filename}:{lineno}] {message}"
-)
+async def async_adk_app(request: Request):
+    request_json = request.get_json(silent=True)
+    request_args = request.args
 
-# Initialize a Flask app to handle routing.
-app = flask.Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app)
-
-@app.route("/", methods=["POST"])
-def on_event() -> dict:
-    """App route that responds to Google Workspace add on events."""
-    if event := flask.request.get_json(silent=True):
-        # del event['authorizationEventObject']
-        print(f"Event received: {event}")
+    if event := request_json:
         if "chat" in event:
+            print(f"Event received: {event}")
             # Extract data from the event.
             chat_event = event["chat"]
             user_name = chat_event["user"]["name"]
-            message_text = chat_event["messagePayload"]["message"]["text"]
 
             if "messagePayload" in chat_event:
-                # TODO
-                # Handle message events
-                # Reply a Chat message with the link
-                return { "hostAppDataAction": { "chatDataAction": { "createMessageAction": { "message": {
-                    "text": "Echo: " + message_text
-                }}}}}
+                # Handle message events, actions will be taken via Google Chat API calls
+                setup_config(chat_event["messagePayload"]["space"]["name"])
+                await request_agent(user_name, chat_event["messagePayload"]["message"], TravelChatAgent())
+                
+                # Respond with an empty response to the Google Chat platform to acknowledge execution
+                return {}
             elif "appCommandPayload" in chat_event:
                 # Handles command events
+                setup_config(chat_event["appCommandPayload"]["space"]["name"])
                 if chat_event["appCommandPayload"]["appCommandMetadata"]["appCommandId"] == RESET_SESSION_COMMAND_ID:
-                    # Reset ADK session for the user.
-                    delete_session(user_name)
+                    # Delete session for the user
+                    await delete_agent_session(user_name)
+                    
                     # Reply a Chat message with confirmation
                     return { "hostAppDataAction": { "chatDataAction": { "createMessageAction": { "message": {
                         "text": "OK, let's start from the beginning, what can I help you with?"
@@ -78,45 +71,59 @@ def on_event() -> dict:
                 options={"verify_signature": False}
             )['sub']
             print(f"User found: {user_name}")
-            # space_name = find_dm(user_name)
-            # print(f"Space found: {space_name}")
+
+            del event['authorizationEventObject']
+            print(f"Event received: {event}")
+
+            space_name = find_dm(user_name)
+            print(f"Space found: {space_name}")
 
             # Handles the session reset action
-            print(flask.request.args.to_dict())
             reset = False
-            update = False
-            if flask.request.args.get('reset') != None:
+            resetConfirmation = []
+            if request_args.get('reset') != None:
                 print(f"Executing reset...")
-                delete_session(user_name)
+                await delete_agent_session(user_name)
+                resetConfirmation = [{ "textParagraph": { "text": "Alright, let's start from the beginning." }}]
                 reset = True
 
+            # Handles the send action
+            has_answer = False
+            answer_sections = []
+            common_event_object = event['commonEventObject']
+            print(f"Common event object: {common_event_object}")
+            if common_event_object.get('formInputs') != None:
+                message = common_event_object.get('formInputs').get('message').get('stringInputs').get('value')[0]
+                print(f"Answering message: {message}...")
+                travel_common_agent = TravelCommonAgent()
+                await request_agent(user_name, message, travel_common_agent)
+                answer_sections = travel_common_agent.get_answer_sections()
+                has_answer = True
+
             # Handles UI card
-            card = { "sections": [{ "widgets": [
-                { "textParagraph": { "text": "Alright, let's start from the beginning.\n\nWhat can I help you with?" if reset is True else "What can I help you with?" }},
-                { "textInput": { "name": "question", "label": "Question" }},
-                { "buttonList": { "buttons": [
-                    {
-                        "text": "Ask",
-                        "type": "FILLED",
-                        "icon": { "materialIcon": { "name": "help" }},
-                        "onClick": { "action": { "function": "https://agentspace-chat-app.uc.r.appspot.com?answer" }}
-                    },
-                    {
-                        "text": "Reset",
-                        "type": "OUTLINED",
-                        "icon": { "materialIcon": { "name": "autorenew" }},
-                        "onClick": { "action": { "function": "https://agentspace-chat-app.uc.r.appspot.com?reset=true" }}
-                    },
-                    # {
-                    #     "text": "Chat",
-                    #     "type": "OUTLINED",
-                    #     "icon": { "materialIcon": { "name": "chat" }},
-                    #     "onClick": { "openLink": { "url": f"https://chat.google.com/dm/{space_name.replace(SPACES_PREFIX, "")}" }}
-                    # }
-                ]}}
-            ]}]}
+            card = { "sections": [{ "widgets": resetConfirmation + [
+                { "textInput": { "name": "message", "label": "Message" }},
+                { "decoratedText": { "button": {
+                    "text": "Send",
+                    "type": "FILLED",
+                    "icon": { "materialIcon": { "name": "help" }},
+                    "onClick": { "action": { "function": BASE_URL }},
+                    "width": { "type": "TYPE_FILL_CONTAINER" }
+                }}},
+                { "buttonList": { "buttons": [{
+                    "text": "Reset session",
+                    "type": "OUTLINED",
+                    "icon": { "materialIcon": { "name": "autorenew" }},
+                    "onClick": { "action": { "function": BASE_URL + "?reset=true" }}
+                }, {
+                    "text": "Open Chat",
+                    "type": "OUTLINED",
+                    "icon": { "materialIcon": { "name": "chat" }},
+                    "onClick": { "openLink": { "url": f"https://chat.google.com/dm/{space_name.replace(SPACES_PREFIX, "")}" }}
+                }]}}
+            ]}] + answer_sections }
             
-            if reset is True or update is True:
+            if reset is True or has_answer is True:
                 return { "action": { "navigations": [{ "updateCard": card }]}}
             else:
                 return card
@@ -130,8 +137,23 @@ def on_event() -> dict:
         # elif "docs" in event:
         #     return {}
 
-    return "Error: Unknown action"
+    return "Error: Unknown action", 400
 
-if __name__ == "__main__":
-    PORT=os.getenv("PORT", "8080")
-    app.run(port=PORT)
+@functions_framework.http
+def adk_app(request: Request):
+    """Function triggered by Google Workspace add on events.
+    Args:
+        request (flask.Request): The request object.
+        <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
+    Returns:
+        The response text, or any set of values that can be turned into a
+        Response object using `make_response`
+        <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
+    """
+    result = asyncio.run(async_adk_app(request))
+    if isinstance(result, dict):
+        return jsonify(result)
+    elif isinstance(result, tuple) and len(result) == 2:
+        return result
+    else:
+        return result, 200
