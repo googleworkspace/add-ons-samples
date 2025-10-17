@@ -21,13 +21,12 @@ import jwt
 import json
 from flask import Request, jsonify
 from chat import setup_config, find_dm
-from gmail import extract_message_contents
+from gmail import extract_message_contents, get_message
+from people import get_person_profile
 from travel_agent_ui_render import TravelAgentUiRender
 from agent_handler import AgentChat, AgentCommon
 from vertex_ai import delete_agent_session, request_agent
 from env import RESET_SESSION_COMMAND_ID, BASE_URL
-
-from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 
 # The prefix used by the Google Chat API in the User resource name.
@@ -97,26 +96,23 @@ async def async_adk_ai_agent(request: Request):
             # Extract contextual, host-specific input
             # Could be expanded to calendar, drive, docs, sheets, slides
             hostAppContext = []
-            google_people_api_client = build('people', 'v1', credentials=Credentials(token=user_oauth_token))
-            person = google_people_api_client.people().get(
-                resourceName=user_name.replace(USERS_PREFIX, PEOPLE_PREFIX),
-                personFields="birthdays"
-            ).execute()
-            hostAppContext.append({ "id": "profile", "name": "Google profile", "selected": False, "value": person })
+            person = get_person_profile(
+                credentials=Credentials(token=user_oauth_token),
+                people_name=user_name.replace(USERS_PREFIX, PEOPLE_PREFIX),
+                person_fields="birthdays"
+            )
+            hostAppContext.append({ "id": "profile", "name": "Google profile", "value": person })
             print(person)
             if "gmail" in event:
                 # Fetch and add selected email in primary text context if any
                 gmailEvent = event["gmail"]
                 if "messageId" in gmailEvent:
-                    google_gmail_api_client = build('gmail', 'v1', credentials=Credentials(token=user_oauth_token))
-                    request = google_gmail_api_client.users().messages().get(
-                        id=gmailEvent["messageId"],
-                        userId='me',
-                        format='full'
+                    message = get_message(
+                        credentials=Credentials(token=user_oauth_token),
+                        message_id=gmailEvent["messageId"],
+                        addon_event_access_token=gmailEvent["accessToken"]
                     )
-                    request.headers["X-Goog-Gmail-Access-Token"] = gmailEvent["accessToken"]
-                    message = request.execute()
-                    hostAppContext.append({ "id": "email", "name": "Current email", "selected": False, "value": message })
+                    hostAppContext.append({ "id": "email", "name": "Current email", "value": message })
                     print(message)
                 else:
                     print("No email is currently selected")
@@ -134,11 +130,12 @@ async def async_adk_ai_agent(request: Request):
                     if common_event_object.get('formInputs').get('message') != None:
                         print(f"Building AI agent request message...")
                         userMessage = "USER MESSAGE TO ANSWER: " + common_event_object.get('formInputs').get('message').get('stringInputs').get('value')[0]
-                        if any((item['id'] == 'email' and item['selected']) for item in hostAppContext):
+                        selectedContexts = common_event_object.get('formInputs').get('context').get('stringInputs').get('value') if common_event_object.get('formInputs').get('context') != None else []
+                        if "email" in selectedContexts and any((item['id'] == 'email') for item in hostAppContext):
                             # Include email context if needed
                             email_subject, email_body = extract_message_contents(next(item for item in hostAppContext if item['id'] == 'email')["value"])
                             userMessage += f"\n\nEMAIL THE USER HAS OPENED ON SCREEN:\nSubject: {email_subject}\nBody:\n---\n{email_body}\n---"
-                        if any((item['id'] == 'profile' and item['selected']) for item in hostAppContext):
+                        if "profile" in selectedContexts and any((item['id'] == 'profile') for item in hostAppContext):
                             # Include profile context if needed
                             userMessage += f"\n\nPUBLIC PROFILE OF THE USER IN JSON FORMAT: {json.dumps(next(item for item in hostAppContext if item['id'] == 'profile')["value"])}"
                         print(f"Answering message: {userMessage}...")
@@ -151,7 +148,7 @@ async def async_adk_ai_agent(request: Request):
                 "name": "context",
                 "label": "Context",
                 "type": "SWITCH",
-                "items": [{ "text": c["name"], "value": c["id"], "selected": c["selected"] } for c in hostAppContext]
+                "items": [{ "text": c["name"], "value": c["id"], "selected": False } for c in hostAppContext]
             }}
             print(f"{hostAppContextSources}")
 
