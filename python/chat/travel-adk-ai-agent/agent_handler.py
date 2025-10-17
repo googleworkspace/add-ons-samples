@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import markdown
+import re
 from chat import create_message, update_message, downloadChatAttachment
 from vertex_ai import snake_to_user_readable, IAiAgentHandler, IAiAgentUiRender
 from typing import Any
@@ -61,10 +63,13 @@ class AgentCommon(IAiAgentHandler):
         return self.turn_card_sections[::-1]
 
     def build_section(self, author="Agent", text="", widgets=[], final=True) -> dict:
-        displayedText = f"{self.ui_render.get_author_emoji(author)} *{snake_to_user_readable(author)}*{f' ✅' if final else ''}{f'\n\n{text}' if text else ''}"
-        # TODO: "text_syntax": 'MARKDOWN'
-        textWidgets = [{ "text_paragraph": { "text": displayedText }}]
+        displayedText = f"{self.ui_render.get_author_emoji(author)} **{snake_to_user_readable(author)}**{f' ✅' if final else ''}{f'\n\n{text}' if text else ''}"
+        textWidgets = [{ "text_paragraph": { "text": markdown.markdown(self.remove_listings_from_markdown(displayedText)) }}]
         return { "widgets": textWidgets + widgets + ([] if final else self.ui_render.create_status_accessory_widgets()) }
+    
+    def remove_listings_from_markdown(self, markdown: str) -> str:
+        pattern = re.compile(r'^\s*([*-+]|\d+\.)\s+', re.MULTILINE)
+        return pattern.sub('-> ', markdown)
 
 
 class AgentChat(IAiAgentHandler):
@@ -113,8 +118,7 @@ class AgentChat(IAiAgentHandler):
 
     def build_message(self, author="Agent", text="", cards_v2=[], final=True) -> dict:
         if text:
-            # TODO: "text_syntax": 'MARKDOWN'
-            cards_v2.insert(0, { "card": { "sections": [{ "widgets": [{ "text_paragraph": { "text": text }}]}]}})
+            cards_v2.insert(0, { "card": { "sections": [{ "widgets": [{ "text_paragraph": { "text": markdown.markdown(text) }}]}]}})
         return {
             "text": f"{self.ui_render.get_author_emoji(author)} *{snake_to_user_readable(author)}*{f' ✅' if final else ''}",
             "cards_v2": cards_v2,

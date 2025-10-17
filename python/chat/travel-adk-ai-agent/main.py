@@ -153,7 +153,7 @@ async def async_adk_ai_agent(request: Request):
             print(f"{hostAppContextSources}")
 
             card = { "sections": [{ "widgets": resetConfirmation +
-                [{ "textInput": { "name": "message", "label": "Message" }}] +
+                [{ "textInput": { "name": "message", "label": "Message", "type": "MULTIPLE_LINE" }}] +
                 ([hostAppContextSources] if len(hostAppContext) > 0 else []) +
                 [{ "decoratedText": { "button": {
                     "text": "Send",
