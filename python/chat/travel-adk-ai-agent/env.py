@@ -19,7 +19,7 @@ import os
 PROJECT_NUMBER = os.environ.get('PROJECT_NUMBER', 'your-google-cloud-project-number')
 LOCATION = os.environ.get('LOCATION', 'your-location')
 ENGINE_ID = os.environ.get('ENGINE_ID', 'your-engine-id')
-MAX_AI_AGENT_RETRIES = os.environ.get('MAX_AI_AGENT_RETRIES', 5)
+MAX_AI_AGENT_RETRIES = os.environ.get('MAX_AI_AGENT_RETRIES', 10)
 
 BASE_URL = os.environ.get('BASE_URL', 'your-google-cloud-function-url')
 

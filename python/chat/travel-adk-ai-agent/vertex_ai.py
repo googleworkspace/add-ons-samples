@@ -27,9 +27,6 @@ REASONING_ENGINE = f"projects/{PROJECT_NUMBER}/locations/{LOCATION}/reasoningEng
 
 session_service = VertexAiSessionService(PROJECT_NUMBER, LOCATION)
 
-def snake_to_user_readable(snake_case_string="") -> str:
-    return snake_case_string.replace('_', ' ').title()
-
 def get_user_pseudo_id(userName) -> str:
     return userName.replace(USERS_PREFIX, '')
 
@@ -97,74 +94,77 @@ class IAiAgentHandler(ABC):
         pass
 
 async def request_agent(userName: str, input, handler: IAiAgentHandler):
-    print("Initializing the session...")
-    session_id = await get_or_create_agent_session(userName)
+    try:
+        print("Initializing the session...")
+        session_id = await get_or_create_agent_session(userName)
 
-    print(f"Requesting remote agent: {REASONING_ENGINE}...")
-    ai_agent = agent_engines.get(REASONING_ENGINE)
-    function_call_output_map = {}
-    attempt = 0
-    responded = False
-    while attempt < MAX_AI_AGENT_RETRIES and not responded:
-        attempt += 1
-        print(f"Attempting agent request #{attempt} / {MAX_AI_AGENT_RETRIES}...")
-        for event_raw in ai_agent.stream_query(user_id=userName, session_id=session_id, message=handler.extract_content_from_input(input=input)):
-            responded = True
-            
-            # Transform
-            event = dict(event_raw)
-            
-            # Logging
-            print(json.dumps(event))
+        print(f"Requesting remote agent: {REASONING_ENGINE}...")
+        ai_agent = agent_engines.get(REASONING_ENGINE)
+        function_call_output_map = {}
+        attempt = 0
+        responded = False
+        while attempt < MAX_AI_AGENT_RETRIES and not responded:
+            attempt += 1
+            print(f"Attempting agent request #{attempt} / {MAX_AI_AGENT_RETRIES}...")
+            for event_raw in ai_agent.stream_query(user_id=userName, session_id=session_id, message=handler.extract_content_from_input(input=input)):
+                responded = True
+                
+                # Transform
+                event = dict(event_raw)
+                
+                # Logging
+                print(json.dumps(event))
 
-            # Retrieve the agent responsible for generating the content
-            author = snake_to_user_readable(event["author"])
+                # Retrieve the agent responsible for generating the content
+                author = event["author"]
 
-            # Ignore events that are not linked to contents for the end-user
-            if "content" not in event:
-                print(f"{author}: internal event")
-                continue
+                # Ignore events that are not linked to contents for the end-user
+                if "content" not in event:
+                    print(f"{author}: internal event")
+                    continue
 
-            # Retrieve function calls and responses
-            function_calls = [
-                e["function_call"]
-                for e in event["content"]["parts"]
-                if "function_call" in e
-            ]
-            function_responses = [
-                e["function_response"]
-                for e in event["content"]["parts"]
-                if "function_response" in e
-            ]
+                # Retrieve function calls and responses
+                function_calls = [
+                    e["function_call"]
+                    for e in event["content"]["parts"]
+                    if "function_call" in e
+                ]
+                function_responses = [
+                    e["function_response"]
+                    for e in event["content"]["parts"]
+                    if "function_response" in e
+                ]
 
-            # Handle final answer
-            if "text" in event["content"]["parts"][0]:
-                text = event["content"]["parts"][0]["text"]
-                print(f"\n{author} {text}")
-                handler.final_answer(author, text)
+                # Handle final answer
+                if "text" in event["content"]["parts"][0]:
+                    text = event["content"]["parts"][0]["text"]
+                    print(f"\n{author} {text}")
+                    handler.final_answer(author, text)
 
-            # Handle agent funtion calling initiation
-            if function_calls:
-                for function_call in function_calls:
-                    id = function_call["id"]
-                    name = function_call["name"]
-                    if name != "transfer_to_agent":
-                        print(f"\n{author}: function calling initiation {name}")
-                        function_call_output_map[id] = handler.function_calling_initiation(author, name)
-                    else:
-                        print(f"\n{author}: internal event, function calling initiation {name}")
+                # Handle agent funtion calling initiation
+                if function_calls:
+                    for function_call in function_calls:
+                        id = function_call["id"]
+                        name = function_call["name"]
+                        if name != "transfer_to_agent":
+                            print(f"\n{author}: function calling initiation {name}")
+                            function_call_output_map[id] = handler.function_calling_initiation(author, name)
+                        else:
+                            print(f"\n{author}: internal event, function calling initiation {name}")
 
-            # Handle agent function calling completion
-            elif function_responses:
-                for function_response in function_responses:
-                    id = function_response["id"]
-                    name = function_response["name"]
-                    response = function_response["response"]
-                    if name != "transfer_to_agent":
-                        output_id = function_call_output_map.get(id)
-                        print(f'\n{author}: function calling completion {name}:\n{json.dumps(response, indent=2)}\n')
-                        handler.function_calling_completion(author, name, response, output_id)
-                    else:
-                        print(f"\n{author}: internal event, completed transfer")
+                # Handle agent function calling completion
+                elif function_responses:
+                    for function_response in function_responses:
+                        id = function_response["id"]
+                        name = function_response["name"]
+                        response = function_response["response"]
+                        if name != "transfer_to_agent":
+                            output_id = function_call_output_map.get(id)
+                            print(f'\n{author}: function calling completion {name}:\n{json.dumps(response, indent=2)}\n')
+                            handler.function_calling_completion(author, name, response, output_id)
+                        else:
+                            print(f"\n{author}: internal event, completed transfer")
 
-        print("Agent responded to the request." if responded is True else "No response received from the agent.")
+            print("Agent responded to the request." if responded is True else "No response received from the agent.")
+    except:
+        handler.final_answer(text="Sorry, I cannot answer that specific question.")

@@ -15,8 +15,11 @@
 import markdown
 import re
 from chat import create_message, update_message, downloadChatAttachment
-from vertex_ai import snake_to_user_readable, IAiAgentHandler, IAiAgentUiRender
+from vertex_ai import IAiAgentHandler, IAiAgentUiRender
 from typing import Any
+
+def snake_to_user_readable(snake_case_string="") -> str:
+    return snake_case_string.replace('_', ' ').title()
 
 class AgentCommon(IAiAgentHandler):
     def __init__(self, ui_render: IAiAgentUiRender):

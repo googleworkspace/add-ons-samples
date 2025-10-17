@@ -99,13 +99,11 @@ class TravelAgentUiRender(IAiAgentUiRender):
         return [{ "carousel": { "carouselCards": carousel_cards }}]
 
     def create_source_widgets(self, text="") -> list:
-        url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+|www\.[^\s/$.?#].[^\s]*'
+        url_pattern = r'https?://\S+'
         urls = re.findall(url_pattern, text)
-        cleaned_urls = [url.rstrip('.,;)') for url in urls]
-        cleaned_urls = cleaned_urls[:5]
-        if len(cleaned_urls) > 0:
+        if len(urls) > 0:
             sourceButtons = []
-            for url in cleaned_urls:
+            for url in urls:
                 sourceButtons.append({ "text": urllib.parse.urlparse(url).netloc, "on_click": { "open_link": { "url": url }}})
             return [{ "button_list": { "buttons": sourceButtons }}]
             
