@@ -64,7 +64,7 @@ class AgentCommon(IAiAgentHandler):
 
     def build_section(self, author="Agent", text="", widgets=[], final=True) -> dict:
         displayedText = f"{self.ui_render.get_author_emoji(author)} **{snake_to_user_readable(author)}**{f' ✅' if final else ''}{f'\n\n{text}' if text else ''}"
-        textWidgets = [{ "text_paragraph": { "text": markdown.markdown(self.remove_listings_from_markdown(displayedText)) }}]
+        textWidgets = [{ "text_paragraph": { "text": markdown.markdown(self.remove_listings_from_markdown(displayedText)).replace('\n', '\n\n') }}]
         return { "widgets": textWidgets + widgets + ([] if final else self.ui_render.create_status_accessory_widgets()) }
     
     def remove_listings_from_markdown(self, markdown: str) -> str:
