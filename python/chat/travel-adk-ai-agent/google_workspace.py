@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Service that handles Google Chat operations."""
+"""Service that handles Google Workspace operations."""
 
 import io
 import base64
@@ -21,12 +21,14 @@ from google.apps import chat_v1 as google_chat
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
+# ------- Google Chat
+
 SERVICE_ACCOUNT_FILE = 'credentials_chat.json'
 APP_AUTH_OAUTH_SCOPE = ["https://www.googleapis.com/auth/chat.bot"]
 
 SPACE_NAME = None
 
-def setup_config(spaceName: str):
+def setup_chat_config(spaceName: str):
     global SPACE_NAME
     SPACE_NAME = spaceName
     print(f"Space is set to {SPACE_NAME}")
@@ -47,7 +49,7 @@ def create_google_chat_api_client():
 google_chat_cloud_client = create_google_chat_cloud_client()
 google_chat_api_client = create_google_chat_api_client()
 
-def find_dm(user_name: str) -> str:
+def find_chat_dm(user_name: str) -> str:
     return google_chat_cloud_client.find_direct_message(google_chat.FindDirectMessageRequest(
         name = user_name
     )).name
@@ -84,3 +86,50 @@ def update_message(name: str, message):
         message = message | {"name": name},
         update_mask = "*"
     ))
+    
+# ------- Gmail
+
+def get_email(credentials: Credentials, message_id: str, addon_event_access_token: str):
+    google_gmail_api_client = build('gmail', 'v1', credentials=credentials)
+    request = google_gmail_api_client.users().messages().get(
+        id=message_id,
+        userId='me',
+        format='full'
+    )
+    request.headers["X-Goog-Gmail-Access-Token"] = addon_event_access_token
+    return request.execute()
+
+def extract_email_contents(message):
+    """Extracts the subject and body from a full message object."""
+    payload = message['payload']
+
+    # Subject
+    headers = payload['headers']
+    subject = next((header['value'] for header in headers if header['name'] == 'Subject'), 'No Subject')
+    
+    # Body
+    def get_body_data(part):
+        """Recursively looks for the plain text part in the message payload."""
+        if part['mimeType'] == 'text/plain':
+            data = part['body'].get('data')
+            if data:
+                return base64.urlsafe_b64decode(data).decode('utf-8')
+        if 'parts' in part:
+            for subpart in part['parts']:
+                body_text = get_body_data(subpart)
+                if body_text:
+                    return body_text
+        return None
+    body_text = get_body_data(payload)
+
+    return subject, body_text if body_text else ''
+
+# ------- People
+
+def get_person_profile(credentials: Credentials, people_name: str, person_fields: str):
+    google_people_api_client = build('people', 'v1', credentials=credentials)
+    request = google_people_api_client.people().get(
+        resourceName=people_name,
+        personFields=person_fields
+    )
+    return request.execute()

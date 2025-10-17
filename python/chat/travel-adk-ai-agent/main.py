@@ -20,9 +20,7 @@ import functions_framework
 import jwt
 import json
 from flask import Request, jsonify
-from chat import setup_config, find_dm
-from gmail import extract_message_contents, get_message
-from people import get_person_profile
+from google_workspace import setup_chat_config, find_chat_dm, extract_email_contents, get_email, get_person_profile
 from travel_agent_ui_render import TravelAgentUiRender
 from agent_handler import AgentChat, AgentCommon
 from vertex_ai import delete_agent_session, request_agent
@@ -51,14 +49,14 @@ async def async_adk_ai_agent(request: Request):
 
             if "messagePayload" in chat_event:
                 # Handle message events, actions will be taken via Google Chat API calls
-                setup_config(chat_event["messagePayload"]["space"]["name"])
+                setup_chat_config(chat_event["messagePayload"]["space"]["name"])
                 await request_agent(user_name, chat_event["messagePayload"]["message"], AgentChat(TravelAgentUiRender()))
                 
                 # Respond with an empty response to the Google Chat platform to acknowledge execution
                 return {}
             elif "appCommandPayload" in chat_event:
                 # Handles command events
-                setup_config(chat_event["appCommandPayload"]["space"]["name"])
+                setup_chat_config(chat_event["appCommandPayload"]["space"]["name"])
                 if chat_event["appCommandPayload"]["appCommandMetadata"]["appCommandId"] == RESET_SESSION_COMMAND_ID:
                     # Delete session for the user
                     await delete_agent_session(user_name)
@@ -81,7 +79,7 @@ async def async_adk_ai_agent(request: Request):
             del event['authorizationEventObject']
             print(f"Event received: {event}")
 
-            space_name = find_dm(user_name)
+            space_name = find_chat_dm(user_name)
             print(f"Space found: {space_name}")
             
             # Handles the session reset action
@@ -107,7 +105,7 @@ async def async_adk_ai_agent(request: Request):
                 # Fetch and add selected email in primary text context if any
                 gmailEvent = event["gmail"]
                 if "messageId" in gmailEvent:
-                    message = get_message(
+                    message = get_email(
                         credentials=Credentials(token=user_oauth_token),
                         message_id=gmailEvent["messageId"],
                         addon_event_access_token=gmailEvent["accessToken"]
@@ -133,7 +131,7 @@ async def async_adk_ai_agent(request: Request):
                         selectedContexts = common_event_object.get('formInputs').get('context').get('stringInputs').get('value') if common_event_object.get('formInputs').get('context') != None else []
                         if "email" in selectedContexts and any((item['id'] == 'email') for item in hostAppContext):
                             # Include email context if needed
-                            email_subject, email_body = extract_message_contents(next(item for item in hostAppContext if item['id'] == 'email')["value"])
+                            email_subject, email_body = extract_email_contents(next(item for item in hostAppContext if item['id'] == 'email')["value"])
                             userMessage += f"\n\nEMAIL THE USER HAS OPENED ON SCREEN:\nSubject: {email_subject}\nBody:\n---\n{email_body}\n---"
                         if "profile" in selectedContexts and any((item['id'] == 'profile') for item in hostAppContext):
                             # Include profile context if needed
