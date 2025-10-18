@@ -108,7 +108,7 @@ async def async_adk_ai_agent(request: Request):
             # Handles the session reset action
             reset = False
             reset_confirmation_widgets = []
-            if request_args['reset'] != None:
+            if request_args.get('reset') != None:
                 reset = True
                 print(f"Executing reset action...")
                 await delete_agent_session(user_name)
@@ -117,31 +117,30 @@ async def async_adk_ai_agent(request: Request):
             # Handles the send action
             send = False
             answer_sections = []
-            if request_args['send'] != None:
+            if request_args.get('send') != None:
                 send = True
                 print(f"Executing send action...")
                 answer_sections = [{ "widgets": [{ "text_paragraph": { "text": "No answer because the message you sent was empty 😥" }}]}]
-                common_event_object = event['commonEventObject']
+                common_event_object = event.get('commonEventObject', {})
                 if is_in_debug_mode():
                     print(f"Common event object: {common_event_object}")
-                if common_event_object['formInputs'] != None:
-                    if common_event_object['formInputs']['message'] != None:
-                        print(f"Building the AI agent request message...")
-                        user_message = "USER MESSAGE TO ANSWER: " + common_event_object['formInputs']['message']['stringInputs']['value'][0]
-                        selected_contexts = common_event_object['formInputs']['context']['stringInputs']['value'] if common_event_object['formInputs']['context'] != None else []
-                        if "email" in selected_contexts and any((item['id'] == 'email') for item in host_app_context):
-                            # Include email context if requested by user
-                            email_subject, email_body = extract_email_contents(next(item for item in host_app_context if item['id'] == 'email')["value"])
-                            user_message += f"\n\nEMAIL THE USER HAS OPENED ON SCREEN:\nSubject: {email_subject}\nBody:\n---\n{email_body}\n---"
-                        if "profile" in selected_contexts and any((item['id'] == 'profile') for item in host_app_context):
-                            # Include profile context if requested by user
-                            user_message += f"\n\nPUBLIC PROFILE OF THE USER IN JSON FORMAT: {json.dumps(next(item for item in host_app_context if item['id'] == 'profile')["value"])}"
-                        if is_in_debug_mode():
-                            print(f"Answering message: {user_message}...")
-                        # Request AI agent to answer the message and use the common handler and UI renderer
-                        travel_common_agent = AgentCommon(TravelAgentUiRender(is_chat=False))
-                        await request_agent(user_name, user_message, travel_common_agent)
-                        answer_sections = travel_common_agent.get_answer_sections()
+                if common_event_object.get('formInputs', {}).get('message') != None:
+                    print(f"Building the AI agent request message...")
+                    user_message = "USER MESSAGE TO ANSWER: " + common_event_object['formInputs']['message']['stringInputs']['value'][0]
+                    selected_contexts = common_event_object['formInputs']['context']['stringInputs']['value'] if 'context' in common_event_object['formInputs'] else []
+                    if "email" in selected_contexts and any((item['id'] == 'email') for item in host_app_context):
+                        # Include email context if requested by user
+                        email_subject, email_body = extract_email_contents(next(item for item in host_app_context if item['id'] == 'email')["value"])
+                        user_message += f"\n\nEMAIL THE USER HAS OPENED ON SCREEN:\nSubject: {email_subject}\nBody:\n---\n{email_body}\n---"
+                    if "profile" in selected_contexts and any((item['id'] == 'profile') for item in host_app_context):
+                        # Include profile context if requested by user
+                        user_message += f"\n\nPUBLIC PROFILE OF THE USER IN JSON FORMAT: {json.dumps(next(item for item in host_app_context if item['id'] == 'profile')["value"])}"
+                    if is_in_debug_mode():
+                        print(f"Answering message: {user_message}...")
+                    # Request AI agent to answer the message and use the common handler and UI renderer
+                    travel_common_agent = AgentCommon(TravelAgentUiRender(is_chat=False))
+                    await request_agent(user_name, user_message, travel_common_agent)
+                    answer_sections = travel_common_agent.get_answer_sections()
 
             # Handles UI card
             host_app_context_sources = { "selectionInput": {
