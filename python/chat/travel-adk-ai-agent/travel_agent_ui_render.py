@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import requests
 import markdown
 import urllib.parse
 import re
 from vertex_ai import IAiAgentUiRender
-from env import DEBUG
+from env import DEBUG, NA_IMAGE_URL
 
 class TravelAgentUiRender(IAiAgentUiRender):
     def ignored_authors(self) -> list:
@@ -45,7 +46,6 @@ class TravelAgentUiRender(IAiAgentUiRender):
             "disabled": True
         }]}}]
 
-    # See https://github.com/google/adk-samples/blob/main/python/agents/travel-concierge/travel_concierge/shared_libraries/types.py
     def get_agent_response_widgets(self, name: str, response):
         print(f"Response from agent: {name}")
         print(response)
@@ -87,7 +87,7 @@ class TravelAgentUiRender(IAiAgentUiRender):
             # Image
             image_url = item.get("image")
             if image_url:
-                carousel_card_widgets.append({ "image": { "image_url": image_url }})
+                carousel_card_widgets.append({ "image": { "image_url": image_url if self.is_url_image(image_url) else NA_IMAGE_URL }})
             # Text
             destination_name = item.get("name", "Unknown")
             country = item.get("country", "Unknown")
@@ -105,7 +105,7 @@ class TravelAgentUiRender(IAiAgentUiRender):
             # Image
             image_url = item.get("image_url")
             if image_url:
-                carousel_card_widgets.append({ "image": { "image_url": image_url }})
+                carousel_card_widgets.append({ "image": { "image_url": image_url if self.is_url_image(image_url) else NA_IMAGE_URL }})
             # Text
             carousel_card_widgets.append(self.create_text_paragraph(f"**{item.get("place_name")}**"))
             carousel_cards.append({ "widgets": carousel_card_widgets, "footer_widgets": footer_widgets })
@@ -138,3 +138,6 @@ class TravelAgentUiRender(IAiAgentUiRender):
         for url in urls:
             sourceButtons.append({ "text": urllib.parse.urlparse(url).netloc, "on_click": { "open_link": { "url": url }}})
         return [{ "button_list": { "buttons": sourceButtons }}]
+
+    def is_url_image(self, image_url):
+        return requests.head(image_url).headers["content-type"] in ["image/png", "image/jpeg", "image/jpg"]

@@ -25,4 +25,6 @@ BASE_URL = os.environ.get('BASE_URL', 'your-google-cloud-function-url')
 
 RESET_SESSION_COMMAND_ID = os.environ.get('RESET_SESSION_COMMAND_ID', 1)
 
+NA_IMAGE_URL = os.environ.get('NA_IMAGE_URL', 'https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png?20210219185637')
+
 DEBUG = os.environ.get('DEBUG', 0)

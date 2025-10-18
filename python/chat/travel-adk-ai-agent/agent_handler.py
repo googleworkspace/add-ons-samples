@@ -121,7 +121,7 @@ class AgentChat(IAiAgentHandler):
 
     def build_message(self, author="Agent", text="", cards_v2=[], final=True) -> dict:
         if text:
-            cards_v2.insert(0, { "card": { "sections": [{ "widgets": [{ "text_paragraph": { "text": text, "text_syntax": "MARKDOWN" }}]}]}})
+            cards_v2.insert(0, { "card": { "sections": [{ "widgets": [{ "text_paragraph": { "text": text.replace('\n', '\n\n'), "text_syntax": "MARKDOWN" }}]}]}})
         return {
             "text": f"{self.ui_render.get_author_emoji(author)} *{snake_to_user_readable(author)}*{f' ✅' if final else ''}",
             "cards_v2": cards_v2,
