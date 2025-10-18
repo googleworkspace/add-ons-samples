@@ -57,6 +57,15 @@ async def get_or_create_agent_session(userName) -> str:
 class IAiAgentUiRender(ABC):
     """Interface AI Agent UI renders need to implement."""
 
+    is_chat: False
+
+    def __init__(self, is_chat: bool):
+        self.is_chat = is_chat
+        
+    @abstractmethod
+    def ignored_authors(self) -> list:
+        pass
+
     @abstractmethod
     def get_author_emoji(self, author) -> str:
         pass
@@ -146,7 +155,7 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
                     for function_call in function_calls:
                         id = function_call["id"]
                         name = function_call["name"]
-                        if name != "transfer_to_agent":
+                        if name != "transfer_to_agent" and name not in handler.ui_render.ignored_authors():
                             print(f"\n{author}: function calling initiation {name}")
                             function_call_output_map[id] = handler.function_calling_initiation(author, name)
                         else:
@@ -158,7 +167,7 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
                         id = function_response["id"]
                         name = function_response["name"]
                         response = function_response["response"]
-                        if name != "transfer_to_agent":
+                        if name != "transfer_to_agent" and name not in handler.ui_render.ignored_authors():
                             output_id = function_call_output_map.get(id)
                             print(f'\n{author}: function calling completion {name}:\n{json.dumps(response, indent=2)}\n')
                             handler.function_calling_completion(author, name, response, output_id)
@@ -166,5 +175,7 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
                             print(f"\n{author}: internal event, completed transfer")
 
             print("Agent responded to the request." if responded is True else "No response received from the agent.")
-    except:
-        handler.final_answer(text="Sorry, I cannot answer that specific question.")
+    except Exception as e:
+        print(e)
+        handler.final_answer(author="Agent", text="Sorry, I cannot answer that specific question.")
+        # TODO: Update all pending agent result widgets and status accessory widgets to failed state

@@ -50,7 +50,7 @@ async def async_adk_ai_agent(request: Request):
             if "messagePayload" in chat_event:
                 # Handle message events, actions will be taken via Google Chat API calls
                 setup_chat_config(chat_event["messagePayload"]["space"]["name"])
-                await request_agent(user_name, chat_event["messagePayload"]["message"], AgentChat(TravelAgentUiRender()))
+                await request_agent(user_name, chat_event["messagePayload"]["message"], AgentChat(TravelAgentUiRender(is_chat=True)))
                 
                 # Respond with an empty response to the Google Chat platform to acknowledge execution
                 return {}
@@ -137,7 +137,7 @@ async def async_adk_ai_agent(request: Request):
                             # Include profile context if needed
                             userMessage += f"\n\nPUBLIC PROFILE OF THE USER IN JSON FORMAT: {json.dumps(next(item for item in hostAppContext if item['id'] == 'profile')["value"])}"
                         print(f"Answering message: {userMessage}...")
-                        travel_common_agent = AgentCommon(TravelAgentUiRender())
+                        travel_common_agent = AgentCommon(TravelAgentUiRender(is_chat=False))
                         await request_agent(user_name, userMessage, travel_common_agent)
                         answer_sections = travel_common_agent.get_answer_sections()
 

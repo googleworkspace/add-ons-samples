@@ -24,3 +24,5 @@ MAX_AI_AGENT_RETRIES = os.environ.get('MAX_AI_AGENT_RETRIES', 10)
 BASE_URL = os.environ.get('BASE_URL', 'your-google-cloud-function-url')
 
 RESET_SESSION_COMMAND_ID = os.environ.get('RESET_SESSION_COMMAND_ID', 1)
+
+DEBUG = os.environ.get('DEBUG', 0)

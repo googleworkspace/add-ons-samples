@@ -14,7 +14,7 @@
 
 import markdown
 import re
-from chat import create_message, update_message, downloadChatAttachment
+from google_workspace import create_message, update_message, downloadChatAttachment
 from vertex_ai import IAiAgentHandler, IAiAgentUiRender
 from typing import Any
 
@@ -121,7 +121,7 @@ class AgentChat(IAiAgentHandler):
 
     def build_message(self, author="Agent", text="", cards_v2=[], final=True) -> dict:
         if text:
-            cards_v2.insert(0, { "card": { "sections": [{ "widgets": [{ "text_paragraph": { "text": markdown.markdown(text) }}]}]}})
+            cards_v2.insert(0, { "card": { "sections": [{ "widgets": [{ "text_paragraph": { "text": text, "text_syntax": "MARKDOWN" }}]}]}})
         return {
             "text": f"{self.ui_render.get_author_emoji(author)} *{snake_to_user_readable(author)}*{f' ✅' if final else ''}",
             "cards_v2": cards_v2,
