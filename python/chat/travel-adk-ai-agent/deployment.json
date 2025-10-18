@@ -2,19 +2,13 @@
   "oauthScopes": [
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/user.birthday.read",
-    "https://www.googleapis.com/auth/cloud-platform",
 
     "https://www.googleapis.com/auth/gmail.addons.execute",
     "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
 
     "https://www.googleapis.com/auth/calendar.addons.execute",
-    "https://www.googleapis.com/auth/calendar.addons.current.event.read",
 
-    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
-
-    "https://www.googleapis.com/auth/chat.spaces.create",
-    "https://www.googleapis.com/auth/chat.memberships.app",
-    "https://www.googleapis.com/auth/chat.messages.create"
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly"
   ],
   "addOns": {
     "common": {
