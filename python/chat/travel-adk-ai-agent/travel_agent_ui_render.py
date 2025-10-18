@@ -44,11 +44,11 @@ class TravelAgentUiRender(IAiAgentUiRender):
             return "🧠"
         return "🤖"
 
-    def create_status_accessory_widgets(self, text="In progress...", materialIconName="progress_activity") -> list:
+    def create_status_accessory_widgets(self, text="In progress...", material_icon_name="progress_activity") -> list:
         """Creates a status accessory widget with a disabled button showing agent progress."""
         return [{ "button_list": { "buttons": [{
             "text": text,
-            "icon": { "material_icon": { "name": materialIconName}},
+            "icon": { "material_icon": { "name": material_icon_name}},
             "on_click": { "open_link": { "url": "https://google.com"}},
             "disabled": True
         }]}}]

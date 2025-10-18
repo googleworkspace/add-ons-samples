@@ -84,7 +84,7 @@ class IAiAgentUiRender(ABC):
         pass
     
     @abstractmethod
-    def create_status_accessory_widgets(self, text="In progress...", materialIconName="progress_activity") -> list:
+    def create_status_accessory_widgets(self, text: str, material_icon_name: str) -> list:
         """Creates a status accessory widget with a disabled button showing agent progress."""
         pass
 
@@ -107,7 +107,7 @@ class IAiAgentHandler(ABC):
         pass
     
     @abstractmethod
-    def final_answer(self, author: str, text: str):
+    def final_answer(self, author: str, text: str, success: bool, failure: bool):
         """Handles the final answer from the agent."""
         pass
 
@@ -121,6 +121,11 @@ class IAiAgentHandler(ABC):
         """Handles the completion of a function calling from the agent."""
         pass
 
+    @abstractmethod
+    def function_calling_failure(self, name: str, output_id: str):
+        """Handles the failure of a function calling from the agent."""
+        pass
+        
 async def request_agent(userName: str, input, handler: IAiAgentHandler):
     """Sends a request to the AI agent and processes the response using the given handler."""
     try:
@@ -129,8 +134,12 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
 
         print(f"Requesting remote agent: {REASONING_ENGINE}...")
         ai_agent = agent_engines.get(REASONING_ENGINE)
-        # Keep track of the output resource IDs for function calling completions
+        # Keep track of the mapping between function call IDs and output resource IDs
         function_call_output_map = {}
+        # Keep track of the mapping between function call IDs and agents
+        function_call_output_agent_map = {}
+        # Keep track of ongoing function calls
+        function_call_ongoing_ids = []
         attempt = 0
         responded = False
         # Retry loop in case of no response from the agent
@@ -160,7 +169,7 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
                 if "text" in event["content"]["parts"][0]:
                     text = event["content"]["parts"][0]["text"]
                     print(f"\n{author}: {text}")
-                    handler.final_answer(author, text)
+                    handler.final_answer(author=author, text=text, success=True, failure=False)
 
                 # Handle agent funtion calling initiation
                 if function_calls:
@@ -170,7 +179,9 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
                         # Skip internal function calls
                         if name != "transfer_to_agent" and name not in handler.ui_render.ignored_authors():
                             print(f"\n{author}: function calling initiation {name}")
-                            function_call_output_map[id] = handler.function_calling_initiation(author, name)
+                            function_call_output_map[id] = handler.function_calling_initiation(author=author, name=name)
+                            function_call_output_agent_map[id] = name
+                            function_call_ongoing_ids.append(id)
                         else:
                             print(f"\n{author}: internal event, function calling initiation {name}")
 
@@ -187,12 +198,25 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
                             print(f'\n{author}: function calling completion {name}')
                             if is_in_debug_mode():
                                 print(f'Function calling response: {json.dumps(response, indent=2)}')
-                            handler.function_calling_completion(author, name, response, output_id)
+                            handler.function_calling_completion(author=author, name=name, response=response, output_id=output_id)
+                            function_call_ongoing_ids.remove(id)
                         else:
                             print(f"\n{author}: internal event, completed transfer")
 
             print("Agent responded to the request." if responded is True else "No response received from the agent.")
     except Exception as e:
         print(f"Error occurred while requesting AI agent: {e}")
-        handler.final_answer(author="Agent", text="Sorry, I cannot answer that specific question.")
-        # TODO: Update all pending agent result widgets and status accessory widgets to failed state
+        # Update all ongoing agent outputs with a failure status
+        for id in function_call_ongoing_ids:
+            handler.function_calling_failure(
+                name=function_call_output_agent_map.get(id),
+                output_id=function_call_output_map.get(id)
+            )
+            function_call_ongoing_ids.remove(id)
+        # Send a final answer indicating the failure
+        handler.final_answer(
+            author="Agent",
+            text="Something went wrong, I could not answer that specific question. Please try again later.",
+            success=False,
+            failure=True
+        )
