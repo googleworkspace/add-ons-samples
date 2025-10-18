@@ -17,13 +17,19 @@ import markdown
 import urllib.parse
 import re
 from vertex_ai import IAiAgentUiRender
-from env import DEBUG, NA_IMAGE_URL
+from env import is_in_debug_mode, NA_IMAGE_URL
 
 class TravelAgentUiRender(IAiAgentUiRender):
+    """UI render implementation for the Travel AI Agent."""
+
+    # ----- IAiAgentUiRender interface implementation
+
     def ignored_authors(self) -> list:
-        return [] if DEBUG == 1 else ["memorize"]
+        """Returns the list of authors to be ignored for function calling."""
+        return [] if is_in_debug_mode() else ["memorize"]
     
     def get_author_emoji(self, author) -> str:
+        """Returns an emoji representing the author."""
         if author == "inspiration_agent":
             return "ℹ️"
         elif author == "place_agent":
@@ -39,6 +45,7 @@ class TravelAgentUiRender(IAiAgentUiRender):
         return "🤖"
 
     def create_status_accessory_widgets(self, text="In progress...", materialIconName="progress_activity") -> list:
+        """Creates a status accessory widget with a disabled button showing agent progress."""
         return [{ "button_list": { "buttons": [{
             "text": text,
             "icon": { "material_icon": { "name": materialIconName}},
@@ -47,22 +54,21 @@ class TravelAgentUiRender(IAiAgentUiRender):
         }]}}]
 
     def get_agent_response_widgets(self, name: str, response):
-        print(f"Response from agent: {name}")
-        print(response)
+        """Returns the widgets to render for a given agent response."""
         widgets = []
         match name:
-            case "poi_agent": # POISuggestions
+            case "poi_agent": # POISuggestions (with place_name, address, image_url)
                 if self.is_chat:
-                    widgets = self.create_place_widgets(response["places"])
-            case "place_agent": # DestinationIdeas
+                    widgets = self.create_poi_agent_widgets(response["places"])
+            case "place_agent": # DestinationIdeas (with name, country, image)
                 if self.is_chat:
-                    widgets = self.create_destination_widgets(response["places"])
-            case "map_tool": # POISuggestions (with map_url and place_id populated)
+                    widgets = self.create_place_agent_widgets(response["places"])
+            case "map_tool": # POISuggestions (with map_url and place_id)
                 if self.is_chat:
-                    widgets = self.create_location_widgets(response["places"])
-            case "google_search_grounding":
-                widgets = self.create_source_widgets(response["result"])
-            case "memorize": # Object with status field
+                    widgets = self.create_map_tool_widgets(response["places"])
+            case "google_search_grounding": # Text with URLs
+                widgets = self.create_google_search_grounding_widgets(response["result"])
+            case "memorize": # Status
                 widgets = self.create_memorize_widgets(response["status"])
             case _:
                 pass
@@ -71,14 +77,17 @@ class TravelAgentUiRender(IAiAgentUiRender):
     # ------ Utility functions
 
     def create_text_paragraph(self, text):
+        """Creates a text paragraph widget, handling markdown for non-chat UIs."""
         return { "text_paragraph": { "text": text, "text_syntax": "MARKDOWN" }} if self.is_chat else { "text_paragraph": { "text": markdown.markdown(text) }}
 
     def create_memorize_widgets(self, status=None) -> list:
+        """Creates widgets for the memorize agent response."""
         if not status:
             return []
         return [self.create_text_paragraph(status)]
     
-    def create_destination_widgets(self, destinations=[]) -> list:
+    def create_place_agent_widgets(self, destinations=[]) -> list:
+        """Creates widgets for the place agent response."""
         if len(destinations) == 0:
             return []
         carousel_cards = []
@@ -87,6 +96,7 @@ class TravelAgentUiRender(IAiAgentUiRender):
             # Image
             image_url = item.get("image")
             if image_url:
+                # Set default image if the provided image URL is valid
                 carousel_card_widgets.append({ "image": { "image_url": image_url if self.is_url_image(image_url) else NA_IMAGE_URL }})
             # Text
             destination_name = item.get("name", "Unknown")
@@ -95,7 +105,8 @@ class TravelAgentUiRender(IAiAgentUiRender):
             carousel_cards.append({ "widgets": carousel_card_widgets })
         return [{ "carousel": { "carousel_cards": carousel_cards }}]
 
-    def create_place_widgets(self, places=[]) -> list:
+    def create_poi_agent_widgets(self, places=[]) -> list:
+        """Creates widgets for the poi agent response."""
         if len(places) == 0:
             return []
         carousel_cards = []
@@ -105,13 +116,15 @@ class TravelAgentUiRender(IAiAgentUiRender):
             # Image
             image_url = item.get("image_url")
             if image_url:
+                # Set default image if the provided image URL is valid
                 carousel_card_widgets.append({ "image": { "image_url": image_url if self.is_url_image(image_url) else NA_IMAGE_URL }})
             # Text
             carousel_card_widgets.append(self.create_text_paragraph(f"**{item.get("place_name")}**"))
             carousel_cards.append({ "widgets": carousel_card_widgets, "footer_widgets": footer_widgets })
         return [{ "carousel": { "carousel_cards": carousel_cards }}]
     
-    def create_location_widgets(self, places=[]) -> list:
+    def create_map_tool_widgets(self, places=[]) -> list:
+        """Creates widgets for the map tool agent response."""
         if len(places) == 0:
             return []
         carousel_cards = []
@@ -129,7 +142,9 @@ class TravelAgentUiRender(IAiAgentUiRender):
             carousel_cards.append({ "widgets": carousel_card_widgets, "footer_widgets": footer_widgets })
         return [{ "carousel": { "carousel_cards": carousel_cards }}]
 
-    def create_source_widgets(self, text="") -> list:
+    def create_google_search_grounding_widgets(self, text="") -> list:
+        """Creates widgets for the google search grounding response."""
+        # Extract URLs from the text
         url_pattern = r'https?://\S+'
         urls = re.findall(url_pattern, text)
         if len(urls) == 0:
@@ -140,4 +155,5 @@ class TravelAgentUiRender(IAiAgentUiRender):
         return [{ "button_list": { "buttons": sourceButtons }}]
 
     def is_url_image(self, image_url):
+        """Checks if a given URL points to an image."""
         return requests.head(image_url).headers["content-type"] in ["image/png", "image/jpeg", "image/jpg"]
