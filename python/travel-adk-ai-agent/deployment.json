@@ -1,0 +1,35 @@
+{
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/user.birthday.read",
+
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
+
+    "https://www.googleapis.com/auth/calendar.addons.execute",
+
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly"
+  ],
+  "addOns": {
+    "common": {
+      "name": "Travel ADK AI Agent",
+      "logoUrl": "https://goo.gle/3SfMkjb",
+      "homepageTrigger": {
+        "runFunction": $BASE_URL
+      }
+    },
+    "gmail": { "contextualTriggers": [{
+      "unconditional": {},
+      "onTriggerFunction": $BASE_URL
+    }]},
+    "calendar":  { "eventOpenTrigger": {
+      "runFunction": $BASE_URL
+    }},
+    "drive": { "onItemsSelectedTrigger": {
+      "runFunction": $BASE_URL
+    }},
+    "httpOptions": {
+      "granularOauthPermissionSupport": "OPT_IN"
+    }
+  }
+}
