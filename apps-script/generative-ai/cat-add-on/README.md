@@ -55,15 +55,8 @@ Before you begin, ensure you have the following:
     **Using `gcloud`:**
     Create a deployment for your add-on using the `gcloud` command:
     ```bash
-    gcloud workspace-add-ons deployments create my-deployment \
-        --project=YOUR_PROJECT_ID \
-        --add-on-type=GMAIL \
-        --name="AI Generated Cat" \
-        --description="An add-on that shows AI generated cats." \
-        --script-id=YOUR_SCRIPT_ID
+    gcloud workspace-add-ons deployments create my-deployment --deployment-file=deployment.json
     ```
-    - Replace `YOUR_PROJECT_ID` with your Google Cloud project ID.
-    - Replace `YOUR_SCRIPT_ID` with your Apps Script project's script ID. You can find this in the `.clasp.json` file or in the Apps Script editor URL.
 
     **Using `clasp`:**
     Alternatively, you can create a deployment using `clasp`:
@@ -76,10 +69,8 @@ Before you begin, ensure you have the following:
 To install the add-on for your own account, use the following command:
 
 ```bash
-gcloud workspace-add-ons deployments install my-deployment --project=YOUR_PROJECT_ID
+gcloud workspace-add-ons deployments install my-deployment
 ```
-- Replace `my-deployment` with the name of the deployment you created in the previous step.
-- Replace `YOUR_PROJECT_ID` with your Google Cloud project ID.
 
 After installation, you should see the "AI Generated Cat" add-on in your Gmail side panel.
 

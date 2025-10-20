@@ -1,8 +1,4 @@
 {
-  "timeZone": "America/New_York",
-  "dependencies": {},
-  "exceptionLogging": "STACKDRIVER",
-  "runtimeVersion": "V8",
   "oauthScopes": [
     "https://www.googleapis.com/auth/cloud-platform",
     "https://www.googleapis.com/auth/gmail.addons.execute",
@@ -20,8 +16,5 @@
         "runFunction": "onHomepage"
       }
     }
-  },
-  "urlFetchWhitelist": [
-    "https://*.googleapis.com/"
-  ]
+  }
 }
