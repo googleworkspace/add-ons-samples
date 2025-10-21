@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+// --- Configuration & Constants ---
+
+/**
+ * Your Google Cloud Project ID for Vertex AI access.
+ * ⚠️ WARNING: Update this value before running.
+ * NOTE: Ensure the Apps Script project has the 'https://www.googleapis.com/auth/cloud-platform' scope.
+ */
+const PROJECT_ID = 'your-project-id';
+const MODEL_ID = 'gemini-2.5-flash-image';
+const IMAGE_PROMPT = 'A high-quality, photorealistic image of a random cat.';
+
 /**
  * Generates an image using the gemini-2.5-flash-image model on Vertex AI
  * and returns it as a Data URI.
@@ -22,7 +33,6 @@
  * @returns {string} A Data URI string (e.g., 'data:image/png;base64,...') or a fallback image URL on error.
  */
 function generateImage(prompt) {
-  // Uses global constants from Configuration.gs
   const ENDPOINT = `https://aiplatform.googleapis.com/v1/projects/${PROJECT_ID}/locations/global/publishers/google/models/${MODEL_ID}:generateContent`;
 
   const payload = {
