@@ -27,7 +27,7 @@ Before you begin, ensure you have the following:
 
 2.  **Configure the Project ID:**
 
-    Open the `Configuration.gs` file and update the `PROJECT_ID` constant with your Google Cloud project ID:
+    Open the `VertexAI.gs` file and update the `PROJECT_ID` constant with your Google Cloud project ID:
     ```javascript
     const PROJECT_ID = 'YOUR_PROJECT_ID';
     ```
