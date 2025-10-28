@@ -80,11 +80,6 @@ def download_chat_attachment(attachment_name) -> str:
             print(f'Download {int(status.progress() * 100)}')
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
-def file_to_base64(file_path: str) -> str:
-    """Reads a file and returns its content as a base64 encoded string."""
-    with open(file_path, "rb") as f:
-        return base64.b64encode(f.read()).decode("utf-8")
-
 def create_message(message) -> str:
     """Creates a Chat message in the configured space."""
     print(f"Creating message in space {SPACE_NAME}...")
