@@ -4,7 +4,7 @@ protobuf==5.29.2
 google_auth_oauthlib==1.2.1
 google-api-core==2.25.1
 PyJWT==2.10.1
-google-apps-chat==0.3.0
+google-apps-chat==0.4.0
 google-cloud-aiplatform[adk,agent-engines]==1.118.0
 google-adk==1.15.1
 markdown==3.9
