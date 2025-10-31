@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Service that handles runtime environment.
+
 // Environment variables
 
 const PROJECT_NUMBER = PropertiesService.getScriptProperties().getProperty('PROJECT_NUMBER');
@@ -25,6 +27,7 @@ const NA_IMAGE_URL = PropertiesService.getScriptProperties().getProperty('NA_IMA
 
 const DEBUG = parseInt(PropertiesService.getScriptProperties().getProperty('DEBUG')) || 0;
 
+// Returns whether the application is running in debug mode.
 function isInDebugMode() {
   return DEBUG == 1
 }

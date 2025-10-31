@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// --- Session Management ---
+// Service that handles Vertex AI API operations.
 
+// Get reasoning engine resource name
 function getReasoningEngine() {
   return `projects/${PROJECT_NUMBER}/locations/${LOCATION}/reasoningEngines/${ENGINE_ID}`;
 }
 
+// --- Session Management ---
+
+// Extracts the pseudo user ID from the full user resource name.
 function getAgentUserPseudoId(userName) {
   return userName.replace(USERS_PREFIX, '');
 }
 
+// Deletes the agent session associated with the given user.
 function deleteAgentSession(userName) {
   const sessionId = getAgentSession(getAgentUserPseudoId(userName));
   if (sessionId) {
@@ -42,6 +47,7 @@ function deleteAgentSession(userName) {
   }
 }
 
+// Creates a new agent session associated with the given user.
 function createAgentSession(userName) {
   const responseContentJson = JSON.parse(UrlFetchApp.fetch(
     `https://${LOCATION}-aiplatform.googleapis.com/v1beta1/${getReasoningEngine()}/sessions`,
@@ -59,7 +65,8 @@ function createAgentSession(userName) {
   return createdSessionId;
 }
 
-function getAgentSession(userId = "117395548653558734883") {
+// Retrieves the agent session associated with the given user.
+function getAgentSession(userId) {
   const responseContentJson = UrlFetchApp.fetch(
     `https://${LOCATION}-aiplatform.googleapis.com/v1beta1/${getReasoningEngine()}/sessions?filter=user_id%3D%22${userId}%22`,
     {
@@ -72,6 +79,7 @@ function getAgentSession(userId = "117395548653558734883") {
   const response = JSON.parse(responseContentJson);
   const sessions = response.sessions || [];
   if (sessions.length > 0) {
+    // Return the first session found
     const sessionId = getSessionId(sessions[0].name);
     console.log(`Found existing session: ${sessionId}`);
     return sessionId
@@ -79,15 +87,18 @@ function getAgentSession(userId = "117395548653558734883") {
   return undefined;
 }
 
+// Retrieves or creates the agent session associated with the given user.
 function getOrCreateAgentSession(userName) {
   let sessionId = getAgentSession(getAgentUserPseudoId(userName));
   if (!sessionId) {
+    // Create a new session
     sessionId = createAgentSession(userName);
     console.log(`Created new session: ${sessionId}`);
   }
   return sessionId;
 }
 
+// Extracts session ID from resource name
 function getSessionId(resourceName) {
   const regex = /\/sessions\/([^/]+)(?:\/.*)?/;
   const match = resourceName.match(regex);
@@ -99,31 +110,46 @@ function getSessionId(resourceName) {
 
 // ---  Agent request handling ---
 
+// Interface AI Agent UI renders need to implement.
 class IAiAgentUiRender {
   constructor(isChat) {
+    // Indicates whether the UI is in chat mode (impacts Card framework features and limitations)
     this.isChat = isChat;
   }
+  // Returns the list of authors to be ignored for function calling.
   ignoredAuthors() { throw new Error("Not Implemented"); }
+  // Returns an emoji representing the author.
   getAuthorEmoji(author) { throw new Error("Not Implemented"); }
+  // Creates a status accessory widget with a disabled button showing agent progress.
   createStatusAccessoryWidgets(text, materialIconName) { throw new Error("Not Implemented"); }
+  // Returns the widgets to render for a given agent response.
   getAgentResponseWidgets(name, response) { throw new Error("Not Implemented"); }
 }
 
+// Interface AI Agent handlers need to implement.
 class IAiAgentHandler {
   constructor(uiRender) {
     this.uiRender = uiRender;
   }
+  // Transforms the user input to AI message with contents.
   extractContentFromInput(input) { throw new Error("Not Implemented"); }
-  finalAnswer(author, text, success, failure) { throw new Error("Not Implemented"); }
+  // Handles the final answer from the agent.
+  finalAnswer(author, text, success, failure) { throw new Error("Not Implemented"); }\
+  // Handles the initiation of a function calling from the agent.
   functionCallingInitiation(author, name) { throw new Error("Not Implemented"); }
+  // Handles the completion of a function calling from the agent.
   functionCallingCompletion(author, name, response, outputId) { throw new Error("Not Implemented"); }
+  // Handles the failure of a function calling from the agent.
   functionCallingFailure(name, outputId) { throw new Error("Not Implemented"); }
 }
 
+// Sends a request to the AI agent and processes the response using the given handler.
 function requestAgent(userName, input, handler) {
-  // Mapping for function call output tracking
+  // Keep track of the mapping between function call IDs and output resource IDs
   const functionCallOutputMap = {};
+  // Keep track of the mapping between function call IDs and agents
   const functionCallOutputAgentMap = {};
+  // Keep track of ongoing function calls
   const functionCallOngoingIds = [];
 
   let attempt = 0;
@@ -137,6 +163,7 @@ function requestAgent(userName, input, handler) {
     while (attempt < MAX_AI_AGENT_RETRIES && !responded) {
       attempt += 1;
       console.log(`Attempting agent request #${attempt} / ${MAX_AI_AGENT_RETRIES}...`);
+      // Sync call that gets all events from agent response
       const responseContentText = UrlFetchApp.fetch(
         `https://${LOCATION}-aiplatform.googleapis.com/v1/${getReasoningEngine()}:streamQuery?alt=sse`,
         {
@@ -168,7 +195,7 @@ function requestAgent(userName, input, handler) {
         // Retrieve the agent responsible for generating the content
         const author = event.author;
         
-        // Skip internal events
+        // Ignore events that are not useful for the end-user
         if (!event.content) {
           console.log(`${author}: internal event`);
           continue;
@@ -244,4 +271,3 @@ function requestAgent(userName, input, handler) {
     );
   }
 }
-
