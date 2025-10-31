@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Get credentials from service account to access Vertex AI and Google Chat APIs
 function getCredentials() {
   const credentials = PropertiesService.getScriptProperties().getProperty('SERVICE_ACCOUNT_KEY');
   if (!credentials) {
@@ -24,11 +25,15 @@ function getCredentials() {
     .setIssuer(parsedCredentials['client_email'])
     .setPropertyStore(PropertiesService.getScriptProperties())
     .setScope([
+      // Vertex AI scope
       "https://www.googleapis.com/auth/cloud-platform",
+      // Google Chat scope
+      // All Chat operations are taken by the Chat app itself
       "https://www.googleapis.com/auth/chat.bot"
     ]);
 }
 
+// Converts a snake_case_string to a user-readable Title Case string.
 function snakeToUserReadable(snakeCaseString = "") {
   return snakeCaseString.replace(/_/g, ' ').split(' ').map(word => {
     if (!word) return '';
@@ -36,10 +41,12 @@ function snakeToUserReadable(snakeCaseString = "") {
   }).join(' ');
 }
 
+// Formats text from Markdown to HTML.
 function markdownToHtml(markdownText) {
   return new showdown.Converter().makeHtml(markdownText);
 }
 
+// Decodes JWT playload
 function decodeJwtPayload(token) {
   const payloadBase64Url = token.split('.')[1];
   let base64 = payloadBase64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -52,7 +59,7 @@ function decodeJwtPayload(token) {
 }
 
 /**
- * Polls the status of a Google Cloud Long-Running Operation until it's complete.
+ * Polls the status of a Google Cloud Long-Running Operation (LRO) until it's complete.
  */
 function pollLroStatus(lroName) {
   const MAX_POLLS = 60;
@@ -93,6 +100,7 @@ function pollLroStatus(lroName) {
   console.log(`Polling timed out after ${MAX_POLLS} attempts.`);
 }
 
+// Extracts hostname from URL string
 function getUrlHostname(url) {
   const hostnameRegex = /^(?:[a-z]+:\/\/)?([^\/\s]+)/i;
   const match = url.match(hostnameRegex);
@@ -106,6 +114,7 @@ function getUrlHostname(url) {
   return null; 
 }
 
+// Returns whether a URL returns an image that is supported
 function isUrlImage(imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Machu_Picchu%2C_Peru.jpg/1920px-Machu_Picchu%2C_Peru.jpg") {
   const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/jpg"];
   const response = UrlFetchApp.fetch(imageUrl, {

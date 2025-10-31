@@ -12,30 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// The main script for the project with all Google Workspace add on event callback functions
+
 // --- The main Chat entry functions ---
 
+// Handle incoming Google Chat message events, actions will be taken via Google Chat API calls
 function onMessage(event) {
   if (isInDebugMode()) {
     console.log(`MESSAGE event received (Chat): ${JSON.stringify(event)}`);
   }
+  // Extract data from the event.
   const chatEvent = event.chat;
   setChatConfig(chatEvent.messagePayload.space.name);
 
+  // Request AI agent to answer the message and use the Chat handler and UI renderer
   requestAgent(chatEvent.user.name, chatEvent.messagePayload.message, new AgentChat(new TravelAgentUiRender(true)))
+  // Respond with an empty response to the Google Chat platform to acknowledge execution
   return null; 
 }
 
+// Handles incoming Gogole Chat app command events (slash & quick commands).
 function onAppCommand(event) {
   if (isInDebugMode()) {
     console.log(`APP_COMMAND event received (Chat): ${JSON.stringify(event)}`);
   }
+  // Extract data from the event.
   const chatEvent = event.chat;
   setChatConfig(chatEvent.appCommandPayload.space.name);
 
   const appCommandMetadata = chatEvent.appCommandPayload.appCommandMetadata;
   switch (appCommandMetadata.appCommandId) {
     case RESET_SESSION_COMMAND_ID:
+      // Delete session for the user
       deleteAgentSession(chatEvent.user.name);
+      // Reply a Chat message with confirmation
       return { hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
         text: "OK, let's start from the beginning, what can I help you with?"
       }}}}};
@@ -45,17 +55,23 @@ function onAppCommand(event) {
 
 // --- The main Add-on entry function ---
 
+ /**
+ * Handles events from other Google Workspace applications (like Gmail) for the add-on UI.
+ * Both initial card display and subsequent user interactions (buttons/form submissions) are covered.
+ */
 function onAddonEvent(event) {
   if (isInDebugMode()) {
     console.log(`Event received (Addon): ${JSON.stringify(event)}`);
   }
 
+  // Extract data from the event.
   const userName = getCurrentUserName();
   console.log(`User found: ${userName}`);
   const spaceName = findChatAppDm(userName);
-  // const spaceName = "kRMGCiAAAAE";
   console.log(`Space found: ${spaceName}`);
 
+  // Extract contextual, host-specific input
+  // Note; This could be expanded to calendar, drive, docs, sheets, slides
   const availableContext = [];
   // Fetch and add user profile context
   const person = getPersonProfile(userName.replace(USERS_PREFIX, PEOPLE_PREFIX));
@@ -79,6 +95,7 @@ function onAddonEvent(event) {
 
   const parameters = event.parameters || {};
 
+  // Handles the session reset action
   let resetConfirmationWidgets = [];
   const isReset = parameters.reset === 'true';
   if (isReset) {
@@ -89,6 +106,7 @@ function onAddonEvent(event) {
     );
   }
 
+  // Handles the send action
   let answerSections = [];
   const isSend = parameters.send === 'true';
   if (isSend) {
@@ -102,7 +120,7 @@ function onAddonEvent(event) {
     const messageInput = formInputs.message;
     const contextInputs = formInputs.context;
     
-    // Extract form values
+    // Extract form input values
     let userMessage = "";
     if (messageInput && messageInput.stringInputs && messageInput.stringInputs.value.length > 0) {
       userMessage = messageInput.stringInputs.value[0];
@@ -125,6 +143,7 @@ function onAddonEvent(event) {
       if (isInDebugMode()) {
         console.log(`Answering message: ${userMessage}...`);
       }
+      // Request AI agent to answer the message and use the common handler and UI renderer
       const travelCommonAgent = new AgentCommon(new TravelAgentUiRender(false))
       requestAgent(userName, userMessage, travelCommonAgent);
       answerSections = travelCommonAgent.getAnswerSections();
@@ -135,9 +154,9 @@ function onAddonEvent(event) {
     }
   }
   
-  // handles UI Card
+  // Handles UI Card
   
-  // Build Context Selection (if available)
+  // Build context selection (if available)
   let contextSourcesWidget = null;
   if (availableContext.length > 0) {
     const selectionInput = CardService.newSelectionInput()
@@ -163,7 +182,7 @@ function onAddonEvent(event) {
     primaryWidgets.push(contextSourcesWidget);
   }
   
-  // Build Buttons
+  // Build action buttons
   const sendAction = CardService.newAction()
     .setFunctionName('onAddonEvent')
     .setParameters({ 'send': 'true' });
@@ -198,7 +217,7 @@ function onAddonEvent(event) {
       )
   );
 
-  // Assemble the Card
+  // Build the card
   const card = CardService.newCardBuilder();
   primarySection = CardService.newCardSection();
   primaryWidgets.forEach(widget => primarySection.addWidget(widget));
@@ -210,10 +229,12 @@ function onAddonEvent(event) {
   }
 
   if (isReset || isSend) {
+    // Update existing card
     return CardService.newActionResponseBuilder()
       .setNavigation(CardService.newNavigation().updateCard(builtCard))
       .build();
   } else {
+    // Initial card render
     return builtCard;
   }
 }

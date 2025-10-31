@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Error message to display when something goes wrong
 const ERROR_MESSAGE = "❌ Something went wrong";
 
 // --- AgentCommon (IAiAgentHandler for non-Chat host apps) ---
 
+// AI Agent handler implementation for non-Chat host apps.
 class AgentCommon extends IAiAgentHandler {
   constructor(uiRender) {
     super(uiRender);
@@ -24,14 +26,18 @@ class AgentCommon extends IAiAgentHandler {
 
   // --- IAiAgentHandler implementation ---
 
+  // Transforms the user input to AI message with contents.
   extractContentFromInput(input) {
+    // For non-Chat host apps, the input is a simple text string
     return { "role": "user", "parts": [{ "text": input }] };
   }
 
+  // Adds the final answer section to the turn card sections.
   finalAnswer(author, text, success, failure) {
     this.addSection(this.buildSection(author, text, [], success, failure));
   }
 
+  // Adds a function calling initiation section to the turn card sections.
   functionCallingInitiation(author, name) {
     return this.addSection(this.buildSection(
       name,
@@ -42,6 +48,7 @@ class AgentCommon extends IAiAgentHandler {
     ));
   }
 
+  // Updates the function calling section with the completion response.
   functionCallingCompletion(author, name, response, outputId) {
     this.updateSection(outputId, this.buildSection(
       name,
@@ -52,6 +59,7 @@ class AgentCommon extends IAiAgentHandler {
     ));
   }
 
+  // Updates the function calling section with a failure status.
   functionCallingFailure(name, outputId) {
     this.updateSection(
       outputId,
@@ -61,21 +69,25 @@ class AgentCommon extends IAiAgentHandler {
 
   // --- Utility functions ---
 
+  // Adds a new section to the turn card sections and returns its index.
   addSection(section) {
     console.log("Adding section in stack...");
     this.turnCardSections.push(section);
     return this.turnCardSections.length - 1; 
   }
 
+  // Updates an existing section in the turn card sections.
   updateSection(index, section) {
     console.log("Updating section in stack...");
     this.turnCardSections[index] = section;
   }
 
+  // Returns the turn card sections in reverse order for display.
   getAnswerSections() {
     return this.turnCardSections.slice().reverse();
   }
 
+  // Builds a card section for the given author, text, and widgets.
   buildSection(author, text, widgets, success, failure) {
     let displayedText = `${this.uiRender.getAuthorEmoji(author)} **${snakeToUserReadable(author)}**${success ? ' ✅' : ''}${text ? `\n\n${text}` : ''}`;
     displayedText = markdownToHtml(this.substituteListingsFromMarkdown(displayedText)).replace(/\n/g, '\n\n');
@@ -87,6 +99,7 @@ class AgentCommon extends IAiAgentHandler {
     return section;
   }
 
+  // Removes markdown listings (bulleted and numbered) from the given markdown text.
   substituteListingsFromMarkdown(text) {
     const pattern = /^\s*([*-+]|\d+\.)\s+/gm; // 'm' for multiline
     return text.replace(pattern, '-> ');
@@ -95,11 +108,14 @@ class AgentCommon extends IAiAgentHandler {
 
 // --- AgentChat (IAiAgentHandler for Chat apps) ---
 
+// AI Agent handler implementation for Chat apps.
 class AgentChat extends IAiAgentHandler {
 
   // --- IAiAgentHandler implementation ---
 
+  // Transforms the user input to AI message with contents.
   extractContentFromInput(input) {
+    // For Chat host apps, the input can contain text and attachments
     const parts = [{ "text": input.text }];
     if (input.attachment && Array.isArray(input.attachment)) {
       for (const attachment of input.attachment) {
@@ -114,10 +130,13 @@ class AgentChat extends IAiAgentHandler {
     return { "role": "user", "parts": parts };
   }
 
+  // Sends the final answer as a Chat message.
   finalAnswer(author, text, success, failure) {
     createMessage(this.buildMessage(author, text, [], success, failure));
   }
 
+
+  // Sends a function calling initiation message in Chat and returns the message name as output ID.
   functionCallingInitiation(author, name) {
     return createMessage(this.buildMessage(
         name,
@@ -128,6 +147,7 @@ class AgentChat extends IAiAgentHandler {
     ));
   }
 
+  // Updates the function calling message in Chat with the completion response.
   functionCallingCompletion(author, name, response, outputId) {
     const widgets = this.uiRender.getAgentResponseWidgets(name, response);
     updateMessage(outputId, this.buildMessage(
@@ -139,6 +159,7 @@ class AgentChat extends IAiAgentHandler {
     ));
   }
 
+  // Updates the function calling section with a failure status.
   functionCallingFailure(name, outputId) {
     updateMessage(
       outputId,
@@ -148,6 +169,7 @@ class AgentChat extends IAiAgentHandler {
 
   // --- Utility functions ---
 
+  // Builds a Chat message for the given author, text, and cards_v2.
   buildMessage(author, text, cardsV2, success, failure) {
     if (text) {
       cardsV2.unshift(this.wrapWidgetsInCardsV2([CardService.newTextParagraph().setText(text.replace(/\n/g, '\n\n'))]));
@@ -168,6 +190,7 @@ class AgentChat extends IAiAgentHandler {
     return message;
   }
 
+  // Wraps the given widgets in Chat cards_v2 structure.
   wrapWidgetsInCardsV2(widgets = []) {
     const section = CardService.newCardSection();
     widgets.forEach(widget => { section.addWidget(widget) });

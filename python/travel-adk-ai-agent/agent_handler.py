@@ -99,7 +99,7 @@ class AgentCommon(IAiAgentHandler):
         """Builds a card section for the given author, text, and widgets."""
         displayedText = f"{self.ui_render.get_author_emoji(author)} **{snake_to_user_readable(author)}**{f' ✅' if success else ''}{f'\n\n{text}' if text else ''}"
         textWidgets = [{ "text_paragraph": { "text": markdown.markdown(self.substitute_listings_from_markdown(displayedText)).replace('\n', '\n\n') }}]
-        return { "widgets": textWidgets + widgets + ([] if success or failure else self.ui_render.create_status_accessory_widgets(text="In progress...", material_icon_name="progress_activity")) }
+        return { "widgets": textWidgets + widgets + ([] if success or failure else self.ui_render.create_status_accessory_widgets()) }
 
     def substitute_listings_from_markdown(self, markdown: str) -> str:
         """Removes markdown listings (bulleted and numbered) from the given markdown text."""
@@ -174,7 +174,7 @@ class AgentChat(IAiAgentHandler):
         return {
             "text": f"{self.ui_render.get_author_emoji(author)} *{snake_to_user_readable(author)}*{f' ✅' if success else ''}",
             "cards_v2": cards_v2,
-            "accessory_widgets": [] if success or failure else self.ui_render.create_status_accessory_widgets(text="In progress...", material_icon_name="progress_activity")
+            "accessory_widgets": [] if success or failure else self.ui_render.create_status_accessory_widgets()
         }
 
     def wrap_widgets_in_cards_v2(self, widgets=[]) -> list:

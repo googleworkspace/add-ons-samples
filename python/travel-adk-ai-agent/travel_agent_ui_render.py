@@ -96,7 +96,7 @@ class TravelAgentUiRender(IAiAgentUiRender):
             # Image
             image_url = item.get("image")
             if image_url:
-                # Set default image if the provided image URL is valid
+                # Set default image if the provided image URL is not valid
                 carousel_card_widgets.append({ "image": { "image_url": image_url if self.is_url_image(image_url) else NA_IMAGE_URL }})
             # Text
             destination_name = item.get("name", "Unknown")
@@ -116,7 +116,7 @@ class TravelAgentUiRender(IAiAgentUiRender):
             # Image
             image_url = item.get("image_url")
             if image_url:
-                # Set default image if the provided image URL is valid
+                # Set default image if the provided image URL is not valid
                 carousel_card_widgets.append({ "image": { "image_url": image_url if self.is_url_image(image_url) else NA_IMAGE_URL }})
             # Text
             carousel_card_widgets.append(self.create_text_paragraph(f"**{item.get("place_name")}**"))

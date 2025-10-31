@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// UI render implementation for the Travel AI Agent.
 class TravelAgentUiRender extends IAiAgentUiRender {
+
+  // ----- IAiAgentUiRender interface implementation
+
+  // Returns the list of authors to be ignored for function calling.
   ignoredAuthors() {
     return isInDebugMode() ? [] : ["memorize"];
   }
 
+  // Returns an emoji representing the author.
   getAuthorEmoji(author) {
-    // Returns an emoji representing the author.
     switch (author) {
       case "inspiration_agent": return "ℹ️";
       case "place_agent": return "📍";
@@ -30,8 +35,8 @@ class TravelAgentUiRender extends IAiAgentUiRender {
     }
   }
 
+  // Creates a status accessory widget with a disabled button showing agent progress.
   createStatusAccessoryWidgets(text = "In progress...", materialIconName = "progress_activity") {
-    // Creates a status accessory widget with a disabled button showing agent progress.
     return [CardService.newButtonSet().addButton(CardService.newTextButton()
       .setText(text)
       .setMaterialIcon(CardService.newMaterialIcon()
@@ -41,8 +46,8 @@ class TravelAgentUiRender extends IAiAgentUiRender {
       .setDisabled(true))];
   }
 
+  // Returns the widgets to render for a given agent response.
   getAgentResponseWidgets(name, response) {
-    // Returns the widgets to render for a given agent response.
     let widgets = [];
     switch (name) {
       case "poi_agent": // POISuggestions (with place_name, address, image_url)
@@ -73,6 +78,7 @@ class TravelAgentUiRender extends IAiAgentUiRender {
 
   // --- Utility functions ---
   
+  // Creates a text paragraph widget, handling markdown for non-chat UIs.
   createTextParagraph(text) {
     const textParagraph = CardService.newTextParagraph();
     if (this.isChat) {
@@ -85,11 +91,13 @@ class TravelAgentUiRender extends IAiAgentUiRender {
     return textParagraph;
   }
 
+  // Creates widgets for the memorize agent response.
   createMemorizeWidgets(status) {
     if (!status) return [];
     return [this.createTextParagraph(status)];
   }
 
+  // Creates widgets for the place agent response.
   createPlaceAgentWidgets(destinations = []) {
     if (destinations.length === 0) return [];
     const carousel = CardService.newCarousel();
@@ -98,6 +106,7 @@ class TravelAgentUiRender extends IAiAgentUiRender {
       // Image
       const imageUrl = item.image
       if (imageUrl) {
+        // Set default image if the provided image URL is not valid
         carouselCard.addWidget(this.createTextParagraph(isUrlImage(imageUrl) ? imageUrl : NA_IMAGE_URL));
         // TODO: wait for bug fix
         // carouselCard.addWidget(CardService.newImage().setImageUrl(isUrlImage(imageUrl) ? imageUrl : NA_IMAGE_URL));
@@ -111,6 +120,7 @@ class TravelAgentUiRender extends IAiAgentUiRender {
     return [carousel];
   }
 
+  // Creates widgets for the poi agent response.
   createPoiAgentWidgets(places = []) {
     if (places.length === 0) return [];
     const carousel = CardService.newCarousel();
@@ -119,6 +129,7 @@ class TravelAgentUiRender extends IAiAgentUiRender {
       // Image
       const imageUrl = item.image_url
       if (imageUrl) {
+        // Set default image if the provided image URL is not valid
         carouselCard.addWidget(this.createTextParagraph(isUrlImage(imageUrl) ? imageUrl : NA_IMAGE_URL));
         // TODO: wait for bug fix
         // carouselCard.addWidget(CardService.newImage().setImageUrl(isUrlImage(imageUrl) ? imageUrl : NA_IMAGE_URL));
@@ -130,8 +141,8 @@ class TravelAgentUiRender extends IAiAgentUiRender {
     return [carousel];
   }
   
+  // Creates widgets for the map tool agent response (carousel with map links).
   createMapToolWidgets(places = []) {
-    // Creates widgets for the map tool agent response (Carousel with map links).
     if (places.length === 0) return [];
     const carousel = CardService.newCarousel();
     for (const item of places) {
@@ -139,7 +150,7 @@ class TravelAgentUiRender extends IAiAgentUiRender {
       // Text
       const placeName = item.place_name || "";
       carouselCard.addWidget(this.createTextParagraph(`**${placeName}**`));
-      // Link
+      // Google Maps button link
       const address = item.address || "";
       carouselCard.addFooterWidget(CardService.newButtonSet()
         .addButton(CardService.newTextButton()
@@ -151,7 +162,9 @@ class TravelAgentUiRender extends IAiAgentUiRender {
     return [carousel];
   }
 
+  // Creates widgets for the google search grounding response.
   createGoogleSearchGroundingWidgets(text = "") {
+    // Extract URLs from the text
     const urlPattern = /https?:\/\/\S+/g;
     const urls = text.match(urlPattern) || [];
     if (urls.length === 0) return [];
