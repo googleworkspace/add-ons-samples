@@ -52,7 +52,7 @@ Agent interactions can timeout when too long and cannot be processed in real tim
 ## Set up
 
 1. Configure the Google Cloud project
-   1. Enable the Vertex AI, Chat, Places, and People APIs
+   1. Enable the Vertex AI, Chat, Places, and People APIs.
    1. Create a Service Account and grant the role `Vertex AI User`
    1. Create a private key with type JSON. This will download the JSON file.
 1. Setup, install, and deploy the Travel Concierge ADK AI Agent sample
