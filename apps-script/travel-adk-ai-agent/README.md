@@ -28,7 +28,7 @@ To expose this agent to end-users, a GUI with specific features is necessary as 
 
 ## Architecture
 
-This solution relies on the following technologies: Google Chat API, People API, Gmail API, Vertex AI Agent Engine API, Python, and Google Cloud Functions.
+This solution relies on the following technologies: Google Chat API, People API, Gmail API, Vertex AI Agent Engine API, and Apps Script.
 
 ## Features
 
@@ -39,9 +39,11 @@ This solution relies on the following technologies: Google Chat API, People API,
 * **Chat Attachments:** Users can send messages with recorded audio or file attachments for extra context.
 * **User Context:** The agent can optionally include user profile data, such as birthdays (available in Gmail, Calendar, Drive).
 * **Switch to Chat:** Access the Chat app DM in a single click from other apps (Gmail, Calendar, Drive) to access Chat-only features.
-* **Agent Responsivity:** Agent interactions are displayed:
-   * **Chat:** in real-time as they are processed.
-   * **Gmail, Calendar, Drive:** after completion because Google Workspace add-on sidebar interactions are always synchronous.
+* **Agent Responsivity:** Agent interactions are displayed after completion because Apps Script cannot make asynchronous requests.
+
+## Limitations
+
+Agent interactions can timeout when too long and cannot be processed in real time due to Apps Script `UrlFetchApp`. Check the [Python version of this code sample](../../python/travel-adk-ai-agent/) to learn how you can overcome these limitations by relying on HTTP endpoints instead of Apps Script.
 
 ## Prerequisites
 
@@ -50,7 +52,7 @@ This solution relies on the following technologies: Google Chat API, People API,
 ## Set up
 
 1. Configure the Google Cloud project
-   1. Enable the Google Workspace Marketplace SDK then the Vertex AI, Cloud Functions, Chat, Places, and People APIs
+   1. Enable the Vertex AI, Chat, Places, and People APIs
    1. Create a Service Account and grant the role `Vertex AI User`
    1. Create a private key with type JSON. This will download the JSON file.
 1. Setup, install, and deploy the Travel Concierge ADK AI Agent sample
@@ -58,24 +60,24 @@ This solution relies on the following technologies: Google Chat API, People API,
    1. Use the same Google Cloud project
    1. Use the location `us-central1`
    1. Use the Vertex AI Agent Engine
-1. Publish HTTP endpoint to Google Cloud Functions
-   1. Add credentials file `credentials.json` to the project root directory
-   1. Create and deploy a new Cloud Function with the project source code
-   1. Configure the environment variables and redeploy
+1. Set up Standalone Apps Script
+   1. Create the project with the sources from this project
+   1. Link it to your Google Cloud project
+   1. Configure the script properties
 1. Publish Google Workspace add-on
-   1. Configure Google Chat API
-   1. Complete manifest and configure a new HTTP deployment with it
+   1. Configure Google Chat API to use the Apps Script project with Head Deployment ID
+   1. Install in Gmail, Calendar, and Drive from test deployment
 
 ## Customization
 
 The core logic supports any ADK AI agent hosted in Vertex AI Agent Engine. Key customization points are:
 
-* `main.py`: Defines the main UI layouts and user interaction logic (Google Workspace event handlers). Example: Add support for Calendar event or Drive document context.
+* `Code.gs`: Defines the main UI layouts and user interaction logic (Google Workspace event handlers). Example: Add support for Calendar event or Drive document context.
 
-* `vertex_ai.py`: Manages the streamed agent events, sessions, and error handling. Example: Enable multi-sessions for separate user conversations.
+* `VertexAi.gs`: Manages the agent events, sessions, and error handling. Example: Enable multi-sessions for separate user conversations.
 
-* `agent_handler.py`: Implements abstracted functions for orchestrating operations. Example: Synchronize message history across all host applications.
+* `AgentHandler.gs`: Implements abstracted functions for orchestrating operations. Example: Synchronize message history across all host applications.
 
-* `google_workspace.py`: Handles API interactions with other systems to gather context or take actions. Example: Add functions to retrieve details of a Calendar event.
+* `GoogleWorkspace.gs`: Handles API interactions with other systems to gather context or take actions. Example: Add functions to retrieve details of a Calendar event.
 
-* `travel_agent_ui_render.py`: Controls how agent responses are displayed to end-users. Example: Design a new card to show a person's profile and avatar.
+* `TravelAgentUiRender.gs`: Controls how agent responses are displayed to end-users. Example: Design a new card to show a person's profile and avatar.
