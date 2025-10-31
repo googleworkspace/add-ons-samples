@@ -134,7 +134,7 @@ class IAiAgentHandler {
   // Transforms the user input to AI message with contents.
   extractContentFromInput(input) { throw new Error("Not Implemented"); }
   // Handles the final answer from the agent.
-  finalAnswer(author, text, success, failure) { throw new Error("Not Implemented"); }\
+  finalAnswer(author, text, success, failure) { throw new Error("Not Implemented"); }
   // Handles the initiation of a function calling from the agent.
   functionCallingInitiation(author, name) { throw new Error("Not Implemented"); }
   // Handles the completion of a function calling from the agent.
