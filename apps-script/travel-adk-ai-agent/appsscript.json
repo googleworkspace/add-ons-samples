@@ -1,0 +1,61 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "OAuth2",
+        "version": "43",
+        "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF"
+      }
+    ],
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Chat",
+        "version": "v1",
+        "serviceId": "chat"
+      },
+      {
+        "userSymbol": "People",
+        "version": "v1",
+        "serviceId": "peopleapi"
+      },
+      {
+        "userSymbol": "Gmail",
+        "version": "v1",
+        "serviceId": "gmail"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "Travel ADK AI Agent (AS)",
+      "logoUrl": "https://goo.gle/3SfMkjb",
+      "homepageTrigger": {
+        "runFunction": "onAddonEvent"
+      }
+    },
+    "chat": {},
+    "gmail": { "contextualTriggers": [{
+      "unconditional": {},
+      "onTriggerFunction": "onAddonEvent"
+    }]},
+    "calendar":  { "eventOpenTrigger": {
+      "runFunction": "onAddonEvent"
+    }},
+    "drive": { "onItemsSelectedTrigger": {
+      "runFunction": "onAddonEvent"
+    }}
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/user.birthday.read",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
+    "https://www.googleapis.com/auth/calendar.addons.execute",
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly"
+  ]
+}

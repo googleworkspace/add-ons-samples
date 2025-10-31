@@ -30,8 +30,10 @@ USERS_PREFIX = "users/"
 # The prefix used for the Space resource name.
 SPACES_PREFIX = "spaces/"
 
+# Credentials
+SERVICE_ACCOUNT_FILE = 'credentials.json'
+
 # All Chat operations are taken by the Chat app itself
-CHAT_SERVICE_ACCOUNT_FILE = 'credentials_chat.json'
 CHAT_APP_AUTH_OAUTH_SCOPE = ["https://www.googleapis.com/auth/chat.bot"]
 
 # The Chat DM space associated with the user
@@ -45,7 +47,7 @@ def set_chat_config(spaceName: str):
 
 def create_google_chat_cloud_client():
     """Creates a Google Chat Cloud client using the service account."""
-    creds = Credentials.from_service_account_file(CHAT_SERVICE_ACCOUNT_FILE)
+    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
     return google_chat.ChatServiceClient(
         credentials=creds,
         client_options={ "scopes": CHAT_APP_AUTH_OAUTH_SCOPE }
@@ -53,7 +55,7 @@ def create_google_chat_cloud_client():
 
 def create_google_chat_api_client():
     """Creates a Google Chat API client using the service account."""
-    creds = Credentials.from_service_account_file(CHAT_SERVICE_ACCOUNT_FILE).with_scopes(CHAT_APP_AUTH_OAUTH_SCOPE)
+    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE).with_scopes(CHAT_APP_AUTH_OAUTH_SCOPE)
     return build('chat', 'v1', credentials=creds)
 
 # Client instance singletons
