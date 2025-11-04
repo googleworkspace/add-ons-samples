@@ -30,7 +30,7 @@
   "runtimeVersion": "V8",
   "addOns": {
     "common": {
-      "name": "Travel ADK AI Agent (AS)",
+      "name": "Travel ADK AI Agent",
       "logoUrl": "https://goo.gle/3SfMkjb",
       "homepageTrigger": {
         "runFunction": "onAddonEvent"
