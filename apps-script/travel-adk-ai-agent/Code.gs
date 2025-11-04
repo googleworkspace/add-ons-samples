@@ -74,7 +74,7 @@ function onAddonEvent(event) {
   // Note; This could be expanded to calendar, drive, docs, sheets, slides
   const availableContext = [];
   // Fetch and add user profile context
-  const person = getPersonProfile(userName.replace(USERS_PREFIX, PEOPLE_PREFIX));
+  const person = getPersonProfile(userName.replace(USERS_PREFIX, PEOPLE_PREFIX), 'birthdays');
   availableContext.push({ id: "profile", name: "Google profile", value: person });
   if (isInDebugMode()) {
     console.log(`Person: ${person}`);
