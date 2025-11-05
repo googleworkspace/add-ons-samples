@@ -8,13 +8,13 @@ This project integrates the Travel Concierge—an advanced, multi-agent AI from 
 
 [![Chat Showcase](./img/chat-preview.png)](https://drive.google.com/file/d/1KjmINbApQhn5mFNQjs1A5d-gVtvijSb7/view?usp=sharing)
 
-### Gmail, Calendar, Drive
+### Gmail, Calendar, Drive, Editors (Docs, Sheets, Slides)
 
 [![Gmail Showcase](./img/gmail-preview.png)](https://drive.google.com/file/d/1K4ycmpgz5fVF4U9_1N1bcZqe5UMvYnIF/view?usp=sharing)
 
 ## Overview
 
-While the ADK provides default interfaces for developers (chat and text), this project focuses on creating a Graphical User Interface (GUI) dedicated to end-users. It demonstrates how to publish the Travel Concierge as a single Google Workspace add-on, making it accessible directly within applications like Google Chat, Gmail, Calendar, and Drive.
+While the ADK provides default interfaces for developers (chat and text), this project focuses on creating a Graphical User Interface (GUI) dedicated to end-users. It demonstrates how to publish the Travel Concierge as a single Google Workspace add-on, making it accessible directly within applications like Google Chat, Gmail, Calendar, Drive, and Editors (Docs, Sheets, Slides).
 
 This solution serves as a practical guide and a reusable framework for developers who want to connect powerful, custom AI agents to Google Workspace, allowing users to leverage advanced AI capabilities seamlessly within their existing workflows.
 
@@ -37,8 +37,8 @@ This solution relies on the following technologies: Google Chat API, People API,
 * **Error Handling:** Features configurable retries and informs users of unexpected failures with graceful interactions.
 * **Gmail Context:** Users can include the current email's subject and body in their message to the agent.
 * **Chat Attachments:** Users can send messages with recorded audio or file attachments for extra context.
-* **User Context:** The agent can optionally include user profile data, such as birthdays (available in Gmail, Calendar, Drive).
-* **Switch to Chat:** Access the Chat app DM in a single click from other apps (Gmail, Calendar, Drive) to access Chat-only features.
+* **User Context:** The agent can optionally include user profile data, such as birthdays (available in Gmail, Calendar, Drive, and Editors).
+* **Switch to Chat:** Access the Chat app DM in a single click from other apps (Gmail, Calendar, Drive, Editors) to access Chat-only features.
 * **Agent Responsivity:** Agent interactions are displayed after completion because Apps Script cannot make asynchronous requests.
 
 ## Limitations
@@ -66,7 +66,7 @@ Agent interactions can timeout when too long and cannot be processed in real tim
    1. Configure the script properties
 1. Publish Google Workspace add-on
    1. Configure Google Chat API to use the Apps Script project with Head Deployment ID
-   1. Install in Gmail, Calendar, and Drive from test deployment
+   1. Install in Gmail, Calendar, Drive, and Editors from test deployment
 
 ## Customization
 
