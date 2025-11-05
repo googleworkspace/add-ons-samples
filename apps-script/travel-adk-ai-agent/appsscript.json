@@ -41,12 +41,11 @@
       "unconditional": {},
       "onTriggerFunction": "onAddonEvent"
     }]},
-    "calendar":  { "eventOpenTrigger": {
-      "runFunction": "onAddonEvent"
-    }},
-    "drive": { "onItemsSelectedTrigger": {
-      "runFunction": "onAddonEvent"
-    }}
+    "calendar":  {},
+    "drive": {},
+    "docs" : {},
+    "sheets": {},
+    "slides": {}
   },
   "oauthScopes": [
     "https://www.googleapis.com/auth/script.external_request",
@@ -55,7 +54,6 @@
     "https://www.googleapis.com/auth/user.birthday.read",
     "https://www.googleapis.com/auth/gmail.addons.execute",
     "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
-    "https://www.googleapis.com/auth/calendar.addons.execute",
-    "https://www.googleapis.com/auth/drive.addons.metadata.readonly"
+    "https://www.googleapis.com/auth/calendar.addons.execute"
   ]
 }
