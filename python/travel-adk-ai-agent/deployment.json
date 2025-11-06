@@ -11,12 +11,12 @@
       "name": "Travel ADK AI Agent",
       "logoUrl": "https://goo.gle/3SfMkjb",
       "homepageTrigger": {
-        "runFunction": $BASE_URL
+        "runFunction": "$BASE_URL"
       }
     },
     "gmail": { "contextualTriggers": [{
       "unconditional": {},
-      "onTriggerFunction": $BASE_URL
+      "onTriggerFunction": "$BASE_URL"
     }]},
     "calendar":  {},
     "drive": {},
