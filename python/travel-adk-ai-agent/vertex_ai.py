@@ -147,7 +147,7 @@ async def request_agent(userName: str, input, handler: IAiAgentHandler):
             attempt += 1
             print(f"Attempting agent request #{attempt} / {MAX_AI_AGENT_RETRIES}...")
             # Stream the agent response
-            for event_raw in ai_agent.stream_query(user_id=userName, session_id=session_id, message=handler.extract_content_from_input(input=input)):
+            for event_raw in ai_agent.stream_query(user_id=get_agent_user_pseudo_id(userName), session_id=session_id, message=handler.extract_content_from_input(input=input)):
                 responded = True
                 event = dict(event_raw)
                 if is_in_debug_mode():
