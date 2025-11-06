@@ -9,13 +9,7 @@ This project integrates the Travel Concierge—an advanced, multi-agent AI from 
 
 ## Showcase
 
-### Chat
-
-[![Chat Showcase](./img/chat-preview.png)](https://drive.google.com/file/d/1KjmINbApQhn5mFNQjs1A5d-gVtvijSb7/view?usp=sharing)
-
-### Gmail, Calendar, Drive, Editors (Docs, Sheets, Slides)
-
-[![Gmail Showcase](./img/gmail-preview.png)](https://drive.google.com/file/d/1K4ycmpgz5fVF4U9_1N1bcZqe5UMvYnIF/view?usp=sharing)
+[![Showcase](./img/chat-preview.png)](https://drive.google.com/file/d/1Mg56ngjmAMYUBSiEhfPNTB_MWE2sDLt9/view?usp=sharing)
 
 ## Overview
 
