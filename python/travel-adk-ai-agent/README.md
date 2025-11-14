@@ -9,7 +9,7 @@ This project integrates the Travel Concierge—an advanced, multi-agent AI from 
 
 ## Showcase
 
-[![Showcase](./img/chat-preview.png)](https://drive.google.com/file/d/1Mg56ngjmAMYUBSiEhfPNTB_MWE2sDLt9/view?usp=sharing)
+[![Showcase](./img/chat-preview.png)](https://youtube.com/shorts/ZQRk40icod4)
 
 ## Overview
 
