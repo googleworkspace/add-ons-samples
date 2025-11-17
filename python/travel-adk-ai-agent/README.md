@@ -1,20 +1,19 @@
 # Travel Concierge ADK AI multi-agent published as Google Workspace add-on
 
-This project integrates the Travel Concierge—an advanced, multi-agent AI from the Agent Development Kit (ADK) samples—into Google Workspace.
+This project integrates the Travel Concierge—an advanced, multi-agent AI from the Agent Development Kit (ADK) samples—into Google Workspace applications: Chat, Gmail, Calendar, Drive, and Editors (Docs, Sheets, Forms).
+
+## Tutorial
+
+🚀 For detailed instructions to deploy and run this sample, follow the
+[dedicated tutorial](https://developers.google.com/workspace/add-ons/samples/travel-concierge).
 
 ## Showcase
 
-### Chat
-
-[![Chat Showcase](./img/chat-preview.png)](https://drive.google.com/file/d/1KjmINbApQhn5mFNQjs1A5d-gVtvijSb7/view?usp=sharing)
-
-### Gmail, Calendar, Drive, Editors (Docs, Sheets, Slides)
-
-[![Gmail Showcase](./img/gmail-preview.png)](https://drive.google.com/file/d/1K4ycmpgz5fVF4U9_1N1bcZqe5UMvYnIF/view?usp=sharing)
+[![Showcase](./img/chat-preview.png)](https://youtube.com/shorts/ZQRk40icod4)
 
 ## Overview
 
-While the ADK provides default interfaces for developers (chat and text), this project focuses on creating a Graphical User Interface (GUI) dedicated to end-users. It demonstrates how to publish the Travel Concierge as a single Google Workspace add-on, making it accessible directly within applications like Google Chat, Gmail, Calendar, Drive, and Editors (Docs, Sheets, Slides).
+While the ADK provides default interfaces for developers (chat and text), this project focuses on creating a Graphical User Interface (GUI) dedicated to end-users. It demonstrates how to publish the Travel Concierge as a single Google Workspace add-on, making it accessible directly within Google Workspace applications.
 
 This solution serves as a practical guide and a reusable framework for developers who want to connect powerful, custom AI agents to Google Workspace, allowing users to leverage advanced AI capabilities seamlessly within their existing workflows.
 
@@ -29,42 +28,6 @@ To expose this agent to end-users, a GUI with specific features is necessary as 
 ## Architecture
 
 This solution relies on the following technologies: Google Chat API, People API, Gmail API, Vertex AI Agent Engine API, Python, and Google Cloud Functions.
-
-## Features
-
-* **User Sessions:** Sessions are managed in Vertex AI. Each user shares one session across all Workspace apps. Users can manually reset their session to start a new conversation.
-* **Rich Messaging:** Users send text messages and receive responses with rich text and graphical card elements (carousels, images, buttons, links).
-* **Error Handling:** Features configurable retries and informs users of unexpected failures with graceful interactions.
-* **Gmail Context:** Users can include the current email's subject and body in their message to the agent.
-* **Chat Attachments:** Users can send messages with recorded audio or file attachments for extra context.
-* **User Context:** The agent can optionally include user profile data, such as birthdays (available in Gmail, Calendar, Drive, Editors).
-* **Switch to Chat:** Access the Chat app DM in a single click from other apps (Gmail, Calendar, Drive, Editors) to access Chat-only features.
-* **Agent Responsivity:** Agent interactions are displayed:
-   * **Chat:** in real-time as they are processed.
-   * **Gmail, Calendar, Drive, Editors (Docs, Sheets, Slides):** after completion because Google Workspace add-on sidebar interactions are always synchronous.
-
-## Prerequisites
-
-* Google Cloud Project with billing enabled.
-
-## Set up
-
-1. Configure the Google Cloud project
-   1. Enable the Google Workspace Marketplace SDK then the Vertex AI, Cloud Functions, Chat, Places, and People APIs
-   1. Create a Service Account and grant the role `Vertex AI User`
-   1. Create a private key with type JSON. This will download the JSON file.
-1. Setup, install, and deploy the Travel Concierge ADK AI Agent sample
-   1. Use Vertex AI
-   1. Use the same Google Cloud project
-   1. Use the location `us-central1`
-   1. Use the Vertex AI Agent Engine
-1. Publish HTTP endpoint to Google Cloud Functions
-   1. Add credentials file `credentials.json` to the project root directory
-   1. Create and deploy a new Cloud Function with the project source code
-   1. Configure the environment variables and redeploy
-1. Publish Google Workspace add-on
-   1. Configure Google Chat API
-   1. Complete manifest and configure a new HTTP deployment with it
 
 ## Customization
 
