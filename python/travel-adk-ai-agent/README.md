@@ -1,6 +1,6 @@
 # Travel Concierge ADK AI multi-agent published as Google Workspace add-on
 
-This project integrates the Travel Concierge—an advanced, multi-agent AI from the Agent Development Kit (ADK) samples—into Google Workspace applications: Chat, Gmail, Calendar, Drive, and Editors (Docs, Sheets, Forms).
+This project integrates the Travel Concierge—an advanced, multi-agent AI from the Agent Development Kit (ADK) samples—into Google Workspace applications: Chat, Gmail, Calendar, Drive, Docs, Sheets, and Slides.
 
 ## Tutorial
 
