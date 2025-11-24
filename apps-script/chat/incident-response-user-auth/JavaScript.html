@@ -27,7 +27,7 @@ limitations under the License.
     google.script.run
       .withSuccessHandler(updateOutput)
       .withFailureHandler(onFailure)
-      .createChatSpace(formObject);
+      .handleIncident(formObject);
   }
 
   function updateOutput(response) {

@@ -16,14 +16,16 @@
 // [START chat_incident_response_space_creator]
 
 /**
- * Creates a space in Google Chat with the provided title and members, and posts an
- * initial message to it.
+ * Handles an incident by creating a chat space with the provided title and members, and posting a message.
+ * All the actions are done using user credentials.
  *
- * @param {Object} formData the data submitted by the user. It should contain the fields
- *                          title, description, and users.
- * @return {string} the resource name of the new space.
+ * @param {Object} formData - The data submitted by the user. It should contain the fields:
+ *                           - title: The display name of the chat space.
+ *                           - description: The description of the incident.
+ *                           - users: A comma-separated string of user emails to be added to the space.
+ * @return {string} The resource name of the new space.
  */
-function createChatSpace(formData) {
+function handleIncident(formData) {
   const users = formData.users.trim().length > 0 ? formData.users.split(',') : [];
   const spaceName = setUpSpace_(formData.title, users);
   addAppToSpace_(spaceName);
@@ -32,7 +34,7 @@ function createChatSpace(formData) {
 }
 
 /**
- * Creates a space in Google Chat with the provided display name and members.
+ * Creates a chat space.
  *
  * @return {string} the resource name of the new space.
  */
@@ -46,8 +48,7 @@ function setUpSpace_(displayName, users) {
   const request = {
     space: {
       displayName: displayName,
-      spaceType: "SPACE",
-      externalUserAllowed: true
+      spaceType: "SPACE"
     },
     memberships: memberships
   };
@@ -74,16 +75,18 @@ function addAppToSpace_(spaceName) {
 }
 
 /**
- * Posts a text message to the space on behalf of the user.
+ * Creates a chat message.
  *
+ * @param {string} spaceName - The resource name of the space.
+ * @param {string} message - The text to be posted.
  * @return {string} the resource name of the new message.
  */
-function createMessage_(spaceName, text) {
+function createMessage_(spaceName, message) {
   const request = {
-    text: text
+    text: message
   };
   // Call Chat API method spaces.messages.create
-  const message = Chat.Spaces.Messages.create(request, spaceName);
-  return message.name;
+  const result = Chat.Spaces.Messages.create(request, spaceName);
+  return result.name;
 }
 // [END chat_incident_response_space_creator]

@@ -17,118 +17,78 @@
 
 /**
  * Responds to a MESSAGE event in Google Chat.
- *
- * This app only responds to a slash command with the ID 1 ("/closeIncident").
- * It will respond to any other message with a simple "Hello" text message.
+ * 
+ * It always respond with a simple "Hello" text message.
  *
  * @param {Object} event the event object from Google Chat
  */
 function onMessage(event) {
-  if (event.message.slashCommand) {
-    return processSlashCommand_(event);
-  }
-  return { text: "Hello from Incident Response app!" };
+  return { hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
+    text: "Hello from Incident Response app!"
+  }}}}};
 }
 
 /**
- * Responds to a CARD_CLICKED event in Google Chat.
- *
- * This app only responds to one kind of dialog (Close Incident).
+ * Responds to an APP_COMMAND event in Google Chat.
  *
  * @param {Object} event the event object from Google Chat
  */
-function onCardClick(event) {
-  if (event.isDialogEvent) {
-    if (event.dialogEventType == 'SUBMIT_DIALOG') {
+function onAppCommand(event) {
+  if (event.chat.appCommandPayload.appCommandMetadata.appCommandId != CLOSE_INCIDENT_COMMAND_ID) {
+    return { hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
+      text: "Command not recognized. Use the quick command `Close incident` to close the incident managed by this space."
+    }}}}};
+  }
+  return { action: { navigations: [{ pushCard: { sections: [{
+    header: "Close Incident",
+    widgets: [{
+      textInput: {
+        label: "Please describe the incident resolution",
+        type: "MULTIPLE_LINE",
+        name: "description"
+      }
+    }, {
+      buttonList: { buttons: [{
+        text: "Close Incident",
+        onClick: { action: { function: "closeIncident" }}
+      }]}
+    }]
+  }]}}]}};
+}
+
+/**
+ * Responds to an BUTTON_CLICKED event in Google Chat from Close Incident dialog.
+ *
+ * @param {Object} event the event object from Google Chat
+ */
+function closeIncident(event) {
+  if (event.chat.buttonClickedPayload.isDialogEvent) {
+    if (event.chat.buttonClickedPayload.dialogEventType == 'SUBMIT_DIALOG') {
       return processSubmitDialog_(event);
     }
-    return {
-      actionResponse: {
-        type: "DIALOG",
-        dialogAction: {
-          actionStatus: "OK"
-        }
-      }
-    };
+    return { action: { navigations: [{ endNavigation: {
+      action: "CLOSE_DIALOG" }
+    }]}};
   }
 }
 
 /**
- * Responds to a MESSAGE event with a Slash command in Google Chat.
+ * Responds to an BUTTON_CLICKED event in Google Chat from Close Incident dialog submission.
  *
- * This app only responds to a slash command with the ID 1 ("/closeIncident")
- * by returning a Dialog.
- *
- * @param {Object} event the event object from Google Chat
- */
-function processSlashCommand_(event) {
-  if (event.message.slashCommand.commandId != CLOSE_INCIDENT_COMMAND_ID) {
-    return {
-      text: "Command not recognized. Use the command `/closeIncident` to close the incident managed by this space."
-    };
-  }
-  const sections = [
-    {
-      header: "Close Incident",
-      widgets: [
-        {
-          textInput: {
-            label: "Please describe the incident resolution",
-            type: "MULTIPLE_LINE",
-            name: "description"
-          }
-        },
-        {
-          buttonList: {
-            buttons: [
-              {
-                text: "Close Incident",
-                onClick: {
-                  action: {
-                    function: "closeIncident"
-                  }
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ];
-  return {
-    actionResponse: {
-      type: "DIALOG",
-      dialogAction: {
-        dialog: {
-          body: {
-            sections,
-          }
-        }
-      }
-    }
-  };
-}
-
-/**
- * Responds to a CARD_CLICKED event with a Dialog submission in Google Chat.
- *
- * This app only responds to one kind of dialog (Close Incident).
  * It creates a Doc with a summary of the incident information and posts a message
  * to the space with a link to the Doc.
  *
  * @param {Object} event the event object from Google Chat
  */
 function processSubmitDialog_(event) {
-  const resolution = event.common.formInputs.description[""].stringInputs.value[0];
-  const chatHistory = concatenateAllSpaceMessages_(event.space.name);
+  const resolution = event.commonEventObject.formInputs.description.stringInputs.value[0];
+  const space = event.chat.buttonClickedPayload.space;
+  const chatHistory = concatenateAllSpaceMessages_(space.name);
   const chatSummary = summarizeChatHistory_(chatHistory);
-  const docUrl = createDoc_(event.space.displayName, resolution, chatHistory, chatSummary);
-  return {
-    actionResponse: {
-      type: "NEW_MESSAGE",
-    },
+  const docUrl = createDoc_(space.displayName, resolution, chatHistory, chatSummary);
+  return { hostAppDataAction: { chatDataAction: { createMessageAction: { message: {
     text: `Incident closed with the following resolution: ${resolution}\n\nHere is the automatically generated post-mortem:\n${docUrl}`
-  };
+  }}}}};
 }
 
 /**

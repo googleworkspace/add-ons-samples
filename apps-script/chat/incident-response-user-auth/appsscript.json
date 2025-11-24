@@ -16,7 +16,13 @@
       }
     ]
   },
-  "chat": {},
+  "addOns": {
+    "common": {
+      "name": "Incident Management User Auth",
+      "logoUrl": "https://developers.google.com/workspace/add-ons/images/quickstart-app-avatar.png"
+    },
+    "chat": {}
+  },
   "oauthScopes": [
     "https://www.googleapis.com/auth/chat.spaces.create",
     "https://www.googleapis.com/auth/chat.memberships",

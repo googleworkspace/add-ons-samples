@@ -16,7 +16,7 @@
 // [START handle_incident_with_application_credentials]
 
 /**
- * Handles an incident by creating a chat space, adding members, and posting a message.
+ * Handles an incident by creating a chat space with the provided title and members, and posting a message.
  * All the actions are done using application credentials.
  *
  * @param {Object} formData - The data submitted by the user. It should contain the fields:
@@ -42,7 +42,7 @@ function handleIncident(formData) {
 }
 
 /**
- * Creates a chat space with application credentials.
+ * Creates a chat space.
  *
  * @param {string} displayName - The name of the chat space.
  * @param {object} service - The credentials of the service account.
@@ -71,32 +71,9 @@ function createChatSpace_(displayName, service) {
   }
 }
 
-/**
- * Creates a chat message with application credentials.
- *
- * @param {string} spaceName - The resource name of the space.
- * @param {string} message - The text to be posted.
- * @param {object} service - The credentials of the service account.
- * @return {string} the resource name of the new space.
- */
-function createMessage_(spaceName, message, service) {
-  try {
-    // Call Chat API with a service account to create a message.
-    const result = Chat.Spaces.Messages.create(
-        {'text': message},
-        spaceName,
-        {},
-        // Authenticate with the service account token.
-        {'Authorization': 'Bearer ' + service.getAccessToken()});
-
-  } catch (err) {
-    // TODO (developer) - Handle exception.
-    console.log('Failed to create message with error %s', err.message);
-  }
-}
 
 /**
- * Creates a human membership in a chat space with application credentials.
+ * Creates a human membership in a chat space.
  *
  * @param {string} spaceName - The resource name of the space.
  * @param {string} email - The email of the user to be added.
@@ -121,6 +98,33 @@ function createHumanMembership_(spaceName, email, service){
     console.log('Failed to create membership with error %s', err.message)
   }
 
+}
+
+/**
+ * Creates a chat message.
+ *
+ * @param {string} spaceName - The resource name of the space.
+ * @param {string} message - The text to be posted.
+ * @param {object} service - The credentials of the service account.
+ * @return {string} the resource name of the new message.
+ */
+function createMessage_(spaceName, message, service) {
+  try {
+    const request = {
+      text: message
+    };
+    // Call Chat API with a service account to create a message.
+    const result = Chat.Spaces.Messages.create(
+        request,
+        spaceName,
+        {},
+        // Authenticate with the service account token.
+        {'Authorization': 'Bearer ' + service.getAccessToken()});
+    return result.name;
+  } catch (err) {
+    // TODO (developer) - Handle exception.
+    console.log('Failed to create message with error %s', err.message);
+  }
 }
 
 /**

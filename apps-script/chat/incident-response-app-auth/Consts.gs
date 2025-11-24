@@ -20,5 +20,5 @@ const APP_CREDENTIALS = 'replace-with-your-app-credentials';
 const APP_CREDENTIALS_SCOPES = 'https://www.googleapis.com/auth/chat.bot https://www.googleapis.com/auth/chat.app.memberships https://www.googleapis.com/auth/chat.app.spaces.create';
 const VERTEX_AI_LOCATION_ID = 'us-central1';
 const CLOSE_INCIDENT_COMMAND_ID = 1;
-const MODEL_ID = 'gemini-1.5-flash-002';
+const MODEL_ID = 'gemini-2.5-flash-lite';
 // [END chat_incident_response_consts]
