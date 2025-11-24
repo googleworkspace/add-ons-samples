@@ -22,8 +22,8 @@
 /** [Cloud Functions](https://cloud.google.com/functions/docs) client library. */
 const functions = require('@google-cloud/functions-framework');
 const express = require('express');
-const App = require('./controllers/app.js');
-const {oauth2callback} = require('./services/user-auth.js');
+const App = require('./controllers/app');
+const {oauth2callback} = require('./services/user-auth');
 const {env} = require('./env.js');
 
 // Initialize an Express app to handle routing.

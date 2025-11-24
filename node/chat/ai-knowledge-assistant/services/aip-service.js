@@ -45,7 +45,7 @@ exports.AIPService = {
   /**
    * Executes AI text prediction to respond to user question.
    * @param {!string} question The user question.
-   * @param {!import('../model/message.js').Message[]} messages The messages to feed
+   * @param {!import('../model/message').Message[]} messages The messages to feed
    *     into the AI model.
    * @return {Promise<string>} The answer to the user question.
    */
