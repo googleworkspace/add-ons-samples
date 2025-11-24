@@ -20,10 +20,10 @@
  */
 
 const {env} = require('../env.js');
-const {AppAuthEventsService} = require('../services/app-auth-events-service');
-const {FirestoreService} = require('../services/firestore-service');
-const {UserAuthChatService} = require('../services/user-auth-chat-service');
-const {UserAuthEventsService} = require('../services/user-auth-events-service');
+const {AppAuthEventsService} = require('../services/app-auth-events-service.js');
+const {FirestoreService} = require('../services/firestore-service.js');
+const {UserAuthChatService} = require('../services/user-auth-chat-service.js');
+const {UserAuthEventsService} = require('../services/user-auth-events-service.js');
 const {generateAuthUrl} = require('../services/user-auth.js');
 
 /**

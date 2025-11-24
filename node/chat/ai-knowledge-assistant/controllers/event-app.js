@@ -22,12 +22,12 @@
  */
 
 const {env} = require('../env.js');
-const {SubscriptionEventType} = require('../model/events');
-const {Message} = require('../model/message');
-const {AIPService} = require('../services/aip-service');
-const {AppAuthChatService} = require('../services/app-auth-chat-service');
-const {FirestoreService} = require('../services/firestore-service');
-const {UserAuthEventsService} = require('../services/user-auth-events-service');
+const {SubscriptionEventType} = require('../model/events.js');
+const {Message} = require('../model/message.js');
+const {AIPService} = require('../services/aip-service.js');
+const {AppAuthChatService} = require('../services/app-auth-chat-service.js');
+const {FirestoreService} = require('../services/firestore-service.js');
+const {UserAuthEventsService} = require('../services/user-auth-events-service.js');
 
 /**
  * Chat application logic for event processing.
