@@ -24,7 +24,7 @@ const {AppAuthEventsService} = require('../services/app-auth-events-service');
 const {FirestoreService} = require('../services/firestore-service');
 const {UserAuthChatService} = require('../services/user-auth-chat-service');
 const {UserAuthEventsService} = require('../services/user-auth-events-service');
-const {generateAuthUrl} = require('../services/user-auth');
+const {generateAuthUrl} = require('../services/user-auth.js');
 
 /**
  * Chat application logic.
