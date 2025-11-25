@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 /**
  * Responds to a MESSAGE event in Google Chat.
  * 
- * It always respond with a simple "Hello" text message.
+ * It always responds with a simple "Hello" text message.
  *
  * @param {Object} event the event object from Google Chat
  */
@@ -57,7 +57,7 @@ function onAppCommand(event) {
 }
 
 /**
- * Responds to an BUTTON_CLICKED event in Google Chat from Close Incident dialog.
+ * Responds to a BUTTON_CLICKED event in Google Chat from Close Incident dialog.
  *
  * @param {Object} event the event object from Google Chat
  */
@@ -73,7 +73,7 @@ function closeIncident(event) {
 }
 
 /**
- * Responds to an BUTTON_CLICKED event in Google Chat from Close Incident dialog submission.
+ * Responds to a BUTTON_CLICKED event in Google Chat from Close Incident dialog submission.
  *
  * It creates a Doc with a summary of the incident information and posts a message
  * to the space with a link to the Doc.
@@ -97,9 +97,6 @@ function processSubmitDialog_(event) {
  *
  * For simplicity for this demo, it only fetches the first 100 messages.
  *
- * Messages with slash commands are filtered out, so the returned history will
- * contain only the conversations between users and not app command invocations.
- *
  * @return {string} a text containing all the messages in the space in the format:
  *          Sender's name: Message
  */
@@ -111,7 +108,6 @@ function concatenateAllSpaceMessages_(spaceName) {
   // concatenating all the messages.
   let userMap = new Map();
   return messages
-    .filter(message => message.slashCommand === undefined)
     .map(message => `${getUserDisplayName_(userMap, message.sender.name)}: ${message.text}`)
     .join('\n');
 }
@@ -140,7 +136,7 @@ function getUserDisplayName_(userMap, userName) {
     displayName = user.name.displayName ? user.name.displayName : user.name.fullName;
   } catch (e) {
     // Ignore error if the API call fails (for example, because it's an
-    // out-of-domain user or Chat app)) and just use 'Unknown User'.
+    // out-of-domain user or Chat app) and just use 'Unknown User'.
   }
   userMap.set(userName, displayName);
   return displayName;
