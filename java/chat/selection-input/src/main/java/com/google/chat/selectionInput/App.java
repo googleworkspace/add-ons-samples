@@ -77,18 +77,15 @@ public class App {
             // The list is static here but it could be dynamic.
             .setItems(List.of(getSuggestedContact("3")))))))))));
 
-    GenericJson createMessageAction = new GenericJson();
-    createMessageAction.set("message", message);
-
-    GenericJson chatDataAction = new GenericJson();
-    chatDataAction.set("createMessageAction", createMessageAction);
-
-    GenericJson hostAppDataAction = new GenericJson();
-    hostAppDataAction.set("chatDataAction", chatDataAction);
-
-    GenericJson renderActions = new GenericJson();
-    renderActions.set("hostAppDataAction", hostAppDataAction);
-    return renderActions;
+    return new GenericJson() {{
+      put("hostAppDataAction", new GenericJson() {{
+        put("chatDataAction", new GenericJson() {{
+          put("createMessageAction", new GenericJson() {{
+            put("message", message);
+          }});
+        }});
+      }});
+    }};
   }
 
   /**
@@ -105,21 +102,17 @@ public class App {
     // Only return items based on the query from the user
     ).stream().filter(e -> query == null || e.getText().indexOf(query) > -1).toList();
 
-    GenericJson selectionInputWidgetSuggestions = new GenericJson();
-    selectionInputWidgetSuggestions.set("suggestions", suggestions);
-
-    GenericJson updateWidget = new GenericJson();
-    updateWidget.set("selectionInputWidgetSuggestions", selectionInputWidgetSuggestions);
-
-    GenericJson modifyOperation = new GenericJson();
-    modifyOperation.set("updateWidget", updateWidget);
-
-    GenericJson action = new GenericJson();
-    action.set("modifyOperations", List.of(modifyOperation));
-
-    GenericJson renderActions = new GenericJson();
-    renderActions.set("action", action);
-    return renderActions;
+    return new GenericJson() {{
+      put("action", new GenericJson() {{
+        put("modifyOperations", List.of(new GenericJson() {{
+          put("updateWidget", new GenericJson() {{
+            put("selectionInputWidgetSuggestions", new GenericJson() {{
+              put("suggestions", suggestions);
+            }});
+          }});
+        }}));
+      }});
+    }};
   }
 
   /**
