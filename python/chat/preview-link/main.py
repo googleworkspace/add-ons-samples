@@ -159,7 +159,7 @@ def handle_card_click(chatMessage: dict) -> dict:
     return { 'hostAppDataAction': { 'chatDataAction': { 'updateInlinePreviewAction': message }}}
   else:
     return { 'hostAppDataAction': { 'chatDataAction': { 'updateMessageAction': message }}}
-  # [END preview_links_assign]
+    # [END preview_links_assign]
 
 
 if __name__ == '__main__':
