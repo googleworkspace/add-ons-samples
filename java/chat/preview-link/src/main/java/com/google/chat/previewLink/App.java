@@ -89,9 +89,8 @@ public class App {
         put("hostAppDataAction", new GenericJson() {{
           put("chatDataAction", new GenericJson() {{
             put("createMessageAction", new GenericJson() {{
-              put("message", new GenericJson() {{
-                put("text", "No matchedUrl detected.");
-              }});
+              put("message", new Message()
+                .setText("No matchedUrl detected."));
             }});
           }});
         }});
@@ -105,9 +104,8 @@ public class App {
         put("hostAppDataAction", new GenericJson() {{
           put("chatDataAction", new GenericJson() {{
             put("createMessageAction", new GenericJson() {{
-              put("message", new GenericJson() {{
-                put("text", "event.chat.messagePayload.message.matchedUrl.url: " + chatMessage.at("/matchedUrl/url").asText());
-              }});
+              put("message", new Message()
+                .setText("event.chat.messagePayload.message.matchedUrl.url: " + chatMessage.at("/matchedUrl/url").asText()));
             }});
           }});
         }});
