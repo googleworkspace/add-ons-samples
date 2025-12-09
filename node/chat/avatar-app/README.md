@@ -7,10 +7,8 @@ the app with a slash command.
 ## Deploy the sample
 
 1. Follow the steps in
-   [Build a Google Chat app with Google Apps Script](https://developers.google.com/workspace/add-ons/chat/quickstart-apps-script)
+   [Build a Google Chat app with HTTP service](https://developers.google.com/workspace/add-ons/chat/quickstart-http)
    to set up your environment, set up the script, and publish the Chat app.
-
-1. Replace the script `Code.gs` with the one in this project.
 
 1. Follow the steps in
    [Respond to commands](https://developers.google.com/workspace/add-ons/chat/commands)
