@@ -1,0 +1,13 @@
+{
+  "name": "avatar-app",
+  "version": "1.0.0",
+  "description": "This is a Google Chat app that returns the user's avatar image",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0"
+  },
+  "license": "Apache-2.0"
+}

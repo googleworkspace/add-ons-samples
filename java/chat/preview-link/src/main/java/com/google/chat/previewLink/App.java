@@ -34,8 +34,6 @@ import com.google.api.services.chat.v1.model.GoogleAppsCardV1DecoratedText;
 import com.google.api.services.chat.v1.model.GoogleAppsCardV1OnClick;
 import com.google.api.services.chat.v1.model.GoogleAppsCardV1OpenLink;
 import com.google.api.services.chat.v1.model.GoogleAppsCardV1Section;
-import com.google.api.services.chat.v1.model.GoogleAppsCardV1SelectionInput;
-import com.google.api.services.chat.v1.model.GoogleAppsCardV1SelectionItem;
 import com.google.api.services.chat.v1.model.GoogleAppsCardV1Widget;
 import com.google.api.services.chat.v1.model.Message;
 
