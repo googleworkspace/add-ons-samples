@@ -43,6 +43,7 @@ app.post('/', async (req, res) => {
     cardsV2: [{
       cardId: "contactSelector",
       card: { sections:[{ widgets: [{
+        // [START selection_input_init]
         selectionInput: {
           name: "contacts",
           type: "MULTI_SELECT",
@@ -54,6 +55,7 @@ app.post('/', async (req, res) => {
           // The list is static here but it could be dynamic.
           items: [getSuggestedContact("3")]
         }
+        // [END selection_input_init]
       }]}]}
     }]
   }}}}});
