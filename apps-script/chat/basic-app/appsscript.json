@@ -1,0 +1,13 @@
+{
+  "timeZone": "America/Los_Angeles",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "Basic app",
+      "logoUrl": "https://developers.google.com/workspace/add-ons/images/quickstart-app-avatar.png"
+    },
+    "chat": {}
+  }
+}
