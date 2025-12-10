@@ -40,6 +40,7 @@ def post() -> Mapping[str, Any]:
     'message': { 'cardsV2': [{
       'cardId': "contactSelector",
       'card': { 'sections':[{ 'widgets': [{
+        # [START selection_input_init]
         'selectionInput': {
           'name': "contacts",
           'type': "MULTI_SELECT",
@@ -51,6 +52,7 @@ def post() -> Mapping[str, Any]:
           # The list is static here but it could be dynamic.
           'items': [get_suggested_contact("3")]
         }
+        # [END selection_input_init]
       }]}]}
     }]}
   }}}})
