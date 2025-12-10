@@ -66,6 +66,7 @@ public class App {
       .setCardId("contactSelector")
       .setCard(new GoogleAppsCardV1Card()
         .setSections(List.of(new GoogleAppsCardV1Section().setWidgets(List.of(new GoogleAppsCardV1Widget()
+          // [START selection_input_init]
           .setSelectionInput(new GoogleAppsCardV1SelectionInput()
             .setName("contacts")
             .setType("MULTI_SELECT")
@@ -76,7 +77,8 @@ public class App {
             // Suggested items loaded by default.
             // The list is static here but it could be dynamic.
             .setItems(List.of(getSuggestedContact("3")))))))))));
-
+            // [END selection_input_init]
+          
     return new GenericJson() {{
       put("hostAppDataAction", new GenericJson() {{
         put("chatDataAction", new GenericJson() {{
