@@ -16,9 +16,6 @@
 // --- A2A-wrapped ADK AI Agent handling logic               ---
 ////////////////////////////////////////////////////
 
-// The prefix used for the User resource name.
-const USERS_PREFIX = "users/";
-
 // Sends a request to the AI agent and processes the response using the agent 
 function requestAgent(userName, input) {
   // Sync call that sends the message to the agent
