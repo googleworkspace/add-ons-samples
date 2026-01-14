@@ -25,7 +25,7 @@ def get_user_profile(tool_context: ToolContext) -> str:
     """Call this tool to get the current user profile."""
     return json.dumps({
         "name": "Pierrick Voulet",
-        "title": "DevRel Engineer @ Google Workspace | Gen AI & AI Agents & Agentic AI | Automation & Digital Transformation",
+        # "title": "DevRel Engineer @ Google Workspace | Gen AI & AI Agents & Agentic AI | Automation & Digital Transformation",
         "imageUrl": "https://io.google/2024/speakers/3ea87822-3160-4d54-89dd-57e185085f79_240.webp",
         "linkedin": "https://www.linkedin.com/in/pierrick-voulet/"
     })
