@@ -1,0 +1,37 @@
+[project]
+name = "a2ui"
+version = "0.1.0"
+description = "A basic A2UI-wrapped ADK AI agent with user action."
+license = "Apache License 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+google-adk = "^1.18.0"
+google-cloud-aiplatform = { extras = [
+    "adk",
+    "agent-engines",
+], version = "^1.126.1" }
+google-genai = "^1.9.0"
+pydantic = "^2.10.6"
+python-dotenv = "^1.0.1"
+absl-py = "^2.2.1"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+google-adk = { version = "^1.18.0", extras = ["eval"] }
+pytest = "^8.3.5"
+pytest-asyncio = "^0.26.0"
+absl-py = "^2.2.1"
+
+[tool.poetry.group.deployment]
+optional = true
+
+[tool.poetry.group.deployment.dependencies]
+absl-py = "^2.2.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
