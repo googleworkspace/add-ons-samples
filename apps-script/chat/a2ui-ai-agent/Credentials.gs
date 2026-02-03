@@ -12,8 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const SCOPES = [
+  // Vertex AI scope
+  'https://www.googleapis.com/auth/cloud-platform',
+  // Google Chat scope
+  // All Chat operations are taken by the Chat app itself
+  'https://www.googleapis.com/auth/chat.bot'
+];
+
 // Get credentials from service account to access Vertex AI and Google Chat APIs
 function getCredentials() {
+  
+  // Option #1: Impersonate service account
+  const serviceAccountEmail = PropertiesService.getScriptProperties().getProperty('SERVICE_ACCOUNT_EMAIL');
+  if (serviceAccountEmail) {
+    const tokenResponse = UrlFetchApp.fetch(
+      `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${serviceAccountEmail}:generateAccessToken`,
+      {
+        method: 'post',
+        contentType: 'application/json',
+        headers: { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() },
+        payload: JSON.stringify({ 'scope': SCOPES, 'lifetime': '3600s' })
+      });
+    const token = JSON.parse(tokenResponse.getContentText());
+    // Decorate the result to mock a OAuth service object
+    return {
+      getAccessToken: function() {
+        return token.accessToken;
+      }
+    };
+  }
+
+  // Option #2: Use service account
   const credentials = PropertiesService.getScriptProperties().getProperty('SERVICE_ACCOUNT_KEY');
   if (!credentials) {
     throw new Error("SERVICE_ACCOUNT_KEY script property must be set.");
@@ -24,11 +54,5 @@ function getCredentials() {
     .setPrivateKey(parsedCredentials['private_key'])
     .setIssuer(parsedCredentials['client_email'])
     .setPropertyStore(PropertiesService.getScriptProperties())
-    .setScope([
-      // Vertex AI scope
-      "https://www.googleapis.com/auth/cloud-platform",
-      // Google Chat scope
-      // All Chat operations are taken by the Chat app itself
-      "https://www.googleapis.com/auth/chat.bot"
-    ]);
+    .setScope(SCOPES);
 }
