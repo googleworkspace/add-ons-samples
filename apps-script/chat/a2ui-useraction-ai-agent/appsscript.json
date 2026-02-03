@@ -26,6 +26,7 @@
     "chat": {}
   },
   "oauthScopes": [
+    "https://www.googleapis.com/auth/iam",
     "https://www.googleapis.com/auth/script.external_request"
   ]
 }
