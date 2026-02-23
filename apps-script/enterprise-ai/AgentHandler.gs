@@ -114,13 +114,13 @@ function getAgentDataStores() {
   return dataStores;
 }
 
+// ---  UI Management ---
+
 // Sends an answer as a Chat message.
 function answer(author, text, success) {
   const widgets = createMarkdownWidgets(text);
   createMessage(buildMessage(author, [wrapWidgetsInCardsV2(widgets)], success));
 }
-
-// ---  UI Management ---
 
 // Sends a request to the AI agent and processes the response for Chat UI
 function requestAgent(input) {
