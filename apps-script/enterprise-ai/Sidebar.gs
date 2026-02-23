@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Service that handles Gmail operations.
+
 // Triggered when the user opens the Gmail Add-on or selects an email.
 function onAddonEvent(event) {
   // If this was triggered by a button click, handle it
