@@ -14,18 +14,6 @@
 
 // Service that handles Gemini Enterprise AI Agent operations.
 
-// Sends a request to the AI agent and processes the response for Chat UI
-function requestAgent(input) {
-  try {
-    const answerText = queryAgent(input);
-    if (answerText) {
-      answer(getAgentId().split('/').pop(), answerText, true);
-    }
-  } catch (err) {
-    answer(getAgentId().split('/').pop(), err.message, false);
-  }
-}
-
 // Submits a query to the AI agent and returns the response string synchronously
 function queryAgent(input) {
   const isNewSession = input.forceNewSession || !PropertiesService.getUserProperties().getProperty(AGENT_SESSION_NAME);
@@ -130,6 +118,20 @@ function getAgentDataStores() {
 function answer(author, text, success) {
   const widgets = createMarkdownWidgets(text);
   createMessage(buildMessage(author, [wrapWidgetsInCardsV2(widgets)], success));
+}
+
+// ---  UI Management ---
+
+// Sends a request to the AI agent and processes the response for Chat UI
+function requestAgent(input) {
+  try {
+    const answerText = queryAgent(input);
+    if (answerText) {
+      answer(getAgentId().split('/').pop(), answerText, true);
+    }
+  } catch (err) {
+    answer(getAgentId().split('/').pop(), err.message, false);
+  }
 }
 
 // Builds a Chat message for the given author, state, and cards_v2.
