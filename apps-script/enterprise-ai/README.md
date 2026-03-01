@@ -1,6 +1,6 @@
 # Enterprise AI Google Workspace add-on
 
-**Note:** This sample is part of an official Google Codelab ([link pending](#)).
+**Note:** This project is part of the official Google Codelab [Integrate Gemini Enterprise Agents with Google Workspace](https://codelabs.developers.google.com/ge-gws-agents).
 
 Integrates with the *default* Gemini Enterprise AI agent natively.
 
