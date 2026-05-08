@@ -142,6 +142,7 @@ function getAgentResponseWidgets(name, text, groundingMetadata) {
     case "critic_agent":
       widgets = createMarkdownAndGroundingWidgets(text, groundingMetadata);
       break;
+    case "root_agent":
     case "reviser_agent":
       widgets = createMarkdownWidgets(text);
       break;
