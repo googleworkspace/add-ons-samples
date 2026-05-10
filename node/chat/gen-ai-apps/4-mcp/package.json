@@ -10,7 +10,7 @@
   "dependencies": {
     "@google-cloud/functions-framework": "^4.0.0",
     "@google/genai": "^1.20.0",
-    "@modelcontextprotocol/sdk": "^1.18.1"
+    "@modelcontextprotocol/sdk": "^1.26.0"
   },
   "author": "Google LLC",
   "license": "Apache-2.0"
