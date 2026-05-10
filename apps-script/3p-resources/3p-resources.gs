@@ -35,13 +35,15 @@ function caseLinkPreview(event) {
       .setTitle(`Case ${caseDetails["name"][0]}`);
     const caseDescription = CardService.newTextParagraph()
       .setText(caseDetails["description"][0]);
-
-    // Returns the card.
-    // Uses the text from the card's header for the title of the smart chip.
-    return CardService.newCardBuilder()
+    const card = CardService.newCardBuilder()
       .setHeader(caseHeader)
       .addSection(CardService.newCardSection().addWidget(caseDescription))
       .build();
+
+    // Returns the link preview smart chip with its dedicated title.
+    return CardService.newLinkPreview()
+      .setTitle(`Case ${caseDetails["name"][0]} - caseDetails["description"][0]`)
+      .setPreviewCard(card);
   }
 }
 
