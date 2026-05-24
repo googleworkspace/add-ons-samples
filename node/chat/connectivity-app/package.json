@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "google-auth-library": "^10.0.0-rc.3",
-    "@google-cloud/firestore": "^7.11.0",
+    "@google-cloud/firestore": "^8.6.0",
     "@google-apps/meet": "^0.7.0",
     "express": "^4.21.2"
   },
